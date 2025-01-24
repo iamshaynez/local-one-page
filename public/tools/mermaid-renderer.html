@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online Mermaid diagram renderer - Create and visualize diagrams using Mermaid syntax. Perfect for flowcharts, sequence diagrams, class diagrams, and more">
+    <meta name="keywords" content="mermaid diagram, diagram generator, flowchart maker, sequence diagram, online diagram tool, mermaid renderer, diagram visualization">
+    <meta name="author" content="Your Name">
+    <title>Mermaid Diagram Renderer - Free Online Tool</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XSMVBZ9FW8"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-XSMVBZ9FW8');
+    </script>
+
+    <link rel="stylesheet" href="https://www.localhosts.vip/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .split-view {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
+        }
+        .editor-panel, .preview-panel {
+            flex: 1;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background-color: var(--background-color);
+        }
+        #mermaidInput {
+            width: 100%;
+            height: 400px;
+            font-family: monospace;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            resize: vertical;
+        }
+        #mermaidOutput {
+            width: 100%;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: auto;
+        }
+        .error-message {
+            color: #ff4444;
+            margin-top: var(--spacing-sm);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+        </aside>
+
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Mermaid Diagram Renderer</h1>
+                <p>Create beautiful diagrams using Mermaid syntax. Simply paste your Mermaid code in the editor, and see it rendered in real-time!</p>
+
+                <div class="split-view">
+                    <div class="editor-panel">
+                        <h2>Mermaid Code Editor</h2>
+                        <textarea id="mermaidInput" placeholder="Enter your Mermaid diagram code here...
+Example:
+graph TD
+    A[Start] --> B{Is it?}
+    B -->|Yes| C[OK]
+    B -->|No| D[End]"></textarea>
+                        <div id="errorMessage" class="error-message"></div>
+                    </div>
+                    <div class="preview-panel">
+                        <h2>Preview</h2>
+                        <div id="mermaidOutput"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-ad">Ad Space (728x90)</div>
+        <div class="copyright">&copy; 2024 Your Website Name. All rights reserved.</div>
+    </footer>
+
+    <script>
+        mermaid.initialize({ startOnLoad: false });
+
+        const mermaidInput = document.getElementById('mermaidInput');
+        const mermaidOutput = document.getElementById('mermaidOutput');
+        const errorMessage = document.getElementById('errorMessage');
+
+        async function renderDiagram() {
+            const code = mermaidInput.value.trim();
+            if (!code) {
+                mermaidOutput.innerHTML = '<p>Diagram preview will appear here</p>';
+                errorMessage.style.display = 'none';
+                return;
+            }
+
+            try {
+                const { svg } = await mermaid.render('mermaid-diagram', code);
+                mermaidOutput.innerHTML = svg;
+                errorMessage.style.display = 'none';
+            } catch (error) {
+                errorMessage.textContent = `Error: ${error.message}`;
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        let debounceTimer;
+        mermaidInput.addEventListener('input', () => {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(renderDiagram, 500);
+        });
+
+        // Initial render
+        renderDiagram();
+    </script>
+</body>
+</html>
