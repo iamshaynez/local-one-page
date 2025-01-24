@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online subtitle meme maker - Create funny memes with custom text at the bottom. Easy-to-use meme generator for adding subtitles to images">
+    <meta name="keywords" content="subtitle meme maker, meme generator, subtitle image creator, meme text tool, subtitle generator, funny meme maker, image subtitle tool">
+    <meta name="author" content="Your Name">
+    <title>Subtitle-Memer - Free Online Subtitle Meme Generator</title>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XSMVBZ9FW8"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-XSMVBZ9FW8');
+    </script>
+
+    <link rel="stylesheet" href="https://www.localhosts.vip/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background-color: var(--background-color);
+        }
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+        .preview-container {
+            margin: var(--spacing-lg) 0;
+            text-align: center;
+        }
+        #previewCanvas {
+            max-width: 100%;
+            height: auto;
+            margin-top: var(--spacing-lg);
+            box-shadow: var(--box-shadow);
+        }
+        .text-input {
+            width: 100%;
+            min-height: 100px;
+            margin: var(--spacing-md) 0;
+        }
+        .controls {
+            margin: var(--spacing-lg) 0;
+        }
+        .button-group {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-lg);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+        </aside>
+
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Subtitle-Memer</h1>
+                <p>Create funny memes by adding custom subtitle text to your images. Perfect for making subtitle memes!</p>
+
+                <div class="upload-area" id="dropZone">
+                    <p>Click to upload or drag and drop an image here</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none">
+                </div>
+
+                <div class="controls">
+                    <label for="textInput">Enter your text (one line per row):</label>
+                    <textarea id="textInput" class="text-input" placeholder="Enter your text here...\nEach line will be placed at the bottom of the image"></textarea>
+                </div>
+
+                <div class="preview-container">
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+
+                <div class="button-group">
+                    <button id="generateBtn" class="button button-primary" disabled>Generate Image</button>
+                    <button id="downloadBtn" class="button button-secondary" disabled>Download Image</button>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-ad">Ad Space (728x90)</div>
+        <div class="copyright">&copy; 2024 Your Website Name. All rights reserved.</div>
+    </footer>
+
+    <script src="subtitle-memer.js"></script>
+</body>
+</html>
