@@ -54,6 +54,12 @@
     "url": "/programmer/json-2-xml.html"
   },
   {
+    "title": "Crontab Expression Generator - Simple Visual Cron Schedule Editor",
+    "desc": "Free online crontab expression generator - Create and validate cron schedule expressions with an interactive interface. Get next run times and human-readable explanations instantly.",
+    "category": "programmer",
+    "url": "/programmer/cron-schedule-expression-generator.html"
+  },
+  {
     "title": "JSON to YAML Converter - Free Online Data Format Transformation Tool",
     "desc": "Free online JSON to YAML converter - Convert JSON data to YAML format instantly. Simple, fast, and accurate JSON to YAML transformation tool with syntax highlighting",
     "category": "programmer",

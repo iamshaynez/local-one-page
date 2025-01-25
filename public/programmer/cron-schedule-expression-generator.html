@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online crontab expression generator - Create and validate cron schedule expressions with an interactive interface. Get next run times and human-readable explanations instantly.">
+    <meta name="keywords" content="crontab generator, cron expression, schedule generator, cron syntax, cron validator, cron schedule, cron job, cron format, cron editor">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Crontab Expression Generator - Simple Visual Cron Schedule Editor</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .cron-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .cron-fields {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cron-field {
+            text-align: center;
+        }
+
+        .cron-field input {
+            width: 60px;
+            padding: 8px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .cron-field label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+        }
+
+        .cron-expression {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+            font-family: monospace;
+            font-size: 1.2em;
+        }
+
+        .next-runs {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        .next-runs h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .next-run-item {
+            margin: 5px 0;
+            padding: 5px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .explanation {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+            line-height: 1.5;
+        }
+
+        .help-text {
+            font-size: 0.9em;
+            color: var(--text-color-secondary);
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="cron-container">
+                <h1>Crontab Expression Generator</h1>
+                <p>Create and validate cron schedule expressions with this simple visual editor. Get instant previews of next run times and human-readable explanations.</p>
+
+                <div class="cron-fields">
+                    <div class="cron-field">
+                        <label for="minute">Minute</label>
+                        <input type="text" id="minute" value="*" maxlength="50">
+                        <div class="help-text">0-59</div>
+                    </div>
+                    <div class="cron-field">
+                        <label for="hour">Hour</label>
+                        <input type="text" id="hour" value="*" maxlength="50">
+                        <div class="help-text">0-23</div>
+                    </div>
+                    <div class="cron-field">
+                        <label for="day">Day</label>
+                        <input type="text" id="day" value="*" maxlength="50">
+                        <div class="help-text">1-31</div>
+                    </div>
+                    <div class="cron-field">
+                        <label for="month">Month</label>
+                        <input type="text" id="month" value="*" maxlength="50">
+                        <div class="help-text">1-12</div>
+                    </div>
+                    <div class="cron-field">
+                        <label for="weekday">Weekday</label>
+                        <input type="text" id="weekday" value="*" maxlength="50">
+                        <div class="help-text">0-6</div>
+                    </div>
+                </div>
+
+                <div class="cron-expression" id="cronExpression">* * * * *</div>
+
+                <div class="explanation" id="explanation">
+                    This expression means: Run every minute of every hour on every day of every month and every day of the week
+                </div>
+
+                <div class="next-runs">
+                    <h3>Next 3 runs:</h3>
+                    <div id="nextRuns"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        class CronExpressionGenerator {
+            constructor() {
+                this.fields = ['minute', 'hour', 'day', 'month', 'weekday'];
+                this.setupEventListeners();
+                this.updateExpression();
+            }
+
+            setupEventListeners() {
+                this.fields.forEach(field => {
+                    document.getElementById(field).addEventListener('input', () => this.updateExpression());
+                });
+            }
+
+            getFieldValues() {
+                return this.fields.map(field => document.getElementById(field).value.trim() || '*');
+            }
+
+            updateExpression() {
+                const values = this.getFieldValues();
+                const expression = values.join(' ');
+                document.getElementById('cronExpression').textContent = expression;
+                this.updateExplanation(values);
+                this.updateNextRuns(expression);
+            }
+
+            updateExplanation(values) {
+                const explanations = {
+                    minute: this.explainField(values[0], 'minute'),
+                    hour: this.explainField(values[1], 'hour'),
+                    day: this.explainField(values[2], 'day of the month'),
+                    month: this.explainField(values[3], 'month'),
+                    weekday: this.explainField(values[4], 'day of the week')
+                };
+
+                const explanation = `This expression means: Run at ${explanations.minute} of ${explanations.hour} on ${explanations.day} in ${explanations.month} and ${explanations.weekday}`;
+                document.getElementById('explanation').textContent = explanation;
+            }
+
+            explainField(value, field) {
+                if (value === '*') return `every ${field}`;
+                if (value.includes('/')) {
+                    const [, step] = value.split('/');
+                    return `every ${step} ${field}s`;
+                }
+                if (value.includes('-')) {
+                    const [start, end] = value.split('-');
+                    return `${field}s from ${start} to ${end}`;
+                }
+                if (value.includes(',')) {
+                    return `${field}s ${value}`;
+                }
+                return `${field} ${value}`;
+            }
+
+            updateNextRuns(expression) {
+                const now = new Date();
+                const nextRuns = [];
+                let currentDate = new Date(now);
+
+                while (nextRuns.length < 3) {
+                    if (this.matchesCron(currentDate, expression)) {
+                        nextRuns.push(new Date(currentDate));
+                    }
+                    currentDate.setMinutes(currentDate.getMinutes() + 1);
+                }
+
+                const nextRunsHtml = nextRuns
+                    .map(date => `<div class="next-run-item">${date.toLocaleString()}</div>`)
+                    .join('');
+                document.getElementById('nextRuns').innerHTML = nextRunsHtml;
+            }
+
+            matchesCron(date, expression) {
+                const [minute, hour, day, month, weekday] = expression.split(' ');
+                return this.matchesField(date.getMinutes(), minute, 0, 59) &&
+                    this.matchesField(date.getHours(), hour, 0, 23) &&
+                    this.matchesField(date.getDate(), day, 1, 31) &&
+                    this.matchesField(date.getMonth() + 1, month, 1, 12) &&
+                    this.matchesField(date.getDay(), weekday, 0, 6);
+            }
+
+            matchesField(value, pattern, min, max) {
+                if (pattern === '*') return true;
+                
+                if (pattern.includes('/')) {
+                    const [start, step] = pattern.split('/');
+                    const startNum = start === '*' ? min : parseInt(start);
+                    return (value - startNum) % parseInt(step) === 0 && value >= startNum;
+                }
+
+                if (pattern.includes('-')) {
+                    const [start, end] = pattern.split('-').map(Number);
+                    return value >= start && value <= end;
+                }
+
+                if (pattern.includes(',')) {
+                    return pattern.split(',').map(Number).includes(value);
+                }
+
+                return parseInt(pattern) === value;
+            }
+        }
+
+        new CronExpressionGenerator();
+    </script>
+</body>
+</html>
