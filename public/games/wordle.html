@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online Wordle game - Play the classic word guessing game with random words. Try to guess the 5-letter word in six attempts with color-coded feedback">
+    <meta name="keywords" content="wordle, word game, word puzzle, word guessing game, free wordle, online wordle, word game online">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Wordle Random Game - Free Online Word Guessing Game</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .game-grid {
+            display: grid;
+            grid-template-rows: repeat(6, 1fr);
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+        .game-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: var(--spacing-sm);
+        }
+        .game-cell {
+            aspect-ratio: 1;
+            border: 2px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            user-select: none;
+        }
+        .game-cell.correct {
+            background-color: #6aaa64;
+            border-color: #6aaa64;
+            color: white;
+        }
+        .game-cell.wrong-position {
+            background-color: #c9b458;
+            border-color: #c9b458;
+            color: white;
+        }
+        .game-cell.wrong {
+            background-color: #787c7e;
+            border-color: #787c7e;
+            color: white;
+        }
+        .keyboard {
+            display: grid;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+        }
+        .keyboard-row {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-sm);
+        }
+        .key {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--background-color-light);
+            color: var(--text-color);
+            font-weight: bold;
+            cursor: pointer;
+            min-width: 2rem;
+            text-transform: uppercase;
+        }
+        .key.wide {
+            min-width: 4rem;
+        }
+        .key:hover {
+            background: var(--background-color-lighter);
+        }
+        .key.correct {
+            background-color: #6aaa64;
+            color: white;
+        }
+        .key.wrong-position {
+            background-color: #c9b458;
+            color: white;
+        }
+        .key.wrong {
+            background-color: #787c7e;
+            color: white;
+        }
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+        .message {
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            font-weight: bold;
+        }
+        .message.success {
+            color: #6aaa64;
+        }
+        .message.error {
+            color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+    <div class="container">
+
+        <main class="main-content">
+            <h1>Wordle Random Game</h1>
+            <p>Play the classic word guessing game with random words.</p>
+            <div class="tool-container">
+                <div class="game-grid" id="gameGrid"></div>
+                <div class="message" id="message"></div>
+                <div class="controls">
+                    <button id="giveUpBtn" class="button button-secondary">Give Up</button>
+                    <button id="newGameBtn" class="button button-primary">New Game</button>
+                </div>
+                <div class="keyboard" id="keyboard">
+                    <div class="keyboard-row">
+                        <button class="key" data-key="q">q</button>
+                        <button class="key" data-key="w">w</button>
+                        <button class="key" data-key="e">e</button>
+                        <button class="key" data-key="r">r</button>
+                        <button class="key" data-key="t">t</button>
+                        <button class="key" data-key="y">y</button>
+                        <button class="key" data-key="u">u</button>
+                        <button class="key" data-key="i">i</button>
+                        <button class="key" data-key="o">o</button>
+                        <button class="key" data-key="p">p</button>
+                    </div>
+                    <div class="keyboard-row">
+                        <button class="key" data-key="a">a</button>
+                        <button class="key" data-key="s">s</button>
+                        <button class="key" data-key="d">d</button>
+                        <button class="key" data-key="f">f</button>
+                        <button class="key" data-key="g">g</button>
+                        <button class="key" data-key="h">h</button>
+                        <button class="key" data-key="j">j</button>
+                        <button class="key" data-key="k">k</button>
+                        <button class="key" data-key="l">l</button>
+                    </div>
+                    <div class="keyboard-row">
+                        <button class="key wide" data-key="Enter">Enter</button>
+                        <button class="key" data-key="z">z</button>
+                        <button class="key" data-key="x">x</button>
+                        <button class="key" data-key="c">c</button>
+                        <button class="key" data-key="v">v</button>
+                        <button class="key" data-key="b">b</button>
+                        <button class="key" data-key="n">n</button>
+                        <button class="key" data-key="m">m</button>
+                        <button class="key wide" data-key="Backspace">⌫</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <footer class="footer">
+        <div class="footer-ad">Ad Space (728x90)</div>
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+    <script>
+        let words = [];
+        let currentWord = '';
+        let currentRow = 0;
+        let currentCol = 0;
+        let gameOver = false;
+        const maxRows = 6;
+        const wordLength = 5;
+
+        // Initialize game grid
+        function initializeGrid() {
+            const grid = document.getElementById('gameGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < maxRows; i++) {
+                const row = document.createElement('div');
+                row.className = 'game-row';
+                for (let j = 0; j < wordLength; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'game-cell';
+                    row.appendChild(cell);
+                }
+                grid.appendChild(row);
+            }
+        }
+
+        // Load words from JSON file
+        async function loadWords() {
+            try {
+                const response = await fetch('wordle.json');
+                const data = await response.json();
+                words = data.words;
+                newGame();
+            } catch (error) {
+                console.error('Error loading words:', error);
+                document.getElementById('message').textContent = 'Error loading word list';
+                document.getElementById('message').className = 'message error';
+            }
+        }
+
+        // Start a new game
+        function newGame() {
+            currentWord = words[Math.floor(Math.random() * words.length)];
+            currentRow = 0;
+            currentCol = 0;
+            gameOver = false;
+            initializeGrid();
+            resetKeyboard();
+            document.getElementById('message').textContent = '';
+            document.getElementById('message').className = 'message';
+        }
+
+        // Reset keyboard colors
+        function resetKeyboard() {
+            document.querySelectorAll('.key').forEach(key => {
+                key.className = key.classList.contains('wide') ? 'key wide' : 'key';
+            });
+        }
+
+        // Handle key input
+        function handleKey(key) {
+            if (gameOver) return;
+
+            if (key === 'Enter') {
+                if (currentCol === wordLength) {
+                    checkGuess();
+                }
+            } else if (key === 'Backspace') {
+                if (currentCol > 0) {
+                    currentCol--;
+                    const cell = document.querySelector(`.game-row:nth-child(${currentRow + 1}) .game-cell:nth-child(${currentCol + 1})`);
+                    cell.textContent = '';
+                }
+            } else if (/^[a-z]$/.test(key) && currentCol < wordLength) {
+                const cell = document.querySelector(`.game-row:nth-child(${currentRow + 1}) .game-cell:nth-child(${currentCol + 1})`);
+                cell.textContent = key.toUpperCase();
+                currentCol++;
+            }
+        }
+
+        // Check the current guess
+        function checkGuess() {
+            const row = document.querySelectorAll(`.game-row:nth-child(${currentRow + 1}) .game-cell`);
+            const guess = Array.from(row).map(cell => cell.textContent.toLowerCase()).join('');
+            const wordArray = currentWord.split('');
+            const result = new Array(wordLength).fill('wrong');
+
+            // Check for correct letters
+            for (let i = 0; i < wordLength; i++) {
+                if (guess[i] === wordArray[i]) {
+                    result[i] = 'correct';
+                    wordArray[i] = null;
+                }
+            }
+
+            // Check for wrong position letters
+            for (let i = 0; i < wordLength; i++) {
+                if (result[i] === 'wrong' && wordArray.includes(guess[i])) {
+                    result[i] = 'wrong-position';
+                    wordArray[wordArray.indexOf(guess[i])] = null;
+                }
+            }
+
+            // Update UI
+            for (let i = 0; i < wordLength; i++) {
+                row[i].className = `game-cell ${result[i]}`;
+                const key = document.querySelector(`[data-key="${guess[i]}"]`);
+                if (key) {
+                    if (result[i] === 'correct') {
+                        key.className = key.classList.contains('wide') ? 'key wide correct' : 'key correct';
+                    } else if (result[i] === 'wrong-position' && !key.classList.contains('correct')) {
+                        key.className = key.classList.contains('wide') ? 'key wide wrong-position' : 'key wrong-position';
+                    } else if (!key.classList.contains('correct') && !key.classList.contains('wrong-position')) {
+                        key.className = key.classList.contains('wide') ? 'key wide wrong' : 'key wrong';
+                    }
+                }
+            }
+
+            if (guess === currentWord) {
+                gameOver = true;
+                document.getElementById('message').textContent = 'Congratulations! You won!';
+                document.getElementById('message').className = 'message success';
+            } else if (currentRow === maxRows - 1) {
+                gameOver = true;
+                document.getElementById('message').textContent = `Game Over! The word was ${currentWord.toUpperCase()}`;
+                document.getElementById('message').className = 'message error';
+            } else {
+                currentRow++;
+                currentCol = 0;
+            }
+        }
+
+        // Give up the current game
+        function giveUp() {
+            if (!gameOver) {
+                gameOver = true;
+                document.getElementById('message').textContent = `Game Over! The word was ${currentWord.toUpperCase()}`;
+                document.getElementById('message').className = 'message error';
+            }
+        }
+
+        // Event listeners
+        document.addEventListener('keydown', (e) => {
+            if (/^[a-z]$/.test(e.key.toLowerCase()) || e.key === 'Enter' || e.key === 'Backspace') {
+                handleKey(e.key.toLowerCase());
+            }
+        });
+
+        document.getElementById('keyboard').addEventListener('click', (e) => {
+            if (e.target.classList.contains('key')) {
+                handleKey(e.target.dataset.key);
+            }
+        });
+
+        document.getElementById('newGameBtn').addEventListener('click', newGame);
+        document.getElementById('giveUpBtn').addEventListener('click', giveUp);
+
+        // Start the game
+        loadWords();
+    </script>
+</body>
+</html>
