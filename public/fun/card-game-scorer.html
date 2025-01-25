@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online card game score tracker - Keep track of scores for your card games. Easy-to-use tool for managing players and recording game scores round by round">
+    <meta name="keywords" content="card game score tracker, score keeper, card game points, game score manager, player score tracker, round-by-round scoring, card game utility">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Card Game Score Tracker - Free Online Score Keeper</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-lg);
+        }
+        .score-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-lg) 0;
+        }
+        .score-table th, .score-table td {
+            border: 1px solid var(--border-color);
+            padding: var(--spacing-sm);
+            text-align: center;
+        }
+        .score-table th {
+            background-color: var(--background-color);
+        }
+        .score-input {
+            width: 80px;
+            text-align: center;
+            padding: var(--spacing-xs);
+        }
+        .player-name {
+            min-width: 100px;
+        }
+        .button-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .total-row {
+            font-weight: bold;
+            background-color: var(--background-color);
+        }
+        .player-header {
+            position: relative;
+        }
+        .remove-player {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            background: none;
+            border: none;
+            color: var(--text-color);
+            cursor: pointer;
+            font-size: 12px;
+            padding: 2px;
+        }
+        .remove-player:hover {
+            color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Card Game Score Tracker</h1>
+                <p>Keep track of scores for your card games. Add players, record scores for each round, and let the tool calculate totals automatically!</p>
+
+                <div class="button-group">
+                    <button id="addPlayerBtn" class="button button-primary">Add Player</button>
+                    <button id="addRoundBtn" class="button button-secondary">Add Round</button>
+                    <button id="resetBtn" class="button button-secondary">Reset All</button>
+                </div>
+
+                <div class="table-container">
+                    <table class="score-table" id="scoreTable">
+                        <thead>
+                            <tr>
+                                <th>Round</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="total-row">
+                                <td>Total</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script src="card-game-scorer.js"></script>
+</body>
+</html>
