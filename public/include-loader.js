@@ -1,7 +1,7 @@
 // 创建一个自执行函数来加载分析代码
 (async function loadAnalytics() {
     try {
-        const response = await fetch('https://www.localhosts.vip/include.html');
+        const response = await fetch('/include.html');
         const html = await response.text();
         
         // 创建一个临时容器

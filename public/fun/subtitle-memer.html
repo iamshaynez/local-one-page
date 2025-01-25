@@ -8,10 +8,10 @@
     <meta name="author" content="Xiaowen Zhang">
     <title>Subtitle Memer - Free Online Subtitle Meme Generator</title>
     
-    <script src="https://www.localhosts.vip/include-loader.js" type="text/javascript"></script>
+    <script src="/include-loader.js" type="text/javascript"></script>
 
 
-    <link rel="stylesheet" href="https://www.localhosts.vip/static/styles.css">
+    <link rel="stylesheet" href="/static/styles.css">
     <style>
         .tool-container {
             max-width: 800px;
@@ -65,7 +65,7 @@
 
         <main class="main-content">
             <div class="tool-container">
-                <h1>Subtitle-Memer</h1>
+                <h1>Subtitle Memer</h1>
                 <p>Create funny memes by adding custom subtitle text to your images. Perfect for making subtitle memes!</p>
 
                 <div class="upload-area" id="dropZone">
@@ -89,37 +89,13 @@
             </div>
         </main>
 
+
     </div>
 
     <footer class="footer">
-        <div class="footer-ad">Ad Space (728x90)</div>
         <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
     </footer>
 
-    <script>
-        // Load default image and text when page loads
-        window.addEventListener('load', () => {
-            const defaultImage = new Image();
-            defaultImage.src = '/static/elon-musk-interview.jpg';
-            defaultImage.onload = () => {
-                const canvas = document.getElementById('previewCanvas');
-                const ctx = canvas.getContext('2d');
-                
-                // Set canvas dimensions to match image
-                canvas.width = defaultImage.width;
-                canvas.height = defaultImage.height;
-                
-                // Draw image
-                ctx.drawImage(defaultImage, 0, 0);
-                
-                // Enable buttons
-                document.getElementById('generateBtn').disabled = false;
-                document.getElementById('downloadBtn').disabled = false;
-            };
-
-            // Set default text
-            document.getElementById('textInput').value = "This meme tool is pretty fun\nI actually said this.\nBelieve me.";
-        });
-    </script>
+    <script src="subtitle-memer.js"></script>
 </body>
 </html>

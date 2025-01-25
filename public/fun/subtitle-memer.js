@@ -9,6 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let originalImage = null;
 
+    // Set default text
+    textInput.value = "This meme tool is pretty fun\nI actually said this.\nBelieve me.";
+
+    // Load default image
+    const defaultImg = new Image();
+    defaultImg.onload = () => {
+        originalImage = defaultImg;
+        generateBtn.disabled = false;
+        generateImage();
+    };
+    defaultImg.src = '/static/elon-musk-interview.jpg';
+
     // Handle drag and drop
     dropZone.addEventListener('dragover', (e) => {
         e.preventDefault();
