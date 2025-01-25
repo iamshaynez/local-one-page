@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Experience the digital version of Asakusa Temple's 100 Fortune Lots (Omikuji). Draw your fortune and receive guidance inspired by the wisdom of Kannon (Guanyin) from the famous Sensoji Temple in Tokyo.">
+    <meta name="keywords" content="Asakusa Temple fortune, omikuji online, Sensoji Temple fortune, Kannon oracle, Buddhist fortune telling, Japanese fortune lots, spiritual guidance, temple divination">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Asakusa Kannon Temple Fortune Lots - Draw Your Fortune Online</title>
+    
+    <script src="https://www.localhosts.vip/include-loader.js" type="text/javascript"></script>
+
+
+    <link rel="stylesheet" href="https://www.localhosts.vip/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .buddha-image {
+            max-width: 300px;
+            margin: 2rem auto;
+            display: block;
+            border-radius: 8px;
+            box-shadow: var(--box-shadow);
+        }
+        .fortune-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 2rem;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin: 2rem 0;
+            transition: background-color 0.3s;
+        }
+        .fortune-button:hover {
+            background-color: var(--primary-color-dark);
+        }
+        .fortune-result {
+            font-size: 1.2rem;
+            margin: 2rem 0;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            background-color: var(--background-color);
+            display: none;
+        }
+        .fortune-link {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .fortune-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+
+    <div class="layout">
+        <aside class="sidebar">
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+        </aside>
+
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>東京浅草観音寺一百签<br>Asakusa Kannon Temple 100 Fortune Lots</h1>
+                <button id="drawFortuneBtn" class="fortune-button">抽签 / Draw Fortune</button>
+                <div id="fortuneResult" class="fortune-result"></div>
+            </div>
+        </main>
+
+        <aside class="sidebar">
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+            <div class="sidebar-ad">Ad Space (300x600)</div>
+        </aside>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-ad">Ad Space (728x90)</div>
+        <div class="copyright">&copy; 2024 Your Website Name. All rights reserved.</div>
+    </footer>
+
+    <script>
+        document.getElementById('drawFortuneBtn').addEventListener('click', function() {
+            const fortuneNumber = Math.floor(Math.random() * 100) + 1;
+            const resultDiv = document.getElementById('fortuneResult');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <p>您抽到的是第 ${fortuneNumber} 签<br>You drew Fortune No. ${fortuneNumber}</p>
+                <p><a href="https://qiangua.temple01.com/qianshi.php?t=fs_akt100&s=${fortuneNumber}" 
+                      class="fortune-link" target="_blank">查看签文详情 / View Fortune Details</a></p>
+            `;
+        });
+    </script>
+</body>
+</html>
