@@ -58,7 +58,14 @@
     </style>
 </head>
 <body>
-    <div class="tool-container">
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
         <h1>DOS Game Emulator</h1>
         <p>Experience classic DOS games directly in your browser! Play the built-in CKong game or upload your own DOS games.</p>
         <p>Goto https://www.dosgames.com/ to download more games.</p>
@@ -169,5 +176,7 @@
         // Load the built-in game by default
         document.addEventListener('DOMContentLoaded', loadBuiltinGame);
     </script>
+        </main>
+    </div>
 </body>
 </html>

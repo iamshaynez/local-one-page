@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online Word to PDF converter - Convert DOCX files to PDF format directly in your browser. Simple, fast, and secure document conversion tool with preview feature">
+    <meta name="keywords" content="word to pdf, docx converter, document converter, online pdf converter, free document converter, word converter, docx to pdf online">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Word to PDF Converter - Free Online Document Conversion Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background-color: var(--background-color);
+            transition: border-color 0.2s ease;
+        }
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: var(--hover-color);
+        }
+        .preview-container {
+            margin: var(--spacing-lg) 0;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: white;
+            min-height: 400px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        .preview-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .controls {
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+            justify-content: center;
+        }
+        .status {
+            text-align: center;
+            margin: var(--spacing-md) 0;
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius);
+        }
+        .status.error {
+            background-color: var(--error-color);
+            color: white;
+        }
+        .status.success {
+            background-color: var(--success-color);
+            color: white;
+        }
+        .loading {
+            display: none;
+            text-align: center;
+            margin: var(--spacing-md) 0;
+        }
+        .loading.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Word to PDF Converter</h1>
+                <p>Convert your Word documents (DOCX) to PDF format easily and securely in your browser. No file upload to server needed!</p>
+                
+                <div class="upload-area" id="uploadArea" ondrop="handleDrop(event)" ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)">
+                    <input type="file" id="fileInput" accept=".docx" style="display: none" onchange="handleFileSelect(event)">
+                    <p>Drop your DOCX file here or click to select</p>
+                    <p class="small">(Only .docx files are supported)</p>
+                </div>
+
+                <div class="loading" id="loading">
+                    <p>Processing... Please wait</p>
+                </div>
+
+                <div id="status" class="status" style="display: none;"></div>
+
+                <div class="preview-container" id="previewContainer" style="display: none;">
+                    <!-- Preview content will be inserted here -->
+                </div>
+
+                <div class="controls">
+                    <button id="convertBtn" class="button" style="display: none;" onclick="convertToPDF()">Convert to PDF</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewContainer = document.getElementById('previewContainer');
+        const convertBtn = document.getElementById('convertBtn');
+        const loadingElement = document.getElementById('loading');
+        const statusElement = document.getElementById('status');
+
+        uploadArea.onclick = () => fileInput.click();
+
+        function handleDragOver(event) {
+            event.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(event) {
+            event.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(event) {
+            event.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const file = event.dataTransfer.files[0];
+            if (file && file.name.endsWith('.docx')) {
+                handleFile(file);
+            } else {
+                showStatus('Please upload a DOCX file.', 'error');
+            }
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        }
+
+        function showStatus(message, type) {
+            statusElement.textContent = message;
+            statusElement.className = 'status ' + type;
+            statusElement.style.display = 'block';
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        }
+
+        function handleFile(file) {
+            if (!file.name.endsWith('.docx')) {
+                showStatus('Please upload a DOCX file.', 'error');
+                return;
+            }
+
+            loadingElement.classList.add('active');
+            previewContainer.style.display = 'none';
+            convertBtn.style.display = 'none';
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                mammoth.convertToHtml({arrayBuffer: e.target.result})
+                    .then(function(result) {
+                        previewContainer.innerHTML = result.value;
+                        previewContainer.style.display = 'block';
+                        convertBtn.style.display = 'block';
+                        loadingElement.classList.remove('active');
+                    })
+                    .catch(function(error) {
+                        showStatus('Error processing the file: ' + error.message, 'error');
+                        loadingElement.classList.remove('active');
+                    });
+            };
+            reader.readAsArrayBuffer(file);
+        }
+
+        async function convertToPDF() {
+            loadingElement.classList.add('active');
+            convertBtn.disabled = true;
+
+            const element = previewContainer;
+            const opt = {
+                margin: 1,
+                filename: 'converted-document.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            };
+
+            try {
+                await html2pdf().set(opt).from(element).save();
+                showStatus('PDF generated successfully!', 'success');
+            } catch (error) {
+                showStatus('Error generating PDF: ' + error.message, 'error');
+            } finally {
+                loadingElement.classList.remove('active');
+                convertBtn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
