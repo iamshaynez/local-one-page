@@ -36,6 +36,12 @@
     "url": "/fun/subtitle-memer.html"
   },
   {
+    "title": "DOS Game Emulator - Free Online DOS Gaming Experience",
+    "desc": "Free online DOS game emulator - Play classic DOS games directly in your browser. Experience retro gaming with this easy-to-use DOS emulator powered by js-dos",
+    "category": "games",
+    "url": "/games/dos-game-free-online.html"
+  },
+  {
     "title": "Wordle Random Game - Free Online Word Guessing Game",
     "desc": "Free online Wordle game - Play the classic word guessing game with random words. Try to guess the 5-letter word in six attempts with color-coded feedback",
     "category": "games",
