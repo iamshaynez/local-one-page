@@ -74,7 +74,7 @@ def main():
     pages = scan_html_files(root_dir)
     
     # 将结果写入 JSON 文件
-    output_file = 'pages.json'
+    output_file = 'public/pages.json'
     with open(output_file, 'w', encoding='utf-8') as f:
         json.dump(pages, f, ensure_ascii=False, indent=2)
     
