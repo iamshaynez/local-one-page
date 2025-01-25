@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online JPG image compressor - Reduce image file size with adjustable compression and resizing options. Fast, easy-to-use, and works directly in your browser">
+    <meta name="keywords" content="jpg compressor, image compression, photo optimizer, resize image, reduce file size, online image tool, free image compression">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>JPG Image Compressor - Free Online Image Optimization Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background-color: var(--background-color);
+            transition: border-color 0.2s ease;
+        }
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: rgba(var(--primary-color-rgb), 0.1);
+        }
+        .controls {
+            margin: var(--spacing-lg) 0;
+        }
+        .control-group {
+            margin-bottom: var(--spacing-md);
+        }
+        .control-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
+        }
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+        }
+        .slider-container input[type="range"] {
+            flex: 1;
+        }
+        .slider-value {
+            min-width: 60px;
+            text-align: right;
+        }
+        .size-inputs {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+        .size-inputs input[type="number"] {
+            width: 100px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+        .preview-container {
+            margin: var(--spacing-lg) 0;
+            text-align: center;
+        }
+        #previewImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        .image-info {
+            margin-top: var(--spacing-sm);
+            font-size: 0.9em;
+            color: var(--text-secondary-color);
+        }
+        .button-container {
+            text-align: center;
+            margin-top: var(--spacing-lg);
+        }
+        .process-btn {
+            padding: var(--spacing-md) var(--spacing-xl);
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.2s ease;
+        }
+        .process-btn:hover {
+            background-color: var(--primary-color-dark);
+        }
+        .process-btn:disabled {
+            background-color: var(--border-color);
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>JPG Image Compressor</h1>
+                <p>Compress and optimize your JPG images with adjustable quality and size options. Free, fast, and works directly in your browser.</p>
+                
+                <div class="upload-area" id="uploadArea">
+                    <p>Drop your JPG image here or click to select</p>
+                    <input type="file" id="fileInput" accept="image/jpeg" style="display: none">
+                </div>
+
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="qualitySlider">Compression Quality</label>
+                        <div class="slider-container">
+                            <input type="range" id="qualitySlider" min="1" max="100" value="80">
+                            <span class="slider-value" id="qualityValue">80%</span>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>
+                            <input type="checkbox" id="resizeCheckbox"> Enable Resizing
+                        </label>
+                        <div class="size-inputs" id="sizeInputs" style="display: none">
+                            <input type="number" id="widthInput" placeholder="Width">
+                            <span>×</span>
+                            <input type="number" id="heightInput" placeholder="Height">
+                            <span>pixels</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="preview-container">
+                    <img id="previewImage" style="display: none">
+                    <div class="image-info" id="imageInfo"></div>
+                </div>
+
+                <div class="button-container">
+                    <button class="process-btn" id="processBtn" disabled>Process & Download</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-ad">Ad Space (728x90)</div>
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const qualitySlider = document.getElementById('qualitySlider');
+        const qualityValue = document.getElementById('qualityValue');
+        const resizeCheckbox = document.getElementById('resizeCheckbox');
+        const sizeInputs = document.getElementById('sizeInputs');
+        const widthInput = document.getElementById('widthInput');
+        const heightInput = document.getElementById('heightInput');
+        const previewImage = document.getElementById('previewImage');
+        const imageInfo = document.getElementById('imageInfo');
+        const processBtn = document.getElementById('processBtn');
+
+        let originalImage = null;
+        let originalFileSize = 0;  // Add variable to store original file size
+
+        // Upload handling
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type === 'image/jpeg') {
+                handleImageUpload(file);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            if (fileInput.files[0]) {
+                handleImageUpload(fileInput.files[0]);
+            }
+        });
+
+        function handleImageUpload(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalImage = new Image();
+                originalFileSize = file.size;  // Store the original file size
+                originalImage.onload = () => {
+                    previewImage.src = e.target.result;
+                    previewImage.style.display = 'block';
+                    widthInput.value = originalImage.width;
+                    heightInput.value = originalImage.height;
+                    updateImageInfo(file.size);
+                    processBtn.disabled = false;
+                };
+                originalImage.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Controls handling
+        qualitySlider.addEventListener('input', () => {
+            qualityValue.textContent = qualitySlider.value + '%';
+        });
+
+        resizeCheckbox.addEventListener('change', () => {
+            sizeInputs.style.display = resizeCheckbox.checked ? 'flex' : 'none';
+        });
+
+        // Maintain aspect ratio
+        let aspectRatio = 1;
+        widthInput.addEventListener('input', () => {
+            if (originalImage) {
+                aspectRatio = originalImage.height / originalImage.width;
+                heightInput.value = Math.round(widthInput.value * aspectRatio);
+            }
+        });
+
+        heightInput.addEventListener('input', () => {
+            if (originalImage) {
+                aspectRatio = originalImage.width / originalImage.height;
+                widthInput.value = Math.round(heightInput.value * aspectRatio);
+            }
+        });
+
+        function updateImageInfo(size) {
+            const fileSizeMB = (size / (1024 * 1024)).toFixed(2);
+            imageInfo.textContent = `Original Size: ${fileSizeMB} MB | Dimensions: ${originalImage.width}×${originalImage.height}px`;
+        }
+
+        // Process and download
+        processBtn.addEventListener('click', () => {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+
+            // Set dimensions
+            let width = originalImage.width;
+            let height = originalImage.height;
+            if (resizeCheckbox.checked) {
+                width = parseInt(widthInput.value);
+                height = parseInt(heightInput.value);
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            // Draw image
+            ctx.drawImage(originalImage, 0, 0, width, height);
+
+            // Convert to JPEG with quality
+            const quality = parseInt(qualitySlider.value) / 100;
+            canvas.toBlob((blob) => {
+                // Create download link
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'compressed-image.jpg';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                // Update info with new size
+                const newSizeMB = (blob.size / (1024 * 1024)).toFixed(2);
+                const savedPercentage = ((1 - (blob.size / originalFileSize)) * 100).toFixed(1);
+                imageInfo.textContent = `Original: ${(originalFileSize / (1024 * 1024)).toFixed(2)} MB | Compressed: ${newSizeMB} MB | Saved: ${savedPercentage}%`;
+            }, 'image/jpeg', quality);
+        });
+    </script>
+</body>
+</html>
