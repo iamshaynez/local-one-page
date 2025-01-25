@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online JSON to YAML converter - Convert JSON data to YAML format instantly. Simple, fast, and accurate JSON to YAML transformation tool with syntax highlighting">
+    <meta name="keywords" content="json to yaml converter, json yaml transformation, online json converter, data format converter, json parser, yaml formatter, developer tools, free converter">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>JSON to YAML Converter - Free Online Data Format Transformation Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/4.1.0/js-yaml.min.js"></script>
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .converter-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+        .section-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+            tab-size: 2;
+        }
+        .json-input {
+            color: #9cdcfe;
+        }
+        .yaml-output {
+            color: #569cd6;
+        }
+        .btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn:hover {
+            opacity: 0.9;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .error-message {
+            color: #dc3545;
+            margin-top: var(--spacing-sm);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>JSON to YAML Converter</h1>
+                <p>Convert JSON data to YAML format instantly. Simply paste your JSON code and get the YAML equivalent with proper formatting.</p>
+                
+                <div class="converter-layout">
+                    <div class="input-section">
+                        <div class="section-header">
+                            <span class="section-title">JSON Input</span>
+                        </div>
+                        <textarea id="jsonInput" class="json-input" placeholder="Paste your JSON here..."></textarea>
+                        <div id="jsonError" class="error-message"></div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="section-header">
+                            <span class="section-title">YAML Output</span>
+                            <button id="copyBtn" class="btn">Copy YAML</button>
+                        </div>
+                        <textarea id="yamlOutput" class="yaml-output" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        const jsonInput = document.getElementById('jsonInput');
+        const yamlOutput = document.getElementById('yamlOutput');
+        const jsonError = document.getElementById('jsonError');
+        const copyBtn = document.getElementById('copyBtn');
+
+        jsonInput.addEventListener('input', () => {
+            try {
+                const json = jsonInput.value.trim();
+                if (!json) {
+                    yamlOutput.value = '';
+                    jsonError.textContent = '';
+                    return;
+                }
+
+                // Parse JSON to validate and format it
+                const parsedJson = JSON.parse(json);
+                
+                // Convert to YAML
+                const yaml = jsyaml.dump(parsedJson, {
+                    indent: 2,
+                    lineWidth: -1,
+                    noRefs: true,
+                    quotingType: '"'
+                });
+
+                yamlOutput.value = yaml;
+                jsonError.textContent = '';
+            } catch (error) {
+                jsonError.textContent = error.message;
+                yamlOutput.value = '';
+            }
+        });
+
+        copyBtn.addEventListener('click', async () => {
+            try {
+                await navigator.clipboard.writeText(yamlOutput.value);
+                const originalText = copyBtn.textContent;
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyBtn.textContent = originalText;
+                }, 2000);
+            } catch (err) {
+                console.error('Failed to copy text:', err);
+            }
+        });
+    </script>
+</body>
+</html>
