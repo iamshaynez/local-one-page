@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online JPG to SVG converter - Convert your JPEG images to scalable vector graphics (SVG) format. Simple, fast, and free to use.">
+    <meta name="keywords" content="jpg to svg, jpeg to svg converter, image converter, vector graphics, svg converter, online converter, free tools">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Free JPG to SVG Converter - Convert Images to Vector Graphics Online</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    
+    <style>
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xl);
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            margin-bottom: var(--spacing-lg);
+        }
+        
+        .drop-zone:hover {
+            border-color: var(--primary-color);
+        }
+        
+        .drop-zone.drag-over {
+            border-color: var(--primary-color);
+            background-color: rgba(74, 144, 226, 0.1);
+        }
+        
+        .preview-container {
+            display: flex;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+            flex-wrap: wrap;
+        }
+        
+        .preview-box {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+        }
+        
+        .preview-box h3 {
+            margin-bottom: var(--spacing-md);
+            text-align: center;
+        }
+        
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .controls {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            margin: var(--spacing-md) 0;
+        }
+        
+        .loading.active {
+            display: block;
+        }
+        
+        #downloadBtn {
+            display: none;
+        }
+        
+        #downloadBtn.active {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+        <div class="header-ad">Ad Space (728x90)</div>
+    </header>
+    
+    <main class="main-content">
+        <h1>JPG to SVG Converter</h1>
+        <p>Convert your JPEG images to scalable vector graphics (SVG) format. Simply drag and drop your image or click to upload.</p>
+        
+        <div class="drop-zone" id="dropZone">
+            <p>Drag & Drop your JPG image here</p>
+            <p>or</p>
+            <input type="file" id="fileInput" accept=".jpg,.jpeg" style="display: none">
+            <button class="button button-primary">Choose File</button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <p>Converting image... Please wait</p>
+        </div>
+        
+        <div class="preview-container">
+            <div class="preview-box">
+                <h3>Original Image</h3>
+                <img id="originalPreview" class="preview-image">
+            </div>
+            <div class="preview-box">
+                <h3>SVG Preview</h3>
+                <div id="svgPreview" class="preview-image"></div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="convertBtn" class="button button-primary" disabled>Convert to SVG</button>
+            <button id="downloadBtn" class="button button-secondary">Download SVG</button>
+        </div>
+    </main>
+    
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const originalPreview = document.getElementById('originalPreview');
+        const svgPreview = document.getElementById('svgPreview');
+        const convertBtn = document.getElementById('convertBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const loading = document.getElementById('loading');
+        
+        // Handle drag and drop events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+        
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('drag-over');
+        });
+        
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('image/jpeg')) {
+                handleFile(file);
+            }
+        });
+        
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+        
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+        
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                originalPreview.src = e.target.result;
+                convertBtn.disabled = false;
+                svgPreview.innerHTML = '';
+                downloadBtn.classList.remove('active');
+            };
+            reader.readAsDataURL(file);
+        }
+        
+        convertBtn.addEventListener('click', () => {
+            loading.classList.add('active');
+            convertToSVG();
+        });
+        
+        function convertToSVG() {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width;
+                canvas.height = img.height;
+                ctx.drawImage(img, 0, 0);
+                
+                // Get image data and create SVG paths
+                const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const paths = generateSVGPaths(imageData);
+                
+                // Create SVG
+                const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+                svg.setAttribute('width', '100%');
+                svg.setAttribute('height', '100%');
+                svg.setAttribute('viewBox', `0 0 ${canvas.width} ${canvas.height}`);
+                svg.innerHTML = paths;
+                
+                svgPreview.innerHTML = '';
+                svgPreview.appendChild(svg);
+                
+                loading.classList.remove('active');
+                downloadBtn.classList.add('active');
+            };
+            img.src = originalPreview.src;
+        }
+        
+        function generateSVGPaths(imageData) {
+            // Simple implementation - convert image to monochrome SVG
+            const width = imageData.width;
+            const height = imageData.height;
+            const data = imageData.data;
+            let paths = '';
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const i = (y * width + x) * 4;
+                    const r = data[i];
+                    const g = data[i + 1];
+                    const b = data[i + 2];
+                    const a = data[i + 3];
+                    
+                    // Convert to grayscale and check threshold
+                    const brightness = (r * 0.299 + g * 0.587 + b * 0.114) / 255;
+                    if (brightness < 0.5 && a > 128) {
+                        paths += `<rect x="${x}" y="${y}" width="1" height="1" fill="black"/>`;
+                    }
+                }
+            }
+            
+            return paths;
+        }
+        
+        downloadBtn.addEventListener('click', () => {
+            const svgData = svgPreview.innerHTML;
+            const blob = new Blob([svgData], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'converted.svg';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    </script>
+</body>
+</html>
