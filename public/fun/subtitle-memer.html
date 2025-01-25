@@ -62,10 +62,6 @@
     </header>
 
     <div class="layout">
-        <aside class="sidebar">
-            <div class="sidebar-ad">Ad Space (300x600)</div>
-            <div class="sidebar-ad">Ad Space (300x600)</div>
-        </aside>
 
         <main class="main-content">
             <div class="tool-container">
@@ -93,17 +89,37 @@
             </div>
         </main>
 
-        <aside class="sidebar">
-            <div class="sidebar-ad">Ad Space (300x600)</div>
-            <div class="sidebar-ad">Ad Space (300x600)</div>
-        </aside>
     </div>
 
     <footer class="footer">
         <div class="footer-ad">Ad Space (728x90)</div>
-        <div class="copyright">&copy; 2024 Your Website Name. All rights reserved.</div>
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
     </footer>
 
-    <script src="subtitle-memer.js"></script>
+    <script>
+        // Load default image and text when page loads
+        window.addEventListener('load', () => {
+            const defaultImage = new Image();
+            defaultImage.src = '/static/elon-musk-interview.jpg';
+            defaultImage.onload = () => {
+                const canvas = document.getElementById('previewCanvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Set canvas dimensions to match image
+                canvas.width = defaultImage.width;
+                canvas.height = defaultImage.height;
+                
+                // Draw image
+                ctx.drawImage(defaultImage, 0, 0);
+                
+                // Enable buttons
+                document.getElementById('generateBtn').disabled = false;
+                document.getElementById('downloadBtn').disabled = false;
+            };
+
+            // Set default text
+            document.getElementById('textInput').value = "This meme tool is pretty fun\nI actually said this.\nBelieve me.";
+        });
+    </script>
 </body>
 </html>
