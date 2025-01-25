@@ -58,5 +58,11 @@
     "desc": "Free online Sudoku game - Play classic 9x9 Sudoku puzzles with adjustable difficulty. Generate random puzzles and challenge yourself with this brain-training number game",
     "category": "games",
     "url": "/games/sudoku.html"
+  },
+  {
+    "title": "Free Online Angry Birds Style Game - Physics-Based Bird Launcher",
+    "desc": "Play free online Angry Birds style game - Launch birds, destroy structures, and defeat pigs in this physics-based game. Simple, fun, and no download required",
+    "category": "games",
+    "url": "/games/angry-bird-free-online.html"
   }
 ]
