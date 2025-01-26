@@ -7,6 +7,7 @@ from typing import Dict, List
 EXCLUDE_FILES = [
     'index.html',      
     'include.html',       
+    'about.html',
     'template.html'    
 ]
 
