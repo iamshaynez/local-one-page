@@ -144,6 +144,18 @@
     "url": "/games/sudoku.html"
   },
   {
+    "title": "Chinese Chess (Xiangqi) - Free Online Two-Player Board Game",
+    "desc": "Free online Chinese Chess (Xiangqi) game - Play the traditional Chinese board game with a friend. Features include move validation, history tracking, and undo moves",
+    "category": "games",
+    "url": "/games/chinese-chess-online.html"
+  },
+  {
+    "title": "Niu Niu (Bull Bull) Poker - Free Online Chinese Card Game",
+    "desc": "Free online Niu Niu (Bull Bull) poker game - Play the popular Chinese poker game against the dealer. Place bets, make combinations, and aim for Niu Niu (Bull Bull) in this exciting casino card game",
+    "category": "games",
+    "url": "/games/poker-niuniu-online.html"
+  },
+  {
     "title": "Black Jack Game - Free Online Casino Card Game",
     "desc": "Free online Black Jack game - Play the classic casino card game with virtual cash. Bet, hit, stand, and double down in this realistic Black Jack simulation",
     "category": "games",
