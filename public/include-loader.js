@@ -4,8 +4,10 @@
         // 检查当前域名是否匹配
         console.log('Current hostname:', window.location.hostname);
         if (window.location.hostname !== 'www.localhosts.vip') {
+            console.log('Hostname does not match. Skipping analytics.');
             return;
         }
+        console.log('Hostname match production. Loading scripts.');
         const response = await fetch('/include.html');
         const html = await response.text();
         
@@ -17,6 +19,7 @@
         const scripts = temp.getElementsByTagName('script');
         
         // 逐个处理脚本
+        let scriptCount = 0;
         Array.from(scripts).forEach(script => {
             const newScript = document.createElement('script');
             
@@ -32,7 +35,11 @@
             
             // 将新脚本添加到文档头部
             document.head.appendChild(newScript);
+            scriptCount++;
         });
+        
+        // Print the total number of scripts loaded
+        console.log(`Total scripts loaded: ${scriptCount}`);
     } catch (error) {
         console.error('Failed to load analytics:', error);
     }
