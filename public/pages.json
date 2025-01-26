@@ -30,6 +30,12 @@
     "url": "/tools/milliseconds-date.html"
   },
   {
+    "title": "Video to GIF Converter - Free Online Animation Tool",
+    "desc": "Free online video to GIF converter - Convert video files to animated GIFs instantly in your browser. Features customizable frame rate, quality settings, and preview functionality",
+    "category": "tools",
+    "url": "/tools/video-gif.html"
+  },
+  {
     "title": "Image to Base64 Converter - Free Online Image Encoding Tool",
     "desc": "Free online image to base64 converter - Convert images to base64 format instantly. Get base64 strings for HTML img tags, CSS backgrounds, and plain text. Simple and fast conversion tool.",
     "category": "tools",
