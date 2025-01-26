@@ -67,6 +67,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/programmer/md5-converter.html</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/programmer/yaml-2-toml.html</loc>
         <lastmod>2025-01-25</lastmod>
         <changefreq>monthly</changefreq>
