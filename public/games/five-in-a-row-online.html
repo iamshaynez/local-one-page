@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Play Five in a Row (Gomoku) online for free - Challenge our AI opponent in this classic board game. Features move history, undo moves, and a responsive game board. No download required.">
+    <meta name="keywords" content="five in a row, gomoku, online game, free game, AI opponent, board game, strategy game, browser game">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Five in a Row Online - Free Gomoku Game with AI Opponent</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .board-container {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .game-board {
+            width: 100%;
+            aspect-ratio: 1;
+            background: #E6B587;
+            position: relative;
+            border: 2px solid #8B4513;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .board-grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: grid;
+            grid-template-columns: repeat(15, 1fr);
+            grid-template-rows: repeat(15, 1fr);
+        }
+
+        .cell {
+            border: 1px solid #8B4513;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .cell:hover::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80%;
+            height: 80%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .stone {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80%;
+            height: 80%;
+            transform: translate(-50%, -50%);
+            border-radius: 50%;
+            box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .stone.black {
+            background: #000;
+        }
+
+        .stone.white {
+            background: #fff;
+            border: 1px solid #ccc;
+        }
+
+        .controls {
+            flex: 0 0 250px;
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .move-history {
+            flex: 1;
+            min-height: 200px;
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm);
+            overflow-y: auto;
+        }
+
+        .move-history h3 {
+            margin: 0 0 var(--spacing-sm);
+            color: var(--primary-color);
+        }
+
+        .move-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .move-item {
+            padding: 4px 8px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .move-item:last-child {
+            border-bottom: none;
+        }
+
+        .button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+
+        .button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .game-status {
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .mode-selector {
+            text-align: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .mode-selector label {
+            margin-right: var(--spacing-md);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="game-container">
+                <div class="board-container">
+                    <div class="mode-selector">
+                        <label>
+                            <input type="radio" name="gameMode" value="ai" checked> vs AI
+                        </label>
+                        <label>
+                            <input type="radio" name="gameMode" value="pvp"> vs Player
+                        </label>
+                    </div>
+                    <div class="game-status">Your turn (Black)</div>
+                    <div class="game-board">
+                        <div class="board-grid" id="board"></div>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="button" id="newGame">New Game</button>
+                    <button class="button" id="undoMove">Undo Move</button>
+                    <div class="move-history">
+                        <h3>Move History</h3>
+                        <ul class="move-list" id="moveList"></ul>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        class FiveInARow {
+            constructor() {
+                this.board = Array(15).fill().map(() => Array(15).fill(null));
+                this.currentPlayer = 'black';
+                this.gameOver = false;
+                this.moveHistory = [];
+                this.isAIMode = true;
+                this.initializeBoard();
+                this.bindEvents();
+            }
+
+            initializeBoard() {
+                const board = document.getElementById('board');
+                board.innerHTML = '';
+                for (let i = 0; i < 15; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        const cell = document.createElement('div');
+                        cell.className = 'cell';
+                        cell.dataset.row = i;
+                        cell.dataset.col = j;
+                        board.appendChild(cell);
+                    }
+                }
+            }
+
+            bindEvents() {
+                document.getElementById('board').addEventListener('click', (e) => {
+                    if (this.gameOver || (this.isAIMode && this.currentPlayer === 'white')) return;
+                    const cell = e.target.closest('.cell');
+                    if (!cell) return;
+
+                    const row = parseInt(cell.dataset.row);
+                    const col = parseInt(cell.dataset.col);
+                    this.makeMove(row, col);
+                });
+
+                document.querySelectorAll('input[name="gameMode"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        this.isAIMode = e.target.value === 'ai';
+                        this.resetGame();
+                    });
+                });
+
+                document.getElementById('newGame').addEventListener('click', () => {
+                    this.resetGame();
+                });
+
+                document.getElementById('undoMove').addEventListener('click', () => {
+                    this.undoMove();
+                });
+            }
+
+            makeMove(row, col) {
+                if (this.board[row][col] !== null) return;
+
+                this.board[row][col] = this.currentPlayer;
+                this.moveHistory.push({ row, col, player: this.currentPlayer });
+                this.renderStone(row, col, this.currentPlayer);
+                this.updateMoveList();
+
+                if (this.checkWin(row, col)) {
+                    this.gameOver = true;
+                    document.querySelector('.game-status').textContent = 
+                        `Game Over! ${this.currentPlayer === 'black' ? 'Black' : 'White'} won!`;
+                    return;
+                }
+
+                this.currentPlayer = this.currentPlayer === 'black' ? 'white' : 'black';
+                document.querySelector('.game-status').textContent = 
+                    this.currentPlayer === 'black' ? 'Black\'s turn' : (this.isAIMode ? 'AI thinking...' : 'White\'s turn');
+
+                if (this.isAIMode && this.currentPlayer === 'white') {
+                    setTimeout(() => this.makeAIMove(), 500);
+                }
+            }
+
+            makeAIMove() {
+                const move = this.findBestMove();
+                if (move) {
+                    this.makeMove(move.row, move.col);
+                }
+            }
+
+            findBestMove() {
+                const emptyCells = [];
+                for (let i = 0; i < 15; i++) {
+                    for (let j = 0; j < 15; j++) {
+                        if (this.board[i][j] === null) {
+                            emptyCells.push({ row: i, col: j });
+                        }
+                    }
+                }
+
+                // Simple AI: Find cells near existing stones
+                const nearMoves = emptyCells.filter(move => {
+                    for (let i = -1; i <= 1; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            const newRow = move.row + i;
+                            const newCol = move.col + j;
+                            if (newRow >= 0 && newRow < 15 && newCol >= 0 && newCol < 15) {
+                                if (this.board[newRow][newCol] !== null) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    return false;
+                });
+
+                if (nearMoves.length > 0) {
+                    return nearMoves[Math.floor(Math.random() * nearMoves.length)];
+                }
+
+                // If no nearby moves, choose random empty cell
+                return emptyCells[Math.floor(Math.random() * emptyCells.length)];
+            }
+
+            renderStone(row, col, player) {
+                const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                const stone = document.createElement('div');
+                stone.className = `stone ${player}`;
+                cell.appendChild(stone);
+            }
+
+            checkWin(row, col) {
+                const directions = [
+                    [0, 1],   // horizontal
+                    [1, 0],   // vertical
+                    [1, 1],   // diagonal
+                    [1, -1]   // anti-diagonal
+                ];
+
+                return directions.some(([dx, dy]) => {
+                    let count = 1;
+                    const player = this.board[row][col];
+
+                    // Check in positive direction
+                    for (let i = 1; i < 5; i++) {
+                        const newRow = row + dx * i;
+                        const newCol = col + dy * i;
+                        if (newRow < 0 || newRow >= 15 || newCol < 0 || newCol >= 15) break;
+                        if (this.board[newRow][newCol] !== player) break;
+                        count++;
+                    }
+
+                    // Check in negative direction
+                    for (let i = 1; i < 5; i++) {
+                        const newRow = row - dx * i;
+                        const newCol = col - dy * i;
+                        if (newRow < 0 || newRow >= 15 || newCol < 0 || newCol >= 15) break;
+                        if (this.board[newRow][newCol] !== player) break;
+                        count++;
+                    }
+
+                    return count >= 5;
+                });
+            }
+
+            updateMoveList() {
+                const moveList = document.getElementById('moveList');
+                moveList.innerHTML = '';
+                this.moveHistory.forEach((move, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'move-item';
+                    li.textContent = `${index + 1}. ${move.player === 'black' ? 'Black' : (this.isAIMode ? 'AI' : 'White')} placed at (${move.row + 1}, ${move.col + 1})`;
+                    moveList.appendChild(li);
+                });
+                moveList.scrollTop = moveList.scrollHeight;
+            }
+
+            undoMove() {
+                if (this.moveHistory.length === 0 || this.gameOver) return;
+
+                // Undo both player's and AI's moves
+                for (let i = 0; i < 2; i++) {
+                    if (this.moveHistory.length === 0) break;
+                    const lastMove = this.moveHistory.pop();
+                    this.board[lastMove.row][lastMove.col] = null;
+                    const cell = document.querySelector(`[data-row="${lastMove.row}"][data-col="${lastMove.col}"]`);
+                    cell.innerHTML = '';
+                }
+
+                this.currentPlayer = 'black';
+                this.gameOver = false;
+                document.querySelector('.game-status').textContent = 'Your turn (Black)';
+                this.updateMoveList();
+            }
+
+            resetGame() {
+                this.board = Array(15).fill().map(() => Array(15).fill(null));
+                this.currentPlayer = 'black';
+                this.gameOver = false;
+                this.moveHistory = [];
+                document.querySelectorAll('.cell').forEach(cell => cell.innerHTML = '');
+                document.querySelector('.game-status').textContent = 'Your turn (Black)';
+                this.updateMoveList();
+            }
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('load', () => {
+            new FiveInARow();
+        });
+    </script>
+</body>
+</html>

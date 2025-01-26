@@ -7,6 +7,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/include-backup.html</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/about.html</loc>
         <lastmod>2025-01-26</lastmod>
         <changefreq>monthly</changefreq>
@@ -152,6 +158,12 @@
     </url>
     <url>
         <loc>https://www.localhosts.vip/games/dos-game-free-online.html</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/games/five-in-a-row-online.html</loc>
         <lastmod>2025-01-26</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
