@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online base64 to image converter - Convert base64 strings to image files instantly. Preview and download images from base64 data. Simple and fast conversion tool.">
+    <meta name="keywords" content="base64 to image, base64 decoder, image converter, base64 image converter, online base64 tool, base64 string to image, data URL converter">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Base64 to Image Converter - Free Online Base64 Decoder Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .input-area {
+            width: 100%;
+            min-height: 150px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .preview-container {
+            margin: var(--spacing-md) 0;
+            text-align: center;
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 500px;
+            margin: var(--spacing-md) 0;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            margin: var(--spacing-sm) 0;
+            display: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-md);
+        }
+
+        .button-group button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .button-group button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .button-group button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Base64 to Image Converter</h1>
+                <p>Convert base64 strings to images. Paste your base64 data to preview and download the image.</p>
+
+                <textarea class="input-area" placeholder="Paste your base64 string here (with or without data URL prefix)..."></textarea>
+                <div class="error-message">Invalid base64 string. Please check your input.</div>
+
+                <div class="preview-container">
+                    <img class="preview-image" alt="Preview will appear here" style="display: none;">
+                    <div class="button-group">
+                        <button id="download-btn" disabled>Download Image</button>
+                        <button id="clear-btn">Clear</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        const inputArea = document.querySelector('.input-area');
+        const previewImage = document.querySelector('.preview-image');
+        const errorMessage = document.querySelector('.error-message');
+        const downloadBtn = document.getElementById('download-btn');
+        const clearBtn = document.getElementById('clear-btn');
+
+        function processBase64Input(input) {
+            // Remove whitespace and newlines
+            input = input.trim().replace(/\s/g, '');
+            
+            // Check if it's a data URL
+            if (input.startsWith('data:image')) {
+                return input;
+            }
+            
+            // Add data URL prefix if it's a raw base64 string
+            return `data:image/png;base64,${input}`;
+        }
+
+        function updatePreview() {
+            const input = inputArea.value;
+            if (!input) {
+                previewImage.style.display = 'none';
+                errorMessage.style.display = 'none';
+                downloadBtn.disabled = true;
+                return;
+            }
+
+            try {
+                const dataUrl = processBase64Input(input);
+                previewImage.src = dataUrl;
+                previewImage.style.display = 'block';
+                errorMessage.style.display = 'none';
+                downloadBtn.disabled = false;
+            } catch (error) {
+                previewImage.style.display = 'none';
+                errorMessage.style.display = 'block';
+                downloadBtn.disabled = true;
+            }
+        }
+
+        function downloadImage() {
+            const dataUrl = processBase64Input(inputArea.value);
+            const link = document.createElement('a');
+            link.href = dataUrl;
+            link.download = 'converted-image.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function clearAll() {
+            inputArea.value = '';
+            previewImage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            downloadBtn.disabled = true;
+        }
+
+        // Event listeners
+        inputArea.addEventListener('input', updatePreview);
+        downloadBtn.addEventListener('click', downloadImage);
+        clearBtn.addEventListener('click', clearAll);
+
+        // Handle paste event
+        inputArea.addEventListener('paste', (e) => {
+            setTimeout(updatePreview, 0);
+        });
+
+        previewImage.addEventListener('error', () => {
+            previewImage.style.display = 'none';
+            errorMessage.style.display = 'block';
+            downloadBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

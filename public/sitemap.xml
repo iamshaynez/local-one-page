@@ -19,6 +19,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/tools/base64-image.html</loc>
+        <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/tools/mermaid-renderer.html</loc>
         <lastmod>2025-01-25</lastmod>
         <changefreq>monthly</changefreq>

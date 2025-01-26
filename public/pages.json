@@ -1,5 +1,11 @@
 [
   {
+    "title": "Base64 to Image Converter - Free Online Base64 Decoder Tool",
+    "desc": "Free online base64 to image converter - Convert base64 strings to image files instantly. Preview and download images from base64 data. Simple and fast conversion tool.",
+    "category": "tools",
+    "url": "/tools/base64-image.html"
+  },
+  {
     "title": "Mermaid Diagram Renderer - Free Online Tool",
     "desc": "Free online Mermaid diagram renderer - Create and visualize diagrams using Mermaid syntax. Perfect for flowcharts, sequence diagrams, class diagrams, and more",
     "category": "tools",
