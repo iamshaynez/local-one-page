@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online milliseconds to date converter - Convert Unix timestamps and milliseconds to human-readable dates. Features multiple time formats, timezone support, and instant conversion.">
+    <meta name="keywords" content="milliseconds to date, timestamp converter, epoch converter, unix timestamp, date converter, time converter, online tools, developer tools">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Milliseconds to Date Converter - Free Online Time Format Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .converter-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            align-items: flex-end;
+        }
+
+        .input-field {
+            flex: 1;
+        }
+
+        .input-field label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-color);
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .result-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .result-card {
+            background: var(--background-color-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            position: relative;
+        }
+
+        .result-card h3 {
+            margin: 0 0 var(--spacing-sm);
+            font-size: 1em;
+            color: var(--text-color);
+        }
+
+        .result-value {
+            font-family: monospace;
+            word-break: break-all;
+            margin-right: var(--spacing-xl);
+        }
+
+        .copy-button {
+            position: absolute;
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background: var(--primary-color);
+            border: none;
+            color: white;
+            padding: var(--spacing-xs) var(--spacing-sm);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.8em;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .action-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .reverse-converter {
+            margin-top: var(--spacing-lg);
+            padding-top: var(--spacing-lg);
+            border-top: 1px solid var(--border-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Milliseconds to Date Converter</h1>
+                <p>Convert milliseconds timestamps to human-readable dates with various formats and timezone support.</p>
+
+                <div class="converter-section">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="milliseconds">Milliseconds (Unix Timestamp)</label>
+                            <input type="number" id="milliseconds" placeholder="Enter milliseconds...">
+                        </div>
+                        <button class="action-button" id="current-time">Use Current Time</button>
+                    </div>
+
+                    <div class="result-section">
+                        <div class="result-card">
+                            <h3>Local Time</h3>
+                            <div class="result-value" id="local-time">-</div>
+                            <button class="copy-button" data-target="local-time">Copy</button>
+                        </div>
+                        <div class="result-card">
+                            <h3>UTC Time</h3>
+                            <div class="result-value" id="utc-time">-</div>
+                            <button class="copy-button" data-target="utc-time">Copy</button>
+                        </div>
+                        <div class="result-card">
+                            <h3>ISO String</h3>
+                            <div class="result-value" id="iso-time">-</div>
+                            <button class="copy-button" data-target="iso-time">Copy</button>
+                        </div>
+                        <div class="result-card">
+                            <h3>Relative Time</h3>
+                            <div class="result-value" id="relative-time">-</div>
+                            <button class="copy-button" data-target="relative-time">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reverse-converter">
+                    <h2>Date to Milliseconds</h2>
+                    <p>Convert a specific date and time to milliseconds.</p>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="date-input">Date and Time</label>
+                            <input type="datetime-local" id="date-input">
+                        </div>
+                        <button class="action-button" id="convert-to-ms">Convert</button>
+                    </div>
+                    <div class="result-section">
+                        <div class="result-card">
+                            <h3>Milliseconds</h3>
+                            <div class="result-value" id="ms-result">-</div>
+                            <button class="copy-button" data-target="ms-result">Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        // Utility function to format the date
+        function formatDate(date) {
+            return date.toLocaleString(undefined, {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit',
+                fractionalSecondDigits: 3
+            });
+        }
+
+        // Function to calculate relative time
+        function getRelativeTime(timestamp) {
+            const now = Date.now();
+            const diff = timestamp - now;
+            const absDiff = Math.abs(diff);
+            const units = [
+                { unit: 'year', ms: 31536000000 },
+                { unit: 'month', ms: 2592000000 },
+                { unit: 'day', ms: 86400000 },
+                { unit: 'hour', ms: 3600000 },
+                { unit: 'minute', ms: 60000 },
+                { unit: 'second', ms: 1000 }
+            ];
+
+            for (const { unit, ms } of units) {
+                if (absDiff >= ms) {
+                    const value = Math.round(absDiff / ms);
+                    return `${diff > 0 ? 'in ' : ''}${value} ${unit}${value !== 1 ? 's' : ''} ${diff > 0 ? '' : 'ago'}`;
+                }
+            }
+            return 'just now';
+        }
+
+        // Function to update all time displays
+        function updateTimeDisplays(timestamp) {
+            if (!timestamp || isNaN(timestamp)) {
+                document.getElementById('local-time').textContent = '-';
+                document.getElementById('utc-time').textContent = '-';
+                document.getElementById('iso-time').textContent = '-';
+                document.getElementById('relative-time').textContent = '-';
+                return;
+            }
+
+            const date = new Date(Number(timestamp));
+            document.getElementById('local-time').textContent = formatDate(date);
+            document.getElementById('utc-time').textContent = date.toUTCString();
+            document.getElementById('iso-time').textContent = date.toISOString();
+            document.getElementById('relative-time').textContent = getRelativeTime(timestamp);
+        }
+
+        // Event listener for milliseconds input
+        document.getElementById('milliseconds').addEventListener('input', (e) => {
+            updateTimeDisplays(e.target.value);
+        });
+
+        // Event listener for current time button
+        document.getElementById('current-time').addEventListener('click', () => {
+            const now = Date.now();
+            document.getElementById('milliseconds').value = now;
+            updateTimeDisplays(now);
+        });
+
+        // Event listener for date to milliseconds conversion
+        document.getElementById('convert-to-ms').addEventListener('click', () => {
+            const dateInput = document.getElementById('date-input').value;
+            if (dateInput) {
+                const ms = new Date(dateInput).getTime();
+                document.getElementById('ms-result').textContent = ms;
+            }
+        });
+
+        // Copy to clipboard functionality
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', async () => {
+                const targetId = button.getAttribute('data-target');
+                const text = document.getElementById(targetId).textContent;
+                try {
+                    await navigator.clipboard.writeText(text);
+                    const originalText = button.textContent;
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 1500);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            });
+        });
+
+        // Set current date-time in the reverse converter
+        const now = new Date();
+        const year = now.getFullYear();
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const day = String(now.getDate()).padStart(2, '0');
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        document.getElementById('date-input').value = `${year}-${month}-${day}T${hours}:${minutes}`;
+
+        // Update relative time every second
+        setInterval(() => {
+            const timestamp = document.getElementById('milliseconds').value;
+            if (timestamp) {
+                document.getElementById('relative-time').textContent = getRelativeTime(Number(timestamp));
+            }
+        }, 1000);
+    </script>
+</body>
+</html>
