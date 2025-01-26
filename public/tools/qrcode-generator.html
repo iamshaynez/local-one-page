@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online QR code generator - Create customizable QR codes instantly. Features include real-time preview, size adjustment, color customization, and download options.">
+    <meta name="keywords" content="qr code generator, qr code maker, create qr code, custom qr code, free qr code, online qr code generator, qr code download">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>QR Code Generator - Free Online QR Code Creation Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .qr-generator-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            align-items: flex-end;
+        }
+
+        .input-field {
+            flex: 1;
+        }
+
+        .input-field label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-color);
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .customization-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .qr-preview-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        #qrcode {
+            padding: var(--spacing-md);
+            background: white;
+            border-radius: var(--border-radius);
+        }
+
+        .action-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>QR Code Generator</h1>
+                <p>Generate customizable QR codes instantly with our free online tool. Perfect for websites, contact information, or any text content.</p>
+
+                <div class="qr-generator-section">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="qr-text">Text or URL</label>
+                            <input type="text" id="qr-text" placeholder="Enter text or URL to generate QR code...">
+                        </div>
+                    </div>
+
+                    <div class="customization-section">
+                        <div class="input-field">
+                            <label for="qr-size">Size (px)</label>
+                            <input type="number" id="qr-size" value="256" min="128" max="512" step="32">
+                        </div>
+                        <div class="input-field">
+                            <label for="qr-dark-color">Dark Color</label>
+                            <input type="color" id="qr-dark-color" value="#000000">
+                        </div>
+                        <div class="input-field">
+                            <label for="qr-light-color">Light Color</label>
+                            <input type="color" id="qr-light-color" value="#FFFFFF">
+                        </div>
+                    </div>
+
+                    <div class="qr-preview-section">
+                        <div id="qrcode"></div>
+                        <div class="button-group">
+                            <button class="action-button" id="download-btn">Download QR Code</button>
+                            <button class="action-button" id="copy-btn">Copy to Clipboard</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        let qrcode = null;
+
+        function generateQRCode(text) {
+            const container = document.getElementById('qrcode');
+            container.innerHTML = '';
+            
+            if (!text) return;
+
+            const size = parseInt(document.getElementById('qr-size').value);
+            const darkColor = document.getElementById('qr-dark-color').value;
+            const lightColor = document.getElementById('qr-light-color').value;
+
+            qrcode = new QRCode(container, {
+                text: text,
+                width: size,
+                height: size,
+                colorDark: darkColor,
+                colorLight: lightColor,
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        // Event listeners for real-time updates
+        document.getElementById('qr-text').addEventListener('input', (e) => {
+            generateQRCode(e.target.value);
+        });
+
+        document.getElementById('qr-size').addEventListener('change', () => {
+            const text = document.getElementById('qr-text').value;
+            if (text) generateQRCode(text);
+        });
+
+        document.getElementById('qr-dark-color').addEventListener('change', () => {
+            const text = document.getElementById('qr-text').value;
+            if (text) generateQRCode(text);
+        });
+
+        document.getElementById('qr-light-color').addEventListener('change', () => {
+            const text = document.getElementById('qr-text').value;
+            if (text) generateQRCode(text);
+        });
+
+        // Download functionality
+        document.getElementById('download-btn').addEventListener('click', () => {
+            if (!qrcode) return;
+
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+
+            const link = document.createElement('a');
+            link.download = 'qrcode.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        // Copy to clipboard functionality
+        document.getElementById('copy-btn').addEventListener('click', async () => {
+            if (!qrcode) return;
+
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+
+            try {
+                canvas.toBlob(async (blob) => {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({ 'image/png': blob })
+                    ]);
+                    alert('QR code copied to clipboard!');
+                });
+            } catch (err) {
+                console.error('Failed to copy:', err);
+                alert('Failed to copy QR code to clipboard');
+            }
+        });
+
+        // Generate initial QR code with placeholder
+        generateQRCode('https://example.com');
+        document.getElementById('qr-text').value = 'https://example.com';
+    </script>
+</body>
+</html>
