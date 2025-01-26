@@ -2,6 +2,7 @@
 (async function loadAnalytics() {
     try {
         // 检查当前域名是否匹配
+        console.log('Current hostname:', window.location.hostname);
         if (window.location.hostname !== 'www.localhosts.vip') {
             return;
         }
