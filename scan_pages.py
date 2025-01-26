@@ -6,7 +6,8 @@ from typing import Dict, List
 # 定义要排除的文件名列表
 EXCLUDE_FILES = [
     'index.html',      
-    'include.html',       
+    'include.html',      
+    'include-backup.html', 
     'about.html',
     'template.html'    
 ]

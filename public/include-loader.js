@@ -1,6 +1,10 @@
 // 创建一个自执行函数来加载分析代码
 (async function loadAnalytics() {
     try {
+        // 检查当前域名是否匹配
+        if (window.location.hostname !== 'www.localhosts.vip') {
+            return;
+        }
         const response = await fetch('/include.html');
         const html = await response.text();
         
