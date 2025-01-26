@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online image to base64 converter - Convert images to base64 format instantly. Get base64 strings for HTML img tags, CSS backgrounds, and plain text. Simple and fast conversion tool.">
+    <meta name="keywords" content="image to base64, base64 converter, image encoder, online image converter, base64 image generator, base64 for CSS, base64 for HTML">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Image to Base64 Converter - Free Online Image Encoding Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background-color: var(--background-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: var(--background-color-secondary);
+        }
+
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            margin: var(--spacing-md) auto;
+            display: none;
+        }
+
+        .output-section {
+            margin-top: var(--spacing-lg);
+        }
+
+        .output-container {
+            position: relative;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .output-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .output-title {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .copy-button {
+            padding: 4px 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-sm);
+        }
+
+        .copy-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .output-content {
+            width: 100%;
+            min-height: 100px;
+            padding: var(--spacing-sm);
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="home-button">Home</a>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Image to Base64 Converter</h1>
+                <p>Convert your images to base64 format. Get the encoded string for use in HTML, CSS, or as plain text.</p>
+
+                <div class="upload-area" id="uploadArea">
+                    <p>Drag and drop an image here or click to select</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none">
+                    <img id="previewImage" class="preview-image" alt="Preview">
+                </div>
+
+                <div class="output-section">
+                    <div class="output-container">
+                        <div class="output-header">
+                            <span class="output-title">Plain Base64 String</span>
+                            <button class="copy-button" data-target="base64Output">Copy</button>
+                        </div>
+                        <textarea class="output-content" id="base64Output" readonly></textarea>
+                    </div>
+
+                    <div class="output-container">
+                        <div class="output-header">
+                            <span class="output-title">HTML Image Tag</span>
+                            <button class="copy-button" data-target="htmlOutput">Copy</button>
+                        </div>
+                        <textarea class="output-content" id="htmlOutput" readonly></textarea>
+                    </div>
+
+                    <div class="output-container">
+                        <div class="output-header">
+                            <span class="output-title">CSS Background Image</span>
+                            <button class="copy-button" data-target="cssOutput">Copy</button>
+                        </div>
+                        <textarea class="output-content" id="cssOutput" readonly></textarea>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const previewImage = document.getElementById('previewImage');
+        const base64Output = document.getElementById('base64Output');
+        const htmlOutput = document.getElementById('htmlOutput');
+        const cssOutput = document.getElementById('cssOutput');
+
+        // Handle drag and drop events
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.add('dragover');
+            });
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            uploadArea.addEventListener(eventName, () => {
+                uploadArea.classList.remove('dragover');
+            });
+        });
+
+        // Handle file drop
+        uploadArea.addEventListener('drop', handleDrop);
+        uploadArea.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', handleFileSelect);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            handleFile(file);
+        }
+
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            handleFile(file);
+        }
+
+        function handleFile(file) {
+            if (!file.type.startsWith('image/')) {
+                alert('Please upload an image file');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64String = e.target.result;
+                updateOutputs(base64String, file.type);
+                previewImage.src = base64String;
+                previewImage.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateOutputs(base64String, mimeType) {
+            // Plain base64 (remove data URL prefix)
+            const base64Data = base64String.split(',')[1];
+            base64Output.value = base64Data;
+
+            // HTML img tag
+            htmlOutput.value = `<img src="${base64String}" alt="Base64 encoded image">`;
+
+            // CSS background-image
+            cssOutput.value = `background-image: url(${base64String});`;
+        }
+
+        // Copy button functionality
+        document.querySelectorAll('.copy-button').forEach(button => {
+            button.addEventListener('click', async () => {
+                const targetId = button.getAttribute('data-target');
+                const targetElement = document.getElementById(targetId);
+                try {
+                    await navigator.clipboard.writeText(targetElement.value);
+                    const originalText = button.textContent;
+                    button.textContent = 'Copied!';
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                    }, 2000);
+                } catch (err) {
+                    console.error('Failed to copy text:', err);
+                    alert('Failed to copy to clipboard');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

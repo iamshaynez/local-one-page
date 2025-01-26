@@ -18,6 +18,12 @@
     "url": "/tools/image-jpg-compressor.html"
   },
   {
+    "title": "Image to Base64 Converter - Free Online Image Encoding Tool",
+    "desc": "Free online image to base64 converter - Convert images to base64 format instantly. Get base64 strings for HTML img tags, CSS backgrounds, and plain text. Simple and fast conversion tool.",
+    "category": "tools",
+    "url": "/tools/image-base64.html"
+  },
+  {
     "title": "Markdown Renderer - Free Online Markdown to HTML Converter",
     "desc": "Free online markdown renderer - Convert markdown text to HTML with live preview. Customize styles, fonts, and colors. Copy rendered HTML to clipboard easily.",
     "category": "tools",
