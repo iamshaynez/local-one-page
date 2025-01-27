@@ -120,6 +120,12 @@
     "url": "/programmer/json-2-toml.html"
   },
   {
+    "title": "AES Encryption Tool - Free Online Text Encryption and Decryption",
+    "desc": "Free online AES encryption tool - Encrypt and decrypt text using AES-128/192/256 with multiple modes. Secure, browser-based encryption with no server processing",
+    "category": "programmer",
+    "url": "/programmer/aes-encrypt-online.html"
+  },
+  {
     "title": "YAML to JSON Converter - Free Online Data Format Transformation Tool",
     "desc": "Free online YAML to JSON converter - Convert YAML data to JSON format instantly. Simple, fast, and accurate YAML to JSON transformation tool with syntax highlighting",
     "category": "programmer",

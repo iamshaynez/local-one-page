@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online AES encryption tool - Encrypt and decrypt text using AES-128/192/256 with multiple modes. Secure, browser-based encryption with no server processing">
+    <meta name="keywords" content="aes encryption online, aes decrypt online, aes-256 encryption, aes cipher, online encryption tool, text encryption, secure encryption">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>AES Encryption Tool - Free Online Text Encryption and Decryption</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .encryption-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        @media (max-width: 768px) {
+            .encryption-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .control-panel {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 200px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .copy-button {
+            padding: 4px 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            align-self: flex-end;
+        }
+
+        .copy-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        select, input {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: var(--font-size-sm);
+            margin-top: var(--spacing-sm);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>AES Encryption Tool</h1>
+                <p>Securely encrypt and decrypt text using AES encryption. All processing happens in your browser - no data is sent to any server.</p>
+
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label for="keySize">Key Size:</label>
+                        <select id="keySize">
+                            <option value="128">AES-128</option>
+                            <option value="192">AES-192</option>
+                            <option value="256" selected>AES-256</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="mode">Mode:</label>
+                        <select id="mode">
+                            <option value="CBC" selected>CBC</option>
+                            <option value="ECB">ECB</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="key">Encryption Key:</label>
+                        <input type="text" id="key" placeholder="Enter your secret key" required>
+                    </div>
+                </div>
+
+                <div class="encryption-container">
+                    <div class="input-section">
+                        <h2>Input Text</h2>
+                        <textarea id="inputText" class="text-area" placeholder="Enter text to encrypt/decrypt"></textarea>
+                        <div class="error-message" id="inputError"></div>
+                    </div>
+
+                    <div class="output-section">
+                        <h2>Output</h2>
+                        <textarea id="outputText" class="text-area" readonly></textarea>
+                        <button class="copy-button" id="copyButton">Copy to Clipboard</button>
+                        <div class="error-message" id="outputError"></div>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button id="encryptButton" class="primary-button">Encrypt</button>
+                    <button id="decryptButton" class="primary-button">Decrypt</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('inputText');
+            const outputText = document.getElementById('outputText');
+            const keyInput = document.getElementById('key');
+            const keySizeSelect = document.getElementById('keySize');
+            const modeSelect = document.getElementById('mode');
+            const encryptButton = document.getElementById('encryptButton');
+            const decryptButton = document.getElementById('decryptButton');
+            const copyButton = document.getElementById('copyButton');
+            const inputError = document.getElementById('inputError');
+            const outputError = document.getElementById('outputError');
+
+            function showError(element, message) {
+                element.textContent = message;
+                element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 3000);
+            }
+
+            function getKeySize() {
+                return parseInt(keySizeSelect.value);
+            }
+
+            function validateKey(key, requiredBits) {
+                const requiredBytes = requiredBits / 8;
+                const keyBytes = CryptoJS.enc.Utf8.parse(key);
+                return keyBytes.sigBytes >= requiredBytes;
+            }
+
+            function padKey(key, requiredBits) {
+                while (key.length * 8 < requiredBits) {
+                    key += key;
+                }
+                return key.slice(0, requiredBits / 8);
+            }
+
+            function encrypt() {
+                try {
+                    const text = inputText.value;
+                    let key = keyInput.value;
+                    const keySize = getKeySize();
+
+                    if (!text) {
+                        showError(inputError, 'Please enter text to encrypt');
+                        return;
+                    }
+                    if (!key) {
+                        showError(inputError, 'Please enter an encryption key');
+                        return;
+                    }
+
+                    key = padKey(key, keySize);
+                    const mode = modeSelect.value;
+                    const iv = mode === 'CBC' ? CryptoJS.lib.WordArray.random(16) : CryptoJS.lib.WordArray.create();
+
+                    const encrypted = CryptoJS.AES.encrypt(text, key, {
+                        mode: CryptoJS.mode[mode],
+                        padding: CryptoJS.pad.Pkcs7,
+                        iv: iv
+                    });
+
+                    outputText.value = encrypted.toString();
+                } catch (error) {
+                    showError(outputError, 'Encryption failed: ' + error.message);
+                }
+            }
+
+            function decrypt() {
+                try {
+                    const encrypted = inputText.value;
+                    let key = keyInput.value;
+                    const keySize = getKeySize();
+
+                    if (!encrypted) {
+                        showError(inputError, 'Please enter text to decrypt');
+                        return;
+                    }
+                    if (!key) {
+                        showError(inputError, 'Please enter the decryption key');
+                        return;
+                    }
+
+                    key = padKey(key, keySize);
+                    const mode = modeSelect.value;
+
+                    const decrypted = CryptoJS.AES.decrypt(encrypted, key, {
+                        mode: CryptoJS.mode[mode],
+                        padding: CryptoJS.pad.Pkcs7
+                    });
+
+                    const result = decrypted.toString(CryptoJS.enc.Utf8);
+                    if (!result) {
+                        throw new Error('Invalid key or corrupted data');
+                    }
+                    outputText.value = result;
+                } catch (error) {
+                    showError(outputError, 'Decryption failed: ' + error.message);
+                }
+            }
+
+            encryptButton.addEventListener('click', encrypt);
+            decryptButton.addEventListener('click', decrypt);
+
+            copyButton.addEventListener('click', function() {
+                outputText.select();
+                document.execCommand('copy');
+                const originalText = copyButton.textContent;
+                copyButton.textContent = 'Copied!';
+                setTimeout(() => {
+                    copyButton.textContent = originalText;
+                }, 2000);
+            });
+
+            // Real-time validation
+            keyInput.addEventListener('input', function() {
+                const keySize = getKeySize();
+                if (!validateKey(this.value, keySize)) {
+                    showError(inputError, `Key should be at least ${keySize/8} characters for AES-${keySize}`);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
