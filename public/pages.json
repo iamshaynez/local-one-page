@@ -1,5 +1,11 @@
 [
   {
+    "title": "EXIF Metadata Viewer and Cleaner - Free Online Image Privacy Tool",
+    "desc": "Free online EXIF metadata viewer and cleaner - View and remove EXIF data from your images. Protect your privacy by cleaning sensitive metadata from photos before sharing",
+    "category": "tools",
+    "url": "/tools/image-exif-cleaner.html"
+  },
+  {
     "title": "Base64 to Image Converter - Free Online Base64 Decoder Tool",
     "desc": "Free online base64 to image converter - Convert base64 strings to image files instantly. Preview and download images from base64 data. Simple and fast conversion tool.",
     "category": "tools",
@@ -42,10 +48,22 @@
     "url": "/tools/video-gif.html"
   },
   {
+    "title": "Image Stitcher - Free Online Image Combining Tool",
+    "desc": "Free online image stitcher - Combine multiple images horizontally or vertically. Easy-to-use tool with automatic resizing and alignment options. Perfect for creating photo collages and image strips",
+    "category": "tools",
+    "url": "/tools/image-stitcher.html"
+  },
+  {
     "title": "Image to Base64 Converter - Free Online Image Encoding Tool",
     "desc": "Free online image to base64 converter - Convert images to base64 format instantly. Get base64 strings for HTML img tags, CSS backgrounds, and plain text. Simple and fast conversion tool.",
     "category": "tools",
     "url": "/tools/image-base64.html"
+  },
+  {
+    "title": "Image Color Extractor - Free Online Color Palette Generator",
+    "desc": "Free online image color extractor - Analyze and extract dominant colors from your images. Get hex codes, RGB values, and color distribution percentages instantly",
+    "category": "tools",
+    "url": "/tools/image-color-extractor.html"
   },
   {
     "title": "Network Speed Test - Free Online Internet Connection Speed Test Tool",
