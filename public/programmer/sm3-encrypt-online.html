@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online SM3 hash generator - Generate SM3 hashes instantly using China's cryptographic hash algorithm. Secure, browser-based hash generation with no server processing">
+    <meta name="keywords" content="sm3 hash generator, sm3 hash calculator, chinese cryptographic standard, sm3 algorithm, online hash tool, secure hash, cryptographic hash function, sm3 online">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>SM3 Hash Generator - Free Online Chinese Standard Hash Calculator</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sm-crypto/dist/sm3.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .hash-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .input-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .input-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .output-section {
+            background: var(--background-color-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .hash-output {
+            font-family: monospace;
+            word-break: break-all;
+            margin: var(--spacing-sm) 0;
+            padding: var(--spacing-sm);
+            background: var(--background-color);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .copy-message {
+            color: var(--success-color);
+            font-size: 0.9em;
+            margin-top: var(--spacing-sm);
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>SM3 Hash Generator</h1>
+                <p>Generate secure hash values using China's SM3 cryptographic hash algorithm. All processing is done in your browser - no data is sent to any server.</p>
+
+                <div class="hash-container">
+                    <div class="input-section">
+                        <label for="input-text">Input Text:</label>
+                        <textarea id="input-text" class="input-textarea" placeholder="Enter text to generate SM3 hash..."></textarea>
+                        <div class="controls">
+                            <button id="clear-btn">Clear</button>
+                        </div>
+                    </div>
+
+                    <div class="output-section">
+                        <label>SM3 Hash:</label>
+                        <div id="hash-output" class="hash-output" title="Click to copy"></div>
+                        <div id="copy-message" class="copy-message">Hash copied to clipboard!</div>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <h2>About SM3</h2>
+                    <p>SM3 is a cryptographic hash function used in the Chinese National Standard. It produces a 256-bit (32-byte) hash value and is designed to provide similar security features to SHA-256.</p>
+                    <h2>Features</h2>
+                    <ul>
+                        <li>Real-time hash generation as you type</li>
+                        <li>Click on the hash to copy to clipboard</li>
+                        <li>Client-side processing for security</li>
+                        <li>Compatible with Chinese cryptographic standards</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('input-text');
+            const hashOutput = document.getElementById('hash-output');
+            const clearBtn = document.getElementById('clear-btn');
+            const copyMessage = document.getElementById('copy-message');
+
+            function generateHash() {
+                const text = inputText.value;
+                if (text) {
+                    const hash = sm3(text);
+                    hashOutput.textContent = hash;
+                } else {
+                    hashOutput.textContent = '';
+                }
+            }
+
+            function copyToClipboard() {
+                if (hashOutput.textContent) {
+                    navigator.clipboard.writeText(hashOutput.textContent)
+                        .then(() => {
+                            copyMessage.style.display = 'block';
+                            setTimeout(() => {
+                                copyMessage.style.display = 'none';
+                            }, 2000);
+                        })
+                        .catch(err => console.error('Failed to copy text: ', err));
+                }
+            }
+
+            inputText.addEventListener('input', generateHash);
+            clearBtn.addEventListener('click', () => {
+                inputText.value = '';
+                generateHash();
+            });
+            hashOutput.addEventListener('click', copyToClipboard);
+
+            // Generate initial hash if there's any text
+            generateHash();
+        });
+    </script>
+</body>
+</html>

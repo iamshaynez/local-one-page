@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online RSA dynamic verification code generator and validator - Generate and verify time-based RSA codes with customizable parameters. Secure, browser-based tool with QR code sharing.">
+    <meta name="keywords" content="RSA verification code, dynamic code generator, time-based RSA, secure verification, QR code sharing, online verification tool, RSA validator">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>RSA Dynamic Code Generator - Free Online Authentication Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrsasign/10.9.0/jsrsasign-all-min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/davidshimjs/qrcodejs/qrcode.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .code-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            align-items: flex-end;
+        }
+
+        .input-field {
+            flex: 1;
+        }
+
+        .input-field label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-color);
+        }
+
+        .input-field input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .code-display {
+            font-size: 2em;
+            text-align: center;
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+            margin: var(--spacing-md) 0;
+            font-family: monospace;
+            letter-spacing: 0.5em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: var(--primary-color);
+            transition: width 1s linear;
+        }
+
+        .qr-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        #qrcode {
+            padding: var(--spacing-md);
+            background: white;
+            border-radius: var(--border-radius);
+        }
+
+        .action-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .action-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            justify-content: center;
+        }
+
+        .validation-result {
+            text-align: center;
+            padding: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            border-radius: var(--border-radius);
+        }
+
+        .validation-result.success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .validation-result.error {
+            background: #f44336;
+            color: white;
+        }
+
+        .tabs {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .tab {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background: var(--background-color);
+        }
+
+        .tab.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>RSA Dynamic Code Generator</h1>
+                <p>Generate and validate secure, time-based RSA verification codes. Perfect for two-factor authentication and secure access control.</p>
+
+                <div class="tabs">
+                    <button class="tab active" data-tab="generate">Generate Code</button>
+                    <button class="tab" data-tab="validate">Validate Code</button>
+                </div>
+
+                <div id="generate-section" class="code-section">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="secret-key">Secret Key (optional)</label>
+                            <input type="text" id="secret-key" placeholder="Enter a secret key or leave empty for random...">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="validity-period">Validity Period (seconds)</label>
+                            <input type="number" id="validity-period" value="30" min="10" max="300">
+                        </div>
+                        <div class="input-field">
+                            <label for="code-length">Code Length</label>
+                            <input type="number" id="code-length" value="6" min="6" max="8">
+                        </div>
+                    </div>
+
+                    <div class="code-display" id="dynamic-code">000000</div>
+                    <div class="button-group">
+                        <button class="action-button" id="generate-btn">Generate New Key</button>
+                        <button class="action-button" id="copy-btn">Copy Code</button>
+                    </div>
+
+                    <div class="qr-section">
+                        <div id="qrcode"></div>
+                        <div class="button-group">
+                            <button class="action-button" id="download-qr-btn">Download QR Code</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="validate-section" class="code-section" style="display: none;">
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="validation-secret">Secret Key</label>
+                            <input type="text" id="validation-secret" placeholder="Enter the secret key...">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="validation-code">Verification Code</label>
+                            <input type="text" id="validation-code" placeholder="Enter the code to validate...">
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button class="action-button" id="validate-btn">Validate Code</button>
+                    </div>
+
+                    <div id="validation-result" class="validation-result" style="display: none;"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        let currentKey = '';
+        let qrcode = null;
+
+        function generateRandomKey() {
+            const array = new Uint8Array(32);
+            crypto.getRandomValues(array);
+            return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+        }
+
+        function generateCode(secret, length = 6) {
+            const time = Math.floor(Date.now() / 1000 / parseInt(document.getElementById('validity-period').value));
+            const hmac = new KJUR.crypto.Mac({alg: 'HmacSHA1', pass: secret});
+            hmac.updateHex(time.toString(16));
+            const hash = hmac.doFinal();
+            
+            const offset = parseInt(hash.slice(-1), 16);
+            const binary = parseInt(hash.substr(offset * 2, 8), 16) & 0x7fffffff;
+            return binary.toString().slice(-length);
+        }
+
+        function updateQRCode(secret) {
+            if (qrcode) {
+                document.getElementById('qrcode').innerHTML = '';
+            }
+
+            const validityPeriod = document.getElementById('validity-period').value;
+            const codeLength = document.getElementById('code-length').value;
+            const qrData = JSON.stringify({
+                secret: secret,
+                validity: validityPeriod,
+                length: codeLength
+            });
+
+            qrcode = new QRCode(document.getElementById('qrcode'), {
+                text: qrData,
+                width: 256,
+                height: 256,
+                colorDark: '#000000',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+        }
+
+        function updateCode() {
+            const validityPeriod = parseInt(document.getElementById('validity-period').value);
+            const currentTime = Math.floor(Date.now() / 1000);
+            const timeInPeriod = currentTime % validityPeriod;
+            const progressPercentage = ((validityPeriod - timeInPeriod) / validityPeriod) * 100;
+
+            const code = generateCode(currentKey, parseInt(document.getElementById('code-length').value));
+            const codeDisplay = document.getElementById('dynamic-code');
+            codeDisplay.textContent = code;
+
+            // Update progress bar
+            let progressBar = codeDisplay.querySelector('.progress-bar');
+            if (!progressBar) {
+                progressBar = document.createElement('div');
+                progressBar.className = 'progress-bar';
+                codeDisplay.appendChild(progressBar);
+            }
+            progressBar.style.width = `${progressPercentage}%`;
+        }
+
+        document.getElementById('generate-btn').addEventListener('click', () => {
+            const secretKey = document.getElementById('secret-key').value.trim() || generateRandomKey();
+            currentKey = secretKey;
+            document.getElementById('secret-key').value = secretKey;
+            updateQRCode(secretKey);
+            updateCode();
+        });
+
+        document.getElementById('copy-btn').addEventListener('click', () => {
+            const code = document.getElementById('dynamic-code').textContent;
+            navigator.clipboard.writeText(code);
+            alert('Code copied to clipboard!');
+        });
+
+        document.getElementById('download-qr-btn').addEventListener('click', () => {
+            const canvas = document.querySelector('#qrcode canvas');
+            if (!canvas) return;
+
+            const link = document.createElement('a');
+            link.download = 'rsa-dynamic-code-qr.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        });
+
+        document.getElementById('validate-btn').addEventListener('click', () => {
+            const secret = document.getElementById('validation-secret').value.trim();
+            const code = document.getElementById('validation-code').value.trim();
+            const length = code.length;
+
+            if (!secret || !code) {
+                alert('Please enter both secret key and verification code');
+                return;
+            }
+
+            const generatedCode = generateCode(secret, length);
+            const result = document.getElementById('validation-result');
+            result.style.display = 'block';
+
+            if (code === generatedCode) {
+                result.textContent = 'Code is valid!';
+                result.className = 'validation-result success';
+            } else {
+                result.textContent = 'Invalid code!';
+                result.className = 'validation-result error';
+            }
+        });
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+
+                const tabId = tab.dataset.tab;
+                document.getElementById('generate-section').style.display = 
+                    tabId === 'generate' ? 'block' : 'none';
+                document.getElementById('validate-section').style.display = 
+                    tabId === 'validate' ? 'block' : 'none';
+            });
+        });
+
+        // Initial setup
+        document.getElementById('generate-btn').click();
+        setInterval(updateCode, 1000);
+    </script>
+</body>
+</html>

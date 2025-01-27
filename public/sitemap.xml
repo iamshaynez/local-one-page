@@ -109,7 +109,25 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/programmer/sm3-encrypt-online.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/programmer/des-encrypt-online.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/programmer/sm2-encrypt-online.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/programmer/sm4-encrypt-online.html</loc>
         <lastmod>2025-01-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -151,7 +169,19 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/programmer/rsa-dynamic-code.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/programmer/sha-encrypt-online.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/programmer/rc-encrypt-online.html</loc>
         <lastmod>2025-01-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
@@ -171,6 +201,12 @@
     <url>
         <loc>https://www.localhosts.vip/programmer/yaml-2-json.html</loc>
         <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/programmer/blowfish-encrypt-online.html</loc>
+        <lastmod>2025-01-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>

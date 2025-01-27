@@ -78,10 +78,28 @@
     "url": "/fun/subtitle-memer.html"
   },
   {
+    "title": "SM3 Hash Generator - Free Online Chinese Standard Hash Calculator",
+    "desc": "Free online SM3 hash generator - Generate SM3 hashes instantly using China's cryptographic hash algorithm. Secure, browser-based hash generation with no server processing",
+    "category": "programmer",
+    "url": "/programmer/sm3-encrypt-online.html"
+  },
+  {
     "title": "DES Encryption Tool - Free Online Text Encryption and Decryption",
     "desc": "Free online DES encryption tool - Encrypt and decrypt text using DES algorithm with multiple modes. Secure, browser-based encryption with no server processing",
     "category": "programmer",
     "url": "/programmer/des-encrypt-online.html"
+  },
+  {
+    "title": "SM2 Encryption Tool - Free Online Chinese Standard Public Key Encryption",
+    "desc": "Free online SM2 encryption tool - Encrypt and decrypt text using China's SM2 public key cryptographic algorithm. Secure, browser-based encryption with no server processing",
+    "category": "programmer",
+    "url": "/programmer/sm2-encrypt-online.html"
+  },
+  {
+    "title": "SM4 Encryption Tool - Free Online Chinese Standard Block Cipher",
+    "desc": "Free online SM4 encryption tool - Encrypt and decrypt text using China's SM4 block cipher algorithm. Secure, browser-based encryption with no server processing",
+    "category": "programmer",
+    "url": "/programmer/sm4-encrypt-online.html"
   },
   {
     "title": "MD5 Hash Generator - Free Online Text to MD5 Converter",
@@ -120,10 +138,22 @@
     "url": "/programmer/xml-2-json.html"
   },
   {
+    "title": "RSA Dynamic Code Generator - Free Online Authentication Tool",
+    "desc": "Free online RSA dynamic verification code generator and validator - Generate and verify time-based RSA codes with customizable parameters. Secure, browser-based tool with QR code sharing.",
+    "category": "programmer",
+    "url": "/programmer/rsa-dynamic-code.html"
+  },
+  {
     "title": "SHA Hash Generator - Free Online Text to SHA Hash Tool",
     "desc": "Free online SHA hash generator - Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly. Secure, browser-based hash generation with no server processing.",
     "category": "programmer",
     "url": "/programmer/sha-encrypt-online.html"
+  },
+  {
+    "title": "RC Encryption Tool - Free Online RC2/RC4/RC5 Text Encryption and Decryption",
+    "desc": "Free online RC encryption tool - Encrypt and decrypt text using RC2, RC4, and RC5 algorithms. Secure, browser-based encryption with no server processing",
+    "category": "programmer",
+    "url": "/programmer/rc-encrypt-online.html"
   },
   {
     "title": "JSON to TOML Converter - Free Online Data Format Transformation Tool",
@@ -142,6 +172,12 @@
     "desc": "Free online YAML to JSON converter - Convert YAML data to JSON format instantly. Simple, fast, and accurate YAML to JSON transformation tool with syntax highlighting",
     "category": "programmer",
     "url": "/programmer/yaml-2-json.html"
+  },
+  {
+    "title": "Blowfish Encryption Tool - Free Online Text Encryption and Decryption",
+    "desc": "Free online Blowfish encryption tool - Encrypt and decrypt text using Blowfish algorithm with multiple modes. Secure, browser-based encryption with no server processing",
+    "category": "programmer",
+    "url": "/programmer/blowfish-encrypt-online.html"
   },
   {
     "title": "DOS Game Emulator - Free Online DOS Gaming Experience",

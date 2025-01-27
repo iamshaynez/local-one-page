@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online SM4 encryption tool - Encrypt and decrypt text using China's SM4 block cipher algorithm. Secure, browser-based encryption with no server processing">
+    <meta name="keywords" content="sm4 encryption, sm4 decryption, chinese encryption standard, block cipher, online encryption tool, text encryption, sm4 cipher, secure encryption, chinese cryptography">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>SM4 Encryption Tool - Free Online Chinese Standard Block Cipher</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sm-crypto/dist/sm4.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .encryption-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        @media (max-width: 768px) {
+            .encryption-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 200px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .key-input {
+            flex: 1;
+            min-width: 200px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+        }
+
+        button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            margin-top: var(--spacing-sm);
+            font-size: 0.9em;
+        }
+
+        .key-section {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>SM4 Encryption Tool</h1>
+                <p>Encrypt and decrypt text using China's SM4 block cipher algorithm. All processing is done in your browser - no data is sent to any server.</p>
+
+                <div class="key-section">
+                    <h2>Key Management</h2>
+                    <div class="input-group">
+                        <label for="encryption-key">Encryption Key (16 bytes):</label>
+                        <div class="controls">
+                            <input type="text" id="encryption-key" class="key-input" placeholder="Enter or generate a 16-byte key">
+                            <button id="generate-key-btn">Generate Random Key</button>
+                            <button id="copy-key-btn">Copy Key</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="encryption-grid">
+                    <div class="input-section">
+                        <div class="input-group">
+                            <label for="input-text">Input Text:</label>
+                            <textarea id="input-text" class="text-area" placeholder="Enter text to encrypt/decrypt..."></textarea>
+                        </div>
+
+                        <div class="controls">
+                            <button id="encrypt-btn">Encrypt</button>
+                            <button id="decrypt-btn">Decrypt</button>
+                            <button id="clear-btn">Clear All</button>
+                        </div>
+                        <div id="input-error" class="error-message"></div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="input-group">
+                            <label for="output-text">Output:</label>
+                            <textarea id="output-text" class="text-area" readonly></textarea>
+                        </div>
+                        <div class="controls">
+                            <button id="copy-output-btn">Copy to Clipboard</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <h2>Instructions</h2>
+                    <ul>
+                        <li>Generate a random key or enter your own 16-byte key</li>
+                        <li>Enter the text you want to encrypt or decrypt</li>
+                        <li>Click the appropriate button to perform the operation</li>
+                        <li>Use the Copy buttons to copy the key or result to your clipboard</li>
+                    </ul>
+                    <p><strong>Note:</strong> Keep your encryption key secure. Anyone with the key can decrypt your messages.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputText = document.getElementById('input-text');
+            const outputText = document.getElementById('output-text');
+            const encryptionKey = document.getElementById('encryption-key');
+            const generateKeyBtn = document.getElementById('generate-key-btn');
+            const encryptBtn = document.getElementById('encrypt-btn');
+            const decryptBtn = document.getElementById('decrypt-btn');
+            const clearBtn = document.getElementById('clear-btn');
+            const copyKeyBtn = document.getElementById('copy-key-btn');
+            const copyOutputBtn = document.getElementById('copy-output-btn');
+            const inputError = document.getElementById('input-error');
+
+            function generateRandomKey() {
+                const array = new Uint8Array(16);
+                crypto.getRandomValues(array);
+                return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+            }
+
+            function validateKey(key) {
+                if (!key) {
+                    throw new Error('Please enter an encryption key');
+                }
+                if (key.length !== 32) {
+                    throw new Error('Key must be exactly 16 bytes (32 hex characters)');
+                }
+                if (!/^[0-9a-fA-F]+$/.test(key)) {
+                    throw new Error('Key must be in hexadecimal format');
+                }
+            }
+
+            async function copyToClipboard(text) {
+                try {
+                    await navigator.clipboard.writeText(text);
+                } catch (err) {
+                    console.error('Failed to copy text: ', err);
+                }
+            }
+
+            generateKeyBtn.addEventListener('click', () => {
+                encryptionKey.value = generateRandomKey();
+            });
+
+            encryptBtn.addEventListener('click', () => {
+                try {
+                    if (!inputText.value) {
+                        throw new Error('Please enter text to encrypt');
+                    }
+                    validateKey(encryptionKey.value);
+                    
+                    const encrypted = sm4.encrypt(inputText.value, encryptionKey.value);
+                    outputText.value = encrypted;
+                    inputError.textContent = '';
+                } catch (error) {
+                    inputError.textContent = error.message;
+                }
+            });
+
+            decryptBtn.addEventListener('click', () => {
+                try {
+                    if (!inputText.value) {
+                        throw new Error('Please enter text to decrypt');
+                    }
+                    validateKey(encryptionKey.value);
+
+                    const decrypted = sm4.decrypt(inputText.value, encryptionKey.value);
+                    outputText.value = decrypted;
+                    inputError.textContent = '';
+                } catch (error) {
+                    inputError.textContent = error.message;
+                }
+            });
+
+            clearBtn.addEventListener('click', () => {
+                inputText.value = '';
+                outputText.value = '';
+                inputError.textContent = '';
+            });
+
+            copyKeyBtn.addEventListener('click', () => {
+                copyToClipboard(encryptionKey.value);
+            });
+
+            copyOutputBtn.addEventListener('click', () => {
+                copyToClipboard(outputText.value);
+            });
+
+            // Generate initial key
+            encryptionKey.value = generateRandomKey();
+        });
+    </script>
+</body>
+</html>
