@@ -24,6 +24,12 @@
     "url": "/tools/image-jpg-compressor.html"
   },
   {
+    "title": "Image Grid Splitter - Free Online 3x3 Grid Image Slicer Tool",
+    "desc": "Free online image grid splitter - Split images into 3x3 grids easily. Perfect for social media posts, profile pictures, and creative photo layouts. Simple, fast, and free to use",
+    "category": "tools",
+    "url": "/tools/image-grid-splitter.html"
+  },
+  {
     "title": "Milliseconds to Date Converter - Free Online Time Format Tool",
     "desc": "Free online milliseconds to date converter - Convert Unix timestamps and milliseconds to human-readable dates. Features multiple time formats, timezone support, and instant conversion.",
     "category": "tools",
@@ -60,6 +66,12 @@
     "url": "/tools/word-to-pdf.html"
   },
   {
+    "title": "Pixel Art Generator - Free Online Image to Pixel Art Converter",
+    "desc": "Free online pixel art generator - Transform your images into pixel art with adjustable pixel size and color palette options. Create retro-style artwork instantly in your browser",
+    "category": "tools",
+    "url": "/tools/image-pixel-art.html"
+  },
+  {
     "title": "QR Code Generator - Free Online QR Code Creation Tool",
     "desc": "Free online QR code generator - Create customizable QR codes instantly. Features include real-time preview, size adjustment, color customization, and download options.",
     "category": "tools",
@@ -88,6 +100,12 @@
     "desc": "Free online dice roller - Roll virtual dice with 3D animations. Choose from 1-6 dice, track roll history, and enjoy realistic physics. Perfect for board games, RPGs, and tabletop gaming",
     "category": "life",
     "url": "/life/dice-roller.html"
+  },
+  {
+    "title": "Mortgage Payment Calculator - Free Online Loan Calculator Tool",
+    "desc": "Free online mortgage payment calculator - Calculate monthly mortgage payments, total interest, and view amortization schedule. Simple, accurate loan payment calculations with customizable terms",
+    "category": "life",
+    "url": "/life/mortgage-payment-calculator.html"
   },
   {
     "title": "BMI Calculator - Free Online Body Mass Index Calculator Tool",

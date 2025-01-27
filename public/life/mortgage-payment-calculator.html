@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online mortgage payment calculator - Calculate monthly mortgage payments, total interest, and view amortization schedule. Simple, accurate loan payment calculations with customizable terms">
+    <meta name="keywords" content="mortgage calculator, loan payment calculator, monthly payment calculator, amortization schedule, mortgage interest calculator, home loan calculator, mortgage estimator, loan amortization">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Mortgage Payment Calculator - Free Online Loan Calculator Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .input-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+        }
+
+        .result-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+
+        .input-field {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-size: var(--font-size-base);
+        }
+
+        .monthly-payment {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: var(--spacing-md) 0;
+        }
+
+        .payment-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .detail-box {
+            background: var(--background-color-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .detail-box h3 {
+            margin: 0;
+            font-size: 1em;
+            color: var(--text-color-secondary);
+        }
+
+        .detail-box p {
+            margin: var(--spacing-sm) 0 0;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .calculate-button {
+            display: block;
+            width: 100%;
+            margin: var(--spacing-md) 0;
+            padding: var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .calculate-button:hover {
+            opacity: 0.9;
+        }
+
+        .amortization-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-lg);
+        }
+
+        .amortization-table th,
+        .amortization-table td {
+            padding: var(--spacing-sm);
+            text-align: right;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .amortization-table th {
+            background-color: var(--background-color);
+            font-weight: bold;
+            color: var(--text-color-secondary);
+        }
+
+        .history-container {
+            margin-top: var(--spacing-xl);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-md);
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-table th {
+            font-weight: bold;
+            color: var(--text-color-secondary);
+        }
+
+        @media (max-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Mortgage Payment Calculator</h1>
+                <p>Calculate your monthly mortgage payments, view total interest costs, and see a detailed amortization schedule. This calculator helps you understand the true cost of your home loan.</p>
+
+                <div class="calculator-grid">
+                    <div class="input-section">
+                        <div class="input-group">
+                            <label for="loanAmount">Loan Amount:</label>
+                            <input type="number" id="loanAmount" class="input-field" placeholder="Enter loan amount" min="0" step="1000">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="interestRate">Annual Interest Rate (%):</label>
+                            <input type="number" id="interestRate" class="input-field" placeholder="Enter interest rate" min="0" max="100" step="0.01">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="loanTerm">Loan Term (years):</label>
+                            <input type="number" id="loanTerm" class="input-field" placeholder="Enter loan term" min="1" max="50" step="1">
+                        </div>
+
+                        <button id="calculateBtn" class="calculate-button">Calculate Payment</button>
+                    </div>
+
+                    <div class="result-section">
+                        <h2>Monthly Payment</h2>
+                        <div class="monthly-payment" id="monthlyPayment">¥0</div>
+
+                        <div class="payment-details">
+                            <div class="detail-box">
+                                <h3>Total Principal</h3>
+                                <p id="totalPrincipal">¥0</p>
+                            </div>
+                            <div class="detail-box">
+                                <h3>Total Interest</h3>
+                                <p id="totalInterest">¥0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="amortization-container">
+                    <h2>Amortization Schedule</h2>
+                    <table class="amortization-table">
+                        <thead>
+                            <tr>
+                                <th>Payment #</th>
+                                <th>Payment</th>
+                                <th>Principal</th>
+                                <th>Interest</th>
+                                <th>Remaining Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody id="amortizationBody"></tbody>
+                    </table>
+                </div>
+
+                <div class="history-container">
+                    <h2>Calculation History</h2>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Loan Amount</th>
+                                <th>Interest Rate</th>
+                                <th>Term</th>
+                                <th>Monthly Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const loanAmountInput = document.getElementById('loanAmount');
+            const interestRateInput = document.getElementById('interestRate');
+            const loanTermInput = document.getElementById('loanTerm');
+            const calculateBtn = document.getElementById('calculateBtn');
+            const monthlyPaymentDisplay = document.getElementById('monthlyPayment');
+            const totalPrincipalDisplay = document.getElementById('totalPrincipal');
+            const totalInterestDisplay = document.getElementById('totalInterest');
+            const amortizationBody = document.getElementById('amortizationBody');
+            const historyBody = document.getElementById('historyBody');
+
+            let calculationHistory = JSON.parse(localStorage.getItem('mortgageHistory') || '[]');
+            updateHistoryTable();
+
+            function calculateMonthlyPayment(principal, annualRate, years) {
+                const monthlyRate = annualRate / 100 / 12;
+                const numberOfPayments = years * 12;
+                
+                if (monthlyRate === 0) {
+                    return principal / numberOfPayments;
+                }
+
+                return principal * monthlyRate * Math.pow(1 + monthlyRate, numberOfPayments) / 
+                       (Math.pow(1 + monthlyRate, numberOfPayments) - 1);
+            }
+
+            function formatCurrency(value) {
+                return '¥' + value.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+            }
+
+            function generateAmortizationSchedule(principal, annualRate, years, monthlyPayment) {
+                const monthlyRate = annualRate / 100 / 12;
+                const numberOfPayments = years * 12;
+                let remainingBalance = principal;
+                let schedule = [];
+
+                for (let i = 1; i <= numberOfPayments; i++) {
+                    const interest = remainingBalance * monthlyRate;
+                    const principalPayment = monthlyPayment - interest;
+                    remainingBalance -= principalPayment;
+
+                    schedule.push({
+                        payment: i,
+                        monthlyPayment: monthlyPayment,
+                        principal: principalPayment,
+                        interest: interest,
+                        balance: Math.max(0, remainingBalance)
+                    });
+                }
+
+                return schedule;
+            }
+
+            function updateAmortizationTable(schedule) {
+                amortizationBody.innerHTML = '';
+                schedule.forEach(payment => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${payment.payment}</td>
+                        <td>${formatCurrency(payment.monthlyPayment)}</td>
+                        <td>${formatCurrency(payment.principal)}</td>
+                        <td>${formatCurrency(payment.interest)}</td>
+                        <td>${formatCurrency(payment.balance)}</td>
+                    `;
+                    amortizationBody.appendChild(row);
+                });
+            }
+
+            function updateHistoryTable() {
+                historyBody.innerHTML = '';
+                calculationHistory.slice(0, 10).forEach(entry => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(entry.date).toLocaleDateString()}</td>
+                        <td>${formatCurrency(entry.loanAmount)}</td>
+                        <td>${entry.interestRate}%</td>
+                        <td>${entry.loanTerm} years</td>
+                        <td>${formatCurrency(entry.monthlyPayment)}</td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            }
+
+            calculateBtn.addEventListener('click', function() {
+                const loanAmount = parseFloat(loanAmountInput.value);
+                const interestRate = parseFloat(interestRateInput.value);
+                const loanTerm = parseFloat(loanTermInput.value);
+
+                if (isNaN(loanAmount) || isNaN(interestRate) || isNaN(loanTerm) ||
+                    loanAmount <= 0 || interestRate < 0 || loanTerm <= 0) {
+                    alert('Please enter valid values for all fields');
+                    return;
+                }
+
+                const monthlyPayment = calculateMonthlyPayment(loanAmount, interestRate, loanTerm);
+                const totalPayments = monthlyPayment * loanTerm * 12;
+                const totalInterest = totalPayments - loanAmount;
+
+                monthlyPaymentDisplay.textContent = formatCurrency(monthlyPayment);
+                totalPrincipalDisplay.textContent = formatCurrency(loanAmount);
+                totalInterestDisplay.textContent = formatCurrency(totalInterest);
+
+                const schedule = generateAmortizationSchedule(loanAmount, interestRate, loanTerm, monthlyPayment);
+                updateAmortizationTable(schedule);
+
+                // Save to history
+                calculationHistory.unshift({
+                    date: new Date().getTime(),
+                    loanAmount: loanAmount,
+                    interestRate: interestRate,
+                    loanTerm: loanTerm,
+                    monthlyPayment: monthlyPayment
+                });
+
+                if (calculationHistory.length > 10) calculationHistory.pop();
+                localStorage.setItem('mortgageHistory', JSON.stringify(calculationHistory));
+                updateHistoryTable();
+            });
+        });
+    </script>
+</body>
+</html>

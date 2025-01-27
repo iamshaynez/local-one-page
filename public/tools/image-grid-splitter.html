@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online image grid splitter - Split images into 3x3 grids easily. Perfect for social media posts, profile pictures, and creative photo layouts. Simple, fast, and free to use">
+    <meta name="keywords" content="image grid splitter, photo grid maker, 3x3 grid splitter, image slicer, photo tile maker, instagram grid maker, image grid tool, photo splitter">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Image Grid Splitter - Free Online 3x3 Grid Image Slicer Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .upload-section {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .upload-button {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: opacity 0.2s;
+        }
+
+        .upload-button:hover {
+            opacity: 0.9;
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: var(--spacing-lg);
+        }
+
+        .canvas-container {
+            position: relative;
+            max-width: 100%;
+            margin: 0 auto;
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .grid-overlay {
+            position: absolute;
+            top: var(--spacing-md);
+            left: var(--spacing-md);
+            right: var(--spacing-md);
+            bottom: var(--spacing-md);
+            pointer-events: none;
+        }
+
+        .grid-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .grid-line-vertical {
+            width: 1px;
+            height: 100%;
+        }
+
+        .grid-line-horizontal {
+            width: 100%;
+            height: 1px;
+        }
+
+        .tiles-section {
+            display: none;
+            margin-top: var(--spacing-lg);
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+        }
+
+        .tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .tile-item {
+            position: relative;
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-sm);
+        }
+
+        .tile-canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .tile-download {
+            display: block;
+            width: 100%;
+            padding: var(--spacing-sm);
+            margin-top: var(--spacing-sm);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: opacity 0.2s;
+        }
+
+        .tile-download:hover {
+            opacity: 0.9;
+        }
+
+        .download-all {
+            display: block;
+            width: 100%;
+            max-width: 300px;
+            margin: var(--spacing-lg) auto 0;
+            padding: var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: opacity 0.2s;
+        }
+
+        .download-all:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .tiles-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tiles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Image Grid Splitter</h1>
+                <p>Split your images into a 3x3 grid easily. Perfect for social media posts, profile pictures, and creative photo layouts. Upload an image to get started!</p>
+
+                <div class="upload-section">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none">
+                    <button class="upload-button" onclick="document.getElementById('imageInput').click()">Upload Image</button>
+                </div>
+
+                <div class="preview-section" id="previewSection">
+                    <h2>Preview</h2>
+                    <div class="canvas-container">
+                        <canvas id="previewCanvas"></canvas>
+                        <div class="grid-overlay">
+                            <div class="grid-line grid-line-vertical" style="left: 33.33%"></div>
+                            <div class="grid-line grid-line-vertical" style="left: 66.66%"></div>
+                            <div class="grid-line grid-line-horizontal" style="top: 33.33%"></div>
+                            <div class="grid-line grid-line-horizontal" style="top: 66.66%"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tiles-section" id="tilesSection">
+                    <h2>Grid Tiles</h2>
+                    <div class="tiles-grid" id="tilesGrid"></div>
+                    <button class="download-all" id="downloadAll">Download All Tiles</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageInput = document.getElementById('imageInput');
+            const previewSection = document.getElementById('previewSection');
+            const previewCanvas = document.getElementById('previewCanvas');
+            const tilesSection = document.getElementById('tilesSection');
+            const tilesGrid = document.getElementById('tilesGrid');
+            const downloadAll = document.getElementById('downloadAll');
+
+            let originalImage = null;
+
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        originalImage = img;
+                        displayPreview();
+                        createTiles();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            function displayPreview() {
+                const maxWidth = 800;
+                const scale = Math.min(1, maxWidth / originalImage.width);
+                previewCanvas.width = originalImage.width * scale;
+                previewCanvas.height = originalImage.height * scale;
+
+                const ctx = previewCanvas.getContext('2d');
+                ctx.drawImage(originalImage, 0, 0, previewCanvas.width, previewCanvas.height);
+                previewSection.style.display = 'block';
+            }
+
+            function createTiles() {
+                tilesGrid.innerHTML = '';
+                const tileWidth = originalImage.width / 3;
+                const tileHeight = originalImage.height / 3;
+
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 3; col++) {
+                        const tileCanvas = document.createElement('canvas');
+                        tileCanvas.width = tileWidth;
+                        tileCanvas.height = tileHeight;
+
+                        const ctx = tileCanvas.getContext('2d');
+                        ctx.drawImage(originalImage,
+                            col * tileWidth, row * tileHeight, tileWidth, tileHeight,
+                            0, 0, tileWidth, tileHeight);
+
+                        const tileContainer = document.createElement('div');
+                        tileContainer.className = 'tile-item';
+                        tileContainer.innerHTML = `
+                            <canvas class="tile-canvas"></canvas>
+                            <button class="tile-download">Download Tile ${row * 3 + col + 1}</button>
+                        `;
+
+                        const displayCanvas = tileContainer.querySelector('.tile-canvas');
+                        displayCanvas.width = tileWidth;
+                        displayCanvas.height = tileHeight;
+                        displayCanvas.getContext('2d').drawImage(tileCanvas, 0, 0);
+
+                        const downloadButton = tileContainer.querySelector('.tile-download');
+                        downloadButton.addEventListener('click', () => downloadTile(tileCanvas, row * 3 + col + 1));
+
+                        tilesGrid.appendChild(tileContainer);
+                    }
+                }
+
+                tilesSection.style.display = 'block';
+            }
+
+            function downloadTile(canvas, index) {
+                const link = document.createElement('a');
+                link.download = `tile_${index}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+
+            downloadAll.addEventListener('click', function() {
+                const tiles = tilesGrid.querySelectorAll('.tile-download');
+                tiles.forEach(button => button.click());
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online pixel art generator - Transform your images into pixel art with adjustable pixel size and color palette options. Create retro-style artwork instantly in your browser">
+    <meta name="keywords" content="pixel art generator, image pixelator, retro art maker, 8-bit art converter, pixel art tool, image to pixel art, online pixel art creator, pixelated image generator">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Pixel Art Generator - Free Online Image to Pixel Art Converter</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .upload-section {
+            text-align: center;
+            padding: var(--spacing-lg);
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .upload-button {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: opacity 0.2s;
+        }
+
+        .upload-button:hover {
+            opacity: 0.9;
+        }
+
+        .controls-section {
+            display: none;
+            margin-top: var(--spacing-lg);
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+        }
+
+        .control-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .control-group select {
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .canvas-container {
+            display: inline-block;
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .download-button {
+            display: inline-block;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: opacity 0.2s;
+            margin-top: var(--spacing-md);
+        }
+
+        .download-button:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 768px) {
+            .control-group input[type="range"] {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Pixel Art Generator</h1>
+                <p>Transform your images into pixel art with adjustable pixel size and color palette options. Perfect for creating retro-style artwork, game assets, or unique digital art. Upload an image to get started!</p>
+
+                <div class="upload-section">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none">
+                    <button class="upload-button" onclick="document.getElementById('imageInput').click()">Upload Image</button>
+                </div>
+
+                <div class="controls-section" id="controlsSection">
+                    <div class="control-group">
+                        <label for="pixelSize">Pixel Size: <span id="pixelSizeValue">8</span>px</label>
+                        <input type="range" id="pixelSize" min="2" max="32" value="8">
+                    </div>
+
+                    <div class="control-group">
+                        <label for="colorPalette">Color Palette:</label>
+                        <select id="colorPalette">
+                            <option value="full">Full Colors</option>
+                            <option value="gameboy">Game Boy (4 colors)</option>
+                            <option value="nes">NES (16 colors)</option>
+                            <option value="cga">CGA (16 colors)</option>
+                            <option value="grayscale">Grayscale</option>
+                        </select>
+                    </div>
+
+                    <div class="control-group">
+                        <label for="dithering">Dithering:</label>
+                        <select id="dithering">
+                            <option value="none">None</option>
+                            <option value="ordered">Ordered</option>
+                            <option value="floyd">Floyd-Steinberg</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="preview-section" id="previewSection">
+                    <div class="canvas-container">
+                        <canvas id="previewCanvas"></canvas>
+                    </div>
+                    <button class="download-button" id="downloadButton">Download Pixel Art</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageInput = document.getElementById('imageInput');
+            const controlsSection = document.getElementById('controlsSection');
+            const previewSection = document.getElementById('previewSection');
+            const previewCanvas = document.getElementById('previewCanvas');
+            const pixelSize = document.getElementById('pixelSize');
+            const pixelSizeValue = document.getElementById('pixelSizeValue');
+            const colorPalette = document.getElementById('colorPalette');
+            const dithering = document.getElementById('dithering');
+            const downloadButton = document.getElementById('downloadButton');
+
+            let originalImage = null;
+
+            // Color palettes
+            const palettes = {
+                gameboy: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f'],
+                nes: ['#7C7C7C', '#0000FC', '#0000BC', '#4428BC', '#940084', '#A80020', '#A81000', '#881400',
+                      '#503000', '#007800', '#006800', '#005800', '#004058', '#000000', '#000000', '#000000'],
+                cga: ['#000000', '#0000AA', '#00AA00', '#00AAAA', '#AA0000', '#AA00AA', '#AA5500', '#AAAAAA',
+                     '#555555', '#5555FF', '#55FF55', '#55FFFF', '#FF5555', '#FF55FF', '#FFFF55', '#FFFFFF'],
+                grayscale: Array.from({length: 16}, (_, i) => {
+                    const value = Math.floor(i * 16);
+                    return `rgb(${value},${value},${value})`;
+                })
+            };
+
+            // Event listeners
+            imageInput.addEventListener('change', handleImageUpload);
+            pixelSize.addEventListener('input', updatePixelSizeValue);
+            pixelSize.addEventListener('change', processImage);
+            colorPalette.addEventListener('change', processImage);
+            dithering.addEventListener('change', processImage);
+            downloadButton.addEventListener('click', downloadImage);
+
+            function handleImageUpload(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        originalImage = img;
+                        controlsSection.style.display = 'block';
+                        previewSection.style.display = 'block';
+                        processImage();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function updatePixelSizeValue() {
+                pixelSizeValue.textContent = pixelSize.value;
+            }
+
+            function processImage() {
+                if (!originalImage) return;
+
+                const pixelSizeVal = parseInt(pixelSize.value);
+                const width = Math.floor(originalImage.width / pixelSizeVal);
+                const height = Math.floor(originalImage.height / pixelSizeVal);
+
+                previewCanvas.width = width * pixelSizeVal;
+                previewCanvas.height = height * pixelSizeVal;
+
+                const ctx = previewCanvas.getContext('2d');
+                ctx.imageSmoothingEnabled = false;
+
+                // Draw at smaller size
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = width;
+                tempCanvas.height = height;
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.drawImage(originalImage, 0, 0, width, height);
+
+                // Apply color palette and dithering
+                const imageData = tempCtx.getImageData(0, 0, width, height);
+                applyColorPaletteAndDithering(imageData);
+                tempCtx.putImageData(imageData, 0, 0);
+
+                // Scale up with pixelation
+                ctx.drawImage(tempCanvas, 0, 0, width, height, 0, 0, width * pixelSizeVal, height * pixelSizeVal);
+            }
+
+            function applyColorPaletteAndDithering(imageData) {
+                const data = imageData.data;
+                const width = imageData.width;
+                const height = imageData.height;
+                const selectedPalette = colorPalette.value;
+                const ditheringMethod = dithering.value;
+
+                if (selectedPalette === 'full' && ditheringMethod === 'none') return;
+
+                const palette = palettes[selectedPalette];
+                const errors = new Array(width * height * 4).fill(0);
+
+                for (let y = 0; y < height; y++) {
+                    for (let x = 0; x < width; x++) {
+                        const i = (y * width + x) * 4;
+
+                        let r = data[i] + (errors[i] || 0);
+                        let g = data[i + 1] + (errors[i + 1] || 0);
+                        let b = data[i + 2] + (errors[i + 2] || 0);
+
+                        let newColor;
+                        if (selectedPalette === 'full') {
+                            newColor = [r, g, b];
+                        } else {
+                            newColor = findClosestColor([r, g, b], palette);
+                        }
+
+                        if (ditheringMethod === 'floyd') {
+                            const errorR = r - newColor[0];
+                            const errorG = g - newColor[1];
+                            const errorB = b - newColor[2];
+
+                            distributeError(errors, errorR, errorG, errorB, x, y, width);
+                        }
+
+                        data[i] = newColor[0];
+                        data[i + 1] = newColor[1];
+                        data[i + 2] = newColor[2];
+                    }
+                }
+            }
+
+            function findClosestColor(color, palette) {
+                let minDistance = Infinity;
+                let closestColor = null;
+
+                for (const paletteColor of palette) {
+                    const pc = hexToRgb(paletteColor);
+                    const distance = colorDistance(color, [pc.r, pc.g, pc.b]);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestColor = [pc.r, pc.g, pc.b];
+                    }
+                }
+
+                return closestColor;
+            }
+
+            function colorDistance(c1, c2) {
+                return Math.sqrt(
+                    Math.pow(c1[0] - c2[0], 2) +
+                    Math.pow(c1[1] - c2[1], 2) +
+                    Math.pow(c1[2] - c2[2], 2)
+                );
+            }
+
+            function distributeError(errors, errorR, errorG, errorB, x, y, width) {
+                const distribution = [
+                    [x + 1, y, 7/16],
+                    [x - 1, y + 1, 3/16],
+                    [x, y + 1, 5/16],
+                    [x + 1, y + 1, 1/16]
+                ];
+
+                for (const [nx, ny, factor] of distribution) {
+                    if (nx >= 0 && nx < width && ny < errors.length / (4 * width)) {
+                        const i = (ny * width + nx) * 4;
+                        errors[i] = (errors[i] || 0) + errorR * factor;
+                        errors[i + 1] = (errors[i + 1] || 0) + errorG * factor;
+                        errors[i + 2] = (errors[i + 2] || 0) + errorB * factor;
+                    }
+                }
+            }
+
+            function hexToRgb(hex) {
+                const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return result ? {
+                    r: parseInt(result[1], 16),
+                    g: parseInt(result[2], 16),
+                    b: parseInt(result[3], 16)
+                } : null;
+            }
+
+            function downloadImage() {
+                const link = document.createElement('a');
+                link.download = 'pixel-art.png';
+                link.href = previewCanvas.toDataURL('image/png');
+                link.click();
+            }
+        });
+    </script>
+</body>
+</html>

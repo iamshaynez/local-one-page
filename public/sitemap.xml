@@ -55,6 +55,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/tools/image-grid-splitter.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/tools/milliseconds-date.html</loc>
         <lastmod>2025-01-26</lastmod>
         <changefreq>monthly</changefreq>
@@ -91,6 +97,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/tools/image-pixel-art.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/tools/qrcode-generator.html</loc>
         <lastmod>2025-01-26</lastmod>
         <changefreq>monthly</changefreq>
@@ -116,6 +128,12 @@
     </url>
     <url>
         <loc>https://www.localhosts.vip/life/dice-roller.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/life/mortgage-payment-calculator.html</loc>
         <lastmod>2025-01-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
