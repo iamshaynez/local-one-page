@@ -78,6 +78,12 @@
     "url": "/fun/subtitle-memer.html"
   },
   {
+    "title": "DES Encryption Tool - Free Online Text Encryption and Decryption",
+    "desc": "Free online DES encryption tool - Encrypt and decrypt text using DES algorithm with multiple modes. Secure, browser-based encryption with no server processing",
+    "category": "programmer",
+    "url": "/programmer/des-encrypt-online.html"
+  },
+  {
     "title": "MD5 Hash Generator - Free Online Text to MD5 Converter",
     "desc": "Free online MD5 hash generator - Convert text to MD5 hash instantly with real-time preview. Simple, fast, and secure text to MD5 conversion tool",
     "category": "programmer",
@@ -112,6 +118,12 @@
     "desc": "Free online XML to JSON converter - Convert XML data to JSON format instantly. Simple, fast, and accurate XML to JSON transformation tool with syntax highlighting",
     "category": "programmer",
     "url": "/programmer/xml-2-json.html"
+  },
+  {
+    "title": "SHA Hash Generator - Free Online Text to SHA Hash Tool",
+    "desc": "Free online SHA hash generator - Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly. Secure, browser-based hash generation with no server processing.",
+    "category": "programmer",
+    "url": "/programmer/sha-encrypt-online.html"
   },
   {
     "title": "JSON to TOML Converter - Free Online Data Format Transformation Tool",

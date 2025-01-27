@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online SHA hash generator - Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly. Secure, browser-based hash generation with no server processing.">
+    <meta name="keywords" content="SHA hash generator, SHA-1, SHA-256, SHA-384, SHA-512, online hash tool, secure hash algorithm, hash calculator, crypto hash">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>SHA Hash Generator - Free Online Text to SHA Hash Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .input-area, .output-area {
+            width: 100%;
+            min-height: 150px;
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .output-area {
+            background: var(--background-color-secondary);
+            cursor: pointer;
+        }
+
+        .controls {
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .hash-type {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .hash-type.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .copy-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .copy-button:hover {
+            opacity: 0.9;
+        }
+
+        .copy-button:active {
+            opacity: 0.8;
+        }
+
+        .copy-notice {
+            color: var(--success-color);
+            margin-left: var(--spacing-md);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .copy-notice.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>SHA Hash Generator</h1>
+                <p>Generate secure SHA hashes from your text. Choose from SHA-1, SHA-256, SHA-384, or SHA-512 algorithms. All processing is done in your browser - no data is sent to any server.</p>
+                
+                <div class="controls">
+                    <button class="hash-type active" data-type="SHA-1">SHA-1</button>
+                    <button class="hash-type" data-type="SHA-256">SHA-256</button>
+                    <button class="hash-type" data-type="SHA-384">SHA-384</button>
+                    <button class="hash-type" data-type="SHA-512">SHA-512</button>
+                </div>
+
+                <textarea class="input-area" placeholder="Enter text to hash..."></textarea>
+                
+                <div class="controls">
+                    <button class="copy-button">Copy Hash</button>
+                    <span class="copy-notice">Hash copied to clipboard!</span>
+                </div>
+
+                <textarea class="output-area" readonly placeholder="Hash output will appear here..."></textarea>
+            </div>
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const inputArea = document.querySelector('.input-area');
+            const outputArea = document.querySelector('.output-area');
+            const hashTypes = document.querySelectorAll('.hash-type');
+            const copyButton = document.querySelector('.copy-button');
+            const copyNotice = document.querySelector('.copy-notice');
+
+            let currentHashType = 'SHA-1';
+
+            function generateHash(text, type) {
+                if (!text) return '';
+                switch (type) {
+                    case 'SHA-1':
+                        return CryptoJS.SHA1(text).toString();
+                    case 'SHA-256':
+                        return CryptoJS.SHA256(text).toString();
+                    case 'SHA-384':
+                        return CryptoJS.SHA384(text).toString();
+                    case 'SHA-512':
+                        return CryptoJS.SHA512(text).toString();
+                    default:
+                        return '';
+                }
+            }
+
+            function updateHash() {
+                const text = inputArea.value;
+                outputArea.value = generateHash(text, currentHashType);
+            }
+
+            hashTypes.forEach(button => {
+                button.addEventListener('click', () => {
+                    hashTypes.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentHashType = button.dataset.type;
+                    updateHash();
+                });
+            });
+
+            inputArea.addEventListener('input', updateHash);
+
+            async function copyToClipboard() {
+                try {
+                    await navigator.clipboard.writeText(outputArea.value);
+                    copyNotice.classList.add('show');
+                    setTimeout(() => copyNotice.classList.remove('show'), 2000);
+                } catch (err) {
+                    console.error('Failed to copy text:', err);
+                }
+            }
+
+            copyButton.addEventListener('click', copyToClipboard);
+            outputArea.addEventListener('click', copyToClipboard);
+        });
+    </script>
+</body>
+</html>
