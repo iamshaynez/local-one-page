@@ -84,6 +84,18 @@
     "url": "/fun/subtitle-memer.html"
   },
   {
+    "title": "Online Dice Roller - Free 3D Virtual Dice Rolling Tool",
+    "desc": "Free online dice roller - Roll virtual dice with 3D animations. Choose from 1-6 dice, track roll history, and enjoy realistic physics. Perfect for board games, RPGs, and tabletop gaming",
+    "category": "life",
+    "url": "/life/dice-roller.html"
+  },
+  {
+    "title": "BMI Calculator - Free Online Body Mass Index Calculator Tool",
+    "desc": "Free online BMI (Body Mass Index) calculator - Calculate and track your BMI, understand weight categories, and monitor your health progress. Simple, accurate, and private calculation with historical tracking",
+    "category": "life",
+    "url": "/life/bmi-calculator.html"
+  },
+  {
     "title": "Color Code Converter - Free Online RGB/HEX Color Conversion Tool",
     "desc": "Free online color code converter tool - Convert between RGB and HEX color formats with live preview. Features color picker, history tracking, and instant conversion. Browser-based tool with no server interaction",
     "category": "programmer",
@@ -258,6 +270,12 @@
     "url": "/games/sudoku.html"
   },
   {
+    "title": "Tetris - Free Online Classic Block Puzzle Game",
+    "desc": "Free online Tetris game - Play the classic block-stacking puzzle game directly in your browser. Features high scores, multiple levels, and responsive controls. No download required",
+    "category": "games",
+    "url": "/games/tetris-online.html"
+  },
+  {
     "title": "Chinese Chess (Xiangqi) - Free Online Two-Player Board Game",
     "desc": "Free online Chinese Chess (Xiangqi) game - Play the traditional Chinese board game with a friend. Features include move validation, history tracking, and undo moves",
     "category": "games",
@@ -274,6 +292,12 @@
     "desc": "Free online Black Jack game - Play the classic casino card game with virtual cash. Bet, hit, stand, and double down in this realistic Black Jack simulation",
     "category": "games",
     "url": "/games/black-jack-online.html"
+  },
+  {
+    "title": "Memory Card Game - Free Online Card Matching Game",
+    "desc": "Free online memory card game - Test and improve your memory with this fun, interactive card matching game. Features multiple difficulty levels, timer, and score tracking",
+    "category": "games",
+    "url": "/games/memory-card-game.html"
   },
   {
     "title": "Free Online Angry Birds Style Game - Physics-Based Bird Launcher",

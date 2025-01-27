@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online dice roller - Roll virtual dice with 3D animations. Choose from 1-6 dice, track roll history, and enjoy realistic physics. Perfect for board games, RPGs, and tabletop gaming">
+    <meta name="keywords" content="dice roller, virtual dice, online dice, 3D dice, dice simulator, random dice, board game dice, RPG dice, digital dice, dice roll history">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Online Dice Roller - Free 3D Virtual Dice Rolling Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .dice-container {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .dice-options {
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .dice-count-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            background: transparent;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .dice-count-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .dice-display {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            min-height: 100px;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s;
+            cursor: pointer;
+        }
+
+        .dice.rolling {
+            animation: roll 0.5s linear infinite;
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .roll-button {
+            display: block;
+            width: 200px;
+            margin: var(--spacing-lg) auto;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .roll-button:hover {
+            opacity: 0.9;
+        }
+
+        .roll-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .history-container {
+            margin-top: var(--spacing-xl);
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-time {
+            color: var(--text-color-secondary);
+            font-size: 0.9em;
+        }
+
+        .total-sum {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: var(--spacing-md);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Online Dice Roller</h1>
+                <p>Roll virtual dice with realistic 3D animations. Perfect for board games, RPGs, or any time you need random numbers. Choose from 1-6 dice and keep track of your roll history.</p>
+
+                <div class="dice-container">
+                    <div class="dice-options">
+                        <button class="dice-count-btn active" data-count="1">1 Die</button>
+                        <button class="dice-count-btn" data-count="2">2 Dice</button>
+                        <button class="dice-count-btn" data-count="3">3 Dice</button>
+                        <button class="dice-count-btn" data-count="4">4 Dice</button>
+                        <button class="dice-count-btn" data-count="5">5 Dice</button>
+                        <button class="dice-count-btn" data-count="6">6 Dice</button>
+                    </div>
+
+                    <div class="dice-display" id="dice-display"></div>
+                    <button id="roll-button" class="roll-button">Roll Dice</button>
+                    <div class="total-sum" id="total-sum"></div>
+                </div>
+
+                <div class="history-container">
+                    <h2>Roll History</h2>
+                    <ul class="history-list" id="history-list"></ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const diceDisplay = document.getElementById('dice-display');
+            const rollButton = document.getElementById('roll-button');
+            const historyList = document.getElementById('history-list');
+            const totalSum = document.getElementById('total-sum');
+            const diceButtons = document.querySelectorAll('.dice-count-btn');
+
+            let diceCount = 1;
+            let isRolling = false;
+
+            // Initialize dice
+            createDice(diceCount);
+
+            // Dice count selection
+            diceButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (isRolling) return;
+                    diceButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    diceCount = parseInt(button.dataset.count);
+                    createDice(diceCount);
+                });
+            });
+
+            function createDice(count) {
+                diceDisplay.innerHTML = '';
+                for (let i = 0; i < count; i++) {
+                    const dice = document.createElement('div');
+                    dice.className = 'dice';
+                    dice.textContent = '1';
+                    diceDisplay.appendChild(dice);
+                }
+                totalSum.textContent = '';
+            }
+
+            function rollDice() {
+                if (isRolling) return;
+                isRolling = true;
+                rollButton.disabled = true;
+
+                const diceElements = diceDisplay.querySelectorAll('.dice');
+                diceElements.forEach(dice => dice.classList.add('rolling'));
+
+                // Simulate rolling animation
+                const rolls = [];
+                let rollCount = 0;
+
+                const rollInterval = setInterval(() => {
+                    diceElements.forEach(dice => {
+                        dice.textContent = Math.floor(Math.random() * 6) + 1;
+                    });
+                    rollCount++;
+
+                    if (rollCount >= 10) {
+                        clearInterval(rollInterval);
+                        finishRoll();
+                    }
+                }, 100);
+
+                function finishRoll() {
+                    diceElements.forEach(dice => {
+                        const value = Math.floor(Math.random() * 6) + 1;
+                        dice.textContent = value;
+                        dice.classList.remove('rolling');
+                        rolls.push(value);
+                    });
+
+                    const sum = rolls.reduce((a, b) => a + b, 0);
+                    totalSum.textContent = `Total: ${sum}`;
+
+                    // Add to history
+                    const historyItem = document.createElement('li');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <span>Rolled: ${rolls.join(', ')} (Total: ${sum})</span>
+                        <span class="history-time">${new Date().toLocaleTimeString()}</span>
+                    `;
+                    historyList.insertBefore(historyItem, historyList.firstChild);
+
+                    // Limit history to 10 items
+                    if (historyList.children.length > 10) {
+                        historyList.removeChild(historyList.lastChild);
+                    }
+
+                    isRolling = false;
+                    rollButton.disabled = false;
+                }
+            }
+
+            rollButton.addEventListener('click', rollDice);
+
+            // Allow rolling by clicking any dice
+            diceDisplay.addEventListener('click', rollDice);
+
+            // Allow rolling with spacebar
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && !isRolling) {
+                    e.preventDefault(); // Prevent page scrolling
+                    rollDice();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

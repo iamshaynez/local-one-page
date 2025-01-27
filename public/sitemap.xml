@@ -115,6 +115,18 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/life/dice-roller.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/life/bmi-calculator.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/programmer/color-code-converter-online.html</loc>
         <lastmod>2025-01-27</lastmod>
         <changefreq>monthly</changefreq>
@@ -289,6 +301,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/games/tetris-online.html</loc>
+        <lastmod>2025-01-27</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/games/chinese-chess-online.html</loc>
         <lastmod>2025-01-26</lastmod>
         <changefreq>monthly</changefreq>
@@ -303,6 +321,12 @@
     <url>
         <loc>https://www.localhosts.vip/games/black-jack-online.html</loc>
         <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/games/memory-card-game.html</loc>
+        <lastmod>2025-01-27</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>

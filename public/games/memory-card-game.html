@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online memory card game - Test and improve your memory with this fun, interactive card matching game. Features multiple difficulty levels, timer, and score tracking">
+    <meta name="keywords" content="memory game, card matching game, concentration game, brain training game, memory test, card flip game, memory cards, online memory game, free memory game">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Memory Card Game - Free Online Card Matching Game</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+            gap: var(--spacing-md);
+        }
+
+        .difficulty-select {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .game-info {
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .info-box {
+            background: var(--background-color);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .card {
+            aspect-ratio: 3/4;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .card.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .card-front,
+        .card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            border: 2px solid var(--border-color);
+        }
+
+        .card-back {
+            background: var(--primary-color);
+            transform: rotateY(180deg);
+            color: white;
+        }
+
+        .game-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .game-button:hover {
+            opacity: 0.9;
+        }
+
+        @media (max-width: 600px) {
+            .game-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Memory Card Game</h1>
+                <p>Test your memory by matching pairs of cards. Select a difficulty level and try to match all pairs in the shortest time with the fewest moves!</p>
+
+                <div class="game-controls">
+                    <select id="difficulty" class="difficulty-select">
+                        <option value="easy">Easy (4x3)</option>
+                        <option value="medium">Medium (4x4)</option>
+                        <option value="hard">Hard (5x4)</option>
+                    </select>
+                    <div class="game-info">
+                        <div class="info-box">Time: <span id="timer">0:00</span></div>
+                        <div class="info-box">Moves: <span id="moves">0</span></div>
+                    </div>
+                    <button id="new-game" class="game-button">New Game</button>
+                </div>
+
+                <div id="game-grid" class="game-grid"></div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const grid = document.getElementById('game-grid');
+            const difficultySelect = document.getElementById('difficulty');
+            const newGameButton = document.getElementById('new-game');
+            const timerDisplay = document.getElementById('timer');
+            const movesDisplay = document.getElementById('moves');
+
+            let cards = [];
+            let flippedCards = [];
+            let matchedPairs = 0;
+            let moves = 0;
+            let timer = 0;
+            let timerInterval;
+            let isGameActive = false;
+
+            const emojis = ['🎮', '🎲', '🎯', '🎪', '🎨', '🎭', '🎪', '🎫', '🎬', '🎵'];
+
+            function updateTimer() {
+                timer++;
+                const minutes = Math.floor(timer / 60);
+                const seconds = timer % 60;
+                timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+            }
+
+            function createCard(emoji) {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div class="card-inner">
+                        <div class="card-front">❓</div>
+                        <div class="card-back">${emoji}</div>
+                    </div>
+                `;
+                return card;
+            }
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function startNewGame() {
+                // Clear previous game state
+                grid.innerHTML = '';
+                cards = [];
+                flippedCards = [];
+                matchedPairs = 0;
+                moves = 0;
+                movesDisplay.textContent = '0';
+                clearInterval(timerInterval);
+                timer = 0;
+                timerDisplay.textContent = '0:00';
+                isGameActive = true;
+
+                // Set up new game
+                const difficulty = difficultySelect.value;
+                let pairs;
+                switch(difficulty) {
+                    case 'easy':
+                        pairs = 6;
+                        grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                        break;
+                    case 'medium':
+                        pairs = 8;
+                        grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+                        break;
+                    case 'hard':
+                        pairs = 10;
+                        grid.style.gridTemplateColumns = 'repeat(5, 1fr)';
+                        break;
+                }
+
+                const gameEmojis = emojis.slice(0, pairs);
+                const cardEmojis = [...gameEmojis, ...gameEmojis];
+                shuffleArray(cardEmojis);
+
+                cardEmojis.forEach(emoji => {
+                    const card = createCard(emoji);
+                    cards.push(card);
+                    grid.appendChild(card);
+
+                    card.addEventListener('click', () => flipCard(card));
+                });
+
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+
+            function flipCard(card) {
+                if (!isGameActive || flippedCards.length >= 2 || card.classList.contains('flipped') || 
+                    card.classList.contains('matched')) {
+                    return;
+                }
+
+                card.classList.add('flipped');
+                flippedCards.push(card);
+
+                if (flippedCards.length === 2) {
+                    moves++;
+                    movesDisplay.textContent = moves;
+                    checkMatch();
+                }
+            }
+
+            function checkMatch() {
+                const [card1, card2] = flippedCards;
+                const emoji1 = card1.querySelector('.card-back').textContent;
+                const emoji2 = card2.querySelector('.card-back').textContent;
+
+                if (emoji1 === emoji2) {
+                    card1.classList.add('matched');
+                    card2.classList.add('matched');
+                    matchedPairs++;
+                    if (matchedPairs === cards.length / 2) {
+                        setTimeout(() => {
+                            clearInterval(timerInterval);
+                            isGameActive = false;
+                            alert(`Congratulations! You won in ${moves} moves and ${timerDisplay.textContent} time!`);
+                        }, 500);
+                    }
+                } else {
+                    setTimeout(() => {
+                        card1.classList.remove('flipped');
+                        card2.classList.remove('flipped');
+                    }, 1000);
+                }
+
+                flippedCards = [];
+            }
+
+            newGameButton.addEventListener('click', startNewGame);
+            difficultySelect.addEventListener('change', startNewGame);
+
+            // Start first game
+            startNewGame();
+        });
+    </script>
+</body>
+</html>
