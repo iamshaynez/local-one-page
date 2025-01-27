@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online image mosaic tool - Create pixelated effects and selectively apply mosaic to images. Paint mosaic areas with mouse, adjust pixel size, and protect sensitive information in photos">
+    <meta name="keywords" content="image mosaic, photo pixelation, privacy mosaic, mosaic painter, image privacy tool, photo blur tool, selective pixelation, online mosaic maker">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Image Mosaic Painter - Free Online Photo Pixelation Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background-color: var(--background-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: var(--background-color-secondary);
+        }
+
+        .editor-section {
+            display: none;
+            margin-top: var(--spacing-lg);
+        }
+
+        .canvas-container {
+            position: relative;
+            margin: var(--spacing-md) 0;
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+
+        #imageCanvas {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .control-group label {
+            font-weight: bold;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .control-group input[type="range"] {
+            width: 100%;
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background-color: var(--primary-color-dark);
+        }
+
+        .action-button.secondary {
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+        }
+
+        .file-info {
+            margin-top: var(--spacing-md);
+            color: var(--text-color-secondary);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Image Mosaic Painter</h1>
+                <p>Create pixelated effects and selectively apply mosaic to your images. Perfect for protecting sensitive information or creating artistic effects. Paint mosaic areas directly with your mouse, adjust pixel size, and preview changes in real-time.</p>
+
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none">
+                    <p>Drag and drop an image here or click to select</p>
+                    <p class="file-info">Supported formats: PNG, JPG, JPEG, GIF, WebP</p>
+                </div>
+
+                <div class="editor-section" id="editorSection">
+                    <div class="controls">
+                        <div class="control-group">
+                            <label for="pixelSize">Mosaic Size</label>
+                            <input type="range" id="pixelSize" min="5" max="50" value="15">
+                            <span id="pixelSizeValue">15px</span>
+                        </div>
+                        <div class="control-group">
+                            <label for="brushSize">Brush Size</label>
+                            <input type="range" id="brushSize" min="10" max="100" value="30">
+                            <span id="brushSizeValue">30px</span>
+                        </div>
+                        <div class="control-group">
+                            <label>Actions</label>
+                            <div class="button-group">
+                                <button id="undoButton" class="action-button secondary">Undo</button>
+                                <button id="redoButton" class="action-button secondary">Redo</button>
+                                <button id="clearButton" class="action-button secondary">Clear</button>
+                                <button id="downloadButton" class="action-button">Download</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="canvas-container">
+                        <canvas id="imageCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+            const editorSection = document.getElementById('editorSection');
+            const canvas = document.getElementById('imageCanvas');
+            const ctx = canvas.getContext('2d');
+
+            let originalImage = null;
+            let isDrawing = false;
+            let undoStack = [];
+            let redoStack = [];
+            let lastX = 0;
+            let lastY = 0;
+
+            // Upload handling
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    handleImageUpload(file);
+                }
+            });
+
+            uploadArea.addEventListener('click', () => {
+                imageInput.click();
+            });
+
+            imageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    handleImageUpload(file);
+                }
+            });
+
+            function handleImageUpload(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    originalImage = new Image();
+                    originalImage.onload = function() {
+                        initializeCanvas();
+                        editorSection.style.display = 'block';
+                        saveState();
+                    };
+                    originalImage.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function initializeCanvas() {
+                canvas.width = originalImage.width;
+                canvas.height = originalImage.height;
+                ctx.drawImage(originalImage, 0, 0);
+            }
+
+            // Mosaic painting
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+
+            function startDrawing(e) {
+                isDrawing = true;
+                [lastX, lastY] = getMousePos(canvas, e);
+            }
+
+            function draw(e) {
+                if (!isDrawing) return;
+
+                const [mouseX, mouseY] = getMousePos(canvas, e);
+                const pixelSize = parseInt(document.getElementById('pixelSize').value);
+                const brushSize = parseInt(document.getElementById('brushSize').value);
+
+                // Draw line between last and current position
+                const dx = mouseX - lastX;
+                const dy = mouseY - lastY;
+                const steps = Math.max(Math.abs(dx), Math.abs(dy));
+
+                for (let i = 0; i <= steps; i++) {
+                    const x = lastX + (dx * i / steps);
+                    const y = lastY + (dy * i / steps);
+                    applyMosaic(x, y, brushSize, pixelSize);
+                }
+
+                lastX = mouseX;
+                lastY = mouseY;
+            }
+
+            function stopDrawing() {
+                if (isDrawing) {
+                    isDrawing = false;
+                    saveState();
+                }
+            }
+
+            function applyMosaic(centerX, centerY, brushSize, pixelSize) {
+                const startX = Math.max(0, centerX - brushSize / 2);
+                const startY = Math.max(0, centerY - brushSize / 2);
+                const endX = Math.min(canvas.width, centerX + brushSize / 2);
+                const endY = Math.min(canvas.height, centerY + brushSize / 2);
+
+                for (let x = startX; x < endX; x += pixelSize) {
+                    for (let y = startY; y < endY; y += pixelSize) {
+                        const avgColor = getAverageColor(x, y, pixelSize);
+                        ctx.fillStyle = avgColor;
+                        ctx.fillRect(x, y, pixelSize, pixelSize);
+                    }
+                }
+            }
+
+            function getAverageColor(startX, startY, size) {
+                const imageData = ctx.getImageData(startX, startY, size, size);
+                let r = 0, g = 0, b = 0, count = 0;
+
+                for (let i = 0; i < imageData.data.length; i += 4) {
+                    r += imageData.data[i];
+                    g += imageData.data[i + 1];
+                    b += imageData.data[i + 2];
+                    count++;
+                }
+
+                return `rgb(${Math.round(r/count)}, ${Math.round(g/count)}, ${Math.round(b/count)})`;
+            }
+
+            function getMousePos(canvas, e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                return [
+                    (e.clientX - rect.left) * scaleX,
+                    (e.clientY - rect.top) * scaleY
+                ];
+            }
+
+            // Controls handling
+            document.getElementById('pixelSize').addEventListener('input', function(e) {
+                document.getElementById('pixelSizeValue').textContent = e.target.value + 'px';
+            });
+
+            document.getElementById('brushSize').addEventListener('input', function(e) {
+                document.getElementById('brushSizeValue').textContent = e.target.value + 'px';
+            });
+
+            document.getElementById('undoButton').addEventListener('click', undo);
+            document.getElementById('redoButton').addEventListener('click', redo);
+            document.getElementById('clearButton').addEventListener('click', clear);
+            document.getElementById('downloadButton').addEventListener('click', download);
+
+            function saveState() {
+                undoStack.push(canvas.toDataURL());
+                redoStack = [];
+                updateButtons();
+            }
+
+            function undo() {
+                if (undoStack.length > 1) {
+                    redoStack.push(undoStack.pop());
+                    loadState(undoStack[undoStack.length - 1]);
+                    updateButtons();
+                }
+            }
+
+            function redo() {
+                if (redoStack.length > 0) {
+                    const state = redoStack.pop();
+                    undoStack.push(state);
+                    loadState(state);
+                    updateButtons();
+                }
+            }
+
+            function clear() {
+                if (originalImage) {
+                    initializeCanvas();
+                    saveState();
+                }
+            }
+
+            function loadState(state) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.drawImage(img, 0, 0);
+                };
+                img.src = state;
+            }
+
+            function updateButtons() {
+                document.getElementById('undoButton').disabled = undoStack.length <= 1;
+                document.getElementById('redoButton').disabled = redoStack.length === 0;
+            }
+
+            function download() {
+                const link = document.createElement('a');
+                link.download = 'mosaic-image.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        });
+    </script>
+</body>
+</html>
