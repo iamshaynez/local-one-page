@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online image color extractor - Analyze and extract dominant colors from your images. Get hex codes, RGB values, and color distribution percentages instantly">
+    <meta name="keywords" content="color extractor, image color analyzer, dominant color finder, color palette generator, image color picker, color scheme extractor, color analysis tool">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Image Color Extractor - Free Online Color Palette Generator</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background-color: var(--background-color);
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background-color: var(--background-color-secondary);
+        }
+
+        .preview-section {
+            display: none;
+            margin-top: var(--spacing-lg);
+        }
+
+        .image-preview {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .colors-section {
+            background: var(--background-color);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .color-swatch {
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: translateY(-2px);
+        }
+
+        .color-preview {
+            height: 100px;
+            width: 100%;
+        }
+
+        .color-info {
+            padding: var(--spacing-sm);
+            background: var(--background-color);
+        }
+
+        .color-hex {
+            font-family: monospace;
+            font-size: 0.9em;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .color-rgb {
+            font-size: 0.8em;
+            color: var(--text-color-secondary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .color-percentage {
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .file-info {
+            margin-top: var(--spacing-md);
+            color: var(--text-color-secondary);
+            font-size: 0.9em;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Image Color Extractor</h1>
+                <p>Upload an image to analyze its dominant colors and generate a color palette. Get hex codes, RGB values, and color distribution percentages. Perfect for designers and developers looking to extract color schemes from images.</p>
+
+                <div class="upload-area" id="uploadArea">
+                    <input type="file" id="imageInput" accept="image/*" style="display: none">
+                    <p>Drag and drop an image here or click to select</p>
+                    <p class="file-info">Supported formats: PNG, JPG, JPEG, GIF, WebP</p>
+                </div>
+
+                <div class="preview-section" id="previewSection">
+                    <img id="imagePreview" class="image-preview">
+                    
+                    <div class="colors-section">
+                        <h2>Dominant Colors</h2>
+                        <div id="colorPalette" class="color-palette"></div>
+                    </div>
+                </div>
+
+                <div id="toast" class="toast">Color code copied to clipboard!</div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            const imageInput = document.getElementById('imageInput');
+            const previewSection = document.getElementById('previewSection');
+            const imagePreview = document.getElementById('imagePreview');
+            const colorPalette = document.getElementById('colorPalette');
+            const toast = document.getElementById('toast');
+
+            // Drag and drop handling
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+                const file = e.dataTransfer.files[0];
+                if (file && file.type.startsWith('image/')) {
+                    handleImageUpload(file);
+                }
+            });
+
+            uploadArea.addEventListener('click', () => {
+                imageInput.click();
+            });
+
+            imageInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    handleImageUpload(file);
+                }
+            });
+
+            function handleImageUpload(file) {
+                const reader = new FileReader();
+
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewSection.style.display = 'block';
+                    analyzeImageColors(e.target.result);
+                };
+
+                reader.readAsDataURL(file);
+            }
+
+            function analyzeImageColors(imageUrl) {
+                const img = new Image();
+                img.crossOrigin = 'Anonymous';
+                img.src = imageUrl;
+
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+                    const colorMap = new Map();
+                    const totalPixels = imageData.length / 4;
+
+                    // Sample every 4th pixel for performance
+                    for (let i = 0; i < imageData.length; i += 16) {
+                        const r = imageData[i];
+                        const g = imageData[i + 1];
+                        const b = imageData[i + 2];
+                        const rgb = `${r},${g},${b}`;
+                        colorMap.set(rgb, (colorMap.get(rgb) || 0) + 1);
+                    }
+
+                    // Convert to array and sort by frequency
+                    const colors = Array.from(colorMap.entries())
+                        .map(([rgb, count]) => ({
+                            rgb: rgb.split(',').map(Number),
+                            percentage: (count / (totalPixels / 4)) * 100
+                        }))
+                        .sort((a, b) => b.percentage - a.percentage)
+                        .slice(0, 6); // Get top 6 colors
+
+                    displayColorPalette(colors);
+                };
+            }
+
+            function displayColorPalette(colors) {
+                colorPalette.innerHTML = '';
+                
+                colors.forEach(color => {
+                    const [r, g, b] = color.rgb;
+                    const hex = rgbToHex(r, g, b);
+                    const percentage = color.percentage.toFixed(1);
+
+                    const swatch = document.createElement('div');
+                    swatch.className = 'color-swatch';
+                    swatch.innerHTML = `
+                        <div class="color-preview" style="background-color: rgb(${r}, ${g}, ${b})"></div>
+                        <div class="color-info">
+                            <div class="color-hex">${hex}</div>
+                            <div class="color-rgb">RGB(${r}, ${g}, ${b})</div>
+                            <div class="color-percentage">${percentage}%</div>
+                        </div>
+                    `;
+
+                    swatch.addEventListener('click', () => {
+                        navigator.clipboard.writeText(hex);
+                        showToast();
+                    });
+
+                    colorPalette.appendChild(swatch);
+                });
+            }
+
+            function rgbToHex(r, g, b) {
+                return '#' + [r, g, b].map(x => {
+                    const hex = x.toString(16);
+                    return hex.length === 1 ? '0' + hex : hex;
+                }).join('');
+            }
+
+            function showToast() {
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 2000);
+            }
+        });
+    </script>
+</body>
+</html>
