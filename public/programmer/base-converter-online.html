@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online number base converter - Convert numbers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). Real-time conversion with no server processing">
+    <meta name="keywords" content="base converter, binary converter, hex converter, octal converter, decimal converter, number base conversion, binary to decimal, hex to decimal, base 2, base 8, base 10, base 16">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Base Converter - Free Online Number Base Conversion Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .converter-grid {
+            display: grid;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .number-input {
+            flex: 1;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            font-size: 1.1em;
+        }
+
+        .copy-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.9em;
+            margin-top: var(--spacing-sm);
+            min-height: 1.2em;
+        }
+
+        .instructions {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Base Converter</h1>
+                <p>Convert numbers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16) formats. All conversions are performed instantly in your browser.</p>
+
+                <div class="converter-grid">
+                    <div class="input-group">
+                        <label for="binary">Binary (Base 2)</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="binary" class="number-input" placeholder="Enter binary number (0s and 1s)">
+                            <button class="copy-btn" data-target="binary">Copy</button>
+                        </div>
+                        <div class="error-message" id="binary-error"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="octal">Octal (Base 8)</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="octal" class="number-input" placeholder="Enter octal number (0-7)">
+                            <button class="copy-btn" data-target="octal">Copy</button>
+                        </div>
+                        <div class="error-message" id="octal-error"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="decimal">Decimal (Base 10)</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="decimal" class="number-input" placeholder="Enter decimal number (0-9)">
+                            <button class="copy-btn" data-target="decimal">Copy</button>
+                        </div>
+                        <div class="error-message" id="decimal-error"></div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="hexadecimal">Hexadecimal (Base 16)</label>
+                        <div class="input-wrapper">
+                            <input type="text" id="hexadecimal" class="number-input" placeholder="Enter hex number (0-9, A-F)">
+                            <button class="copy-btn" data-target="hexadecimal">Copy</button>
+                        </div>
+                        <div class="error-message" id="hex-error"></div>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <h2>Instructions</h2>
+                    <ul>
+                        <li>Enter a number in any base and see instant conversions to other bases</li>
+                        <li>Binary numbers use only 0s and 1s</li>
+                        <li>Octal numbers use digits 0-7</li>
+                        <li>Decimal numbers use digits 0-9</li>
+                        <li>Hexadecimal numbers use digits 0-9 and letters A-F</li>
+                        <li>Use the copy buttons to quickly copy any converted value</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = {
+                binary: document.getElementById('binary'),
+                octal: document.getElementById('octal'),
+                decimal: document.getElementById('decimal'),
+                hexadecimal: document.getElementById('hexadecimal')
+            };
+
+            const errors = {
+                binary: document.getElementById('binary-error'),
+                octal: document.getElementById('octal-error'),
+                decimal: document.getElementById('decimal-error'),
+                hex: document.getElementById('hex-error')
+            };
+
+            const validators = {
+                binary: /^[01]*$/,
+                octal: /^[0-7]*$/,
+                decimal: /^[0-9]*$/,
+                hexadecimal: /^[0-9A-Fa-f]*$/
+            };
+
+            function clearErrors() {
+                Object.values(errors).forEach(error => error.textContent = '');
+            }
+
+            function convertNumber(value, fromBase, toBase) {
+                if (!value) return '';
+                try {
+                    const decimal = parseInt(value, fromBase);
+                    if (isNaN(decimal)) return '';
+                    return decimal.toString(toBase).toUpperCase();
+                } catch (e) {
+                    return '';
+                }
+            }
+
+            function updateConversions(source) {
+                clearErrors();
+                const value = inputs[source].value.trim().toUpperCase();
+                if (!value) {
+                    Object.values(inputs).forEach(input => input.value = '');
+                    return;
+                }
+
+                if (!validators[source].test(value)) {
+                    errors[source === 'hexadecimal' ? 'hex' : source].textContent = `Invalid ${source} number`;
+                    return;
+                }
+
+                const bases = {
+                    binary: 2,
+                    octal: 8,
+                    decimal: 10,
+                    hexadecimal: 16
+                };
+
+                const sourceBase = bases[source];
+                Object.entries(inputs).forEach(([base, input]) => {
+                    if (base !== source) {
+                        input.value = convertNumber(value, sourceBase, bases[base]);
+                    }
+                });
+            }
+
+            Object.entries(inputs).forEach(([base, input]) => {
+                input.addEventListener('input', () => updateConversions(base));
+            });
+
+            // Copy button functionality
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', async () => {
+                    const targetId = button.getAttribute('data-target');
+                    const text = inputs[targetId].value;
+                    if (text) {
+                        try {
+                            await navigator.clipboard.writeText(text);
+                            const originalText = button.textContent;
+                            button.textContent = 'Copied!';
+                            setTimeout(() => button.textContent = originalText, 1500);
+                        } catch (err) {
+                            console.error('Failed to copy text: ', err);
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

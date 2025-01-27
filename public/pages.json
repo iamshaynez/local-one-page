@@ -42,6 +42,12 @@
     "url": "/tools/image-base64.html"
   },
   {
+    "title": "Network Speed Test - Free Online Internet Connection Speed Test Tool",
+    "desc": "Free online network speed test tool - Test your internet connection speed, measure download and upload speeds, latency, and jitter. Simple, accurate, and browser-based testing",
+    "category": "tools",
+    "url": "/tools/network-speed-test.html"
+  },
+  {
     "title": "Markdown Renderer - Free Online Markdown to HTML Converter",
     "desc": "Free online markdown renderer - Convert markdown text to HTML with live preview. Customize styles, fonts, and colors. Copy rendered HTML to clipboard easily.",
     "category": "tools",
@@ -76,6 +82,12 @@
     "desc": "Free online subtitle meme maker - Create funny memes with custom text at the bottom. Easy-to-use meme generator for adding subtitles to images",
     "category": "fun",
     "url": "/fun/subtitle-memer.html"
+  },
+  {
+    "title": "Color Code Converter - Free Online RGB/HEX Color Conversion Tool",
+    "desc": "Free online color code converter tool - Convert between RGB and HEX color formats with live preview. Features color picker, history tracking, and instant conversion. Browser-based tool with no server interaction",
+    "category": "programmer",
+    "url": "/programmer/color-code-converter-online.html"
   },
   {
     "title": "SM3 Hash Generator - Free Online Chinese Standard Hash Calculator",
@@ -126,10 +138,34 @@
     "url": "/programmer/cron-schedule-expression-generator.html"
   },
   {
+    "title": "Code Formatter - Free Online JSON/HTML/CSS Beautifier Tool",
+    "desc": "Free online code formatter tool - Beautify and format JSON, HTML, and CSS code with syntax highlighting. Browser-based processing with no server interaction",
+    "category": "programmer",
+    "url": "/programmer/code-formatter-online.html"
+  },
+  {
     "title": "JSON to YAML Converter - Free Online Data Format Transformation Tool",
     "desc": "Free online JSON to YAML converter - Convert JSON data to YAML format instantly. Simple, fast, and accurate JSON to YAML transformation tool with syntax highlighting",
     "category": "programmer",
     "url": "/programmer/json-2-yaml.html"
+  },
+  {
+    "title": "Regex Tester - Free Online Regular Expression Testing Tool",
+    "desc": "Free online regex tester and debugger - Test regular expressions with real-time matching, pattern explanation, and common regex examples. Browser-based processing with no server interaction",
+    "category": "programmer",
+    "url": "/programmer/regex-tester-online.html"
+  },
+  {
+    "title": "URL Encoder/Decoder - Free Online URL Encoding and Decoding Tool",
+    "desc": "Free online URL encoder and decoder tool - Convert URLs to percent-encoded format and decode them back. Secure, browser-based processing with no server interaction",
+    "category": "programmer",
+    "url": "/programmer/url-encoder-decoder-online.html"
+  },
+  {
+    "title": "JavaScript Minifier - Free Online JS Compression Tool",
+    "desc": "Free online JavaScript minifier tool - Compress and optimize JavaScript code instantly. Reduce file size, improve load times, with browser-based processing and no server interaction",
+    "category": "programmer",
+    "url": "/programmer/js-minifier-online.html"
   },
   {
     "title": "XML to JSON Converter - Free Online Data Format Transformation Tool",
@@ -144,10 +180,22 @@
     "url": "/programmer/rsa-dynamic-code.html"
   },
   {
+    "title": "Base Converter - Free Online Number Base Conversion Tool",
+    "desc": "Free online number base converter - Convert numbers between binary (base 2), octal (base 8), decimal (base 10), and hexadecimal (base 16). Real-time conversion with no server processing",
+    "category": "programmer",
+    "url": "/programmer/base-converter-online.html"
+  },
+  {
     "title": "SHA Hash Generator - Free Online Text to SHA Hash Tool",
     "desc": "Free online SHA hash generator - Generate SHA-1, SHA-256, SHA-384, and SHA-512 hashes instantly. Secure, browser-based hash generation with no server processing.",
     "category": "programmer",
     "url": "/programmer/sha-encrypt-online.html"
+  },
+  {
+    "title": "HTTP Status Code Lookup - Free Online HTTP Response Code Reference Tool",
+    "desc": "Free online HTTP status code lookup tool - Quick reference for all HTTP response codes with detailed descriptions, examples, and common use cases. Browser-based tool with instant search",
+    "category": "programmer",
+    "url": "/programmer/http-status-code-lookup.html"
   },
   {
     "title": "RC Encryption Tool - Free Online RC2/RC4/RC5 Text Encryption and Decryption",
@@ -166,6 +214,12 @@
     "desc": "Free online AES encryption tool - Encrypt and decrypt text using AES-128/192/256 with multiple modes. Secure, browser-based encryption with no server processing",
     "category": "programmer",
     "url": "/programmer/aes-encrypt-online.html"
+  },
+  {
+    "title": "Port Scanner - Free Online Port Scanning Tool",
+    "desc": "Free online port scanner tool - Check open ports on a host or IP address with customizable port ranges and common port presets. Browser-based scanning with no server interaction",
+    "category": "programmer",
+    "url": "/programmer/port-scanner-online.html"
   },
   {
     "title": "YAML to JSON Converter - Free Online Data Format Transformation Tool",

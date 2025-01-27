@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online port scanner tool - Check open ports on a host or IP address with customizable port ranges and common port presets. Browser-based scanning with no server interaction">
+    <meta name="keywords" content="port scanner, online port checker, network tool, port analyzer, open port finder, port scanning tool, network port scanner, security tool, port status checker">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Port Scanner - Free Online Port Scanning Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .scanner-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+
+        .host-input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+        }
+
+        .port-range {
+            display: flex;
+            gap: var(--spacing-md);
+            align-items: center;
+        }
+
+        .port-input {
+            width: 100px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+        }
+
+        .preset-container {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            margin: var(--spacing-md) 0;
+        }
+
+        .preset-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-button:hover {
+            border-color: var(--primary-color);
+            background: var(--background-color-secondary);
+        }
+
+        .scan-button {
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            transition: all 0.2s ease;
+        }
+
+        .scan-button:hover {
+            opacity: 0.9;
+        }
+
+        .scan-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .results {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        .port-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .port-item {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .port-open {
+            border-color: #4CAF50;
+        }
+
+        .port-closed {
+            border-color: #f44336;
+        }
+
+        .warning {
+            padding: var(--spacing-md);
+            background: rgba(244, 67, 54, 0.1);
+            border: 1px solid #f44336;
+            border-radius: var(--border-radius);
+            margin: var(--spacing-md) 0;
+            color: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Port Scanner</h1>
+                <p>Scan ports on a host or IP address to check their status. All processing is done in your browser - no data is sent to any server.</p>
+
+                <div class="warning">
+                    <strong>Important:</strong> Please ensure you have permission to scan the target host. Port scanning without authorization may be illegal in some jurisdictions.
+                </div>
+
+                <div class="scanner-grid">
+                    <div class="input-group">
+                        <label for="host">Host or IP Address:</label>
+                        <input type="text" id="host" class="host-input" placeholder="Enter hostname or IP address (e.g., localhost, 127.0.0.1)" />
+                    </div>
+
+                    <div class="input-group">
+                        <label>Port Range:</label>
+                        <div class="port-range">
+                            <input type="number" id="start-port" class="port-input" min="1" max="65535" value="1" />
+                            <span>to</span>
+                            <input type="number" id="end-port" class="port-input" min="1" max="65535" value="1024" />
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Common Port Presets:</label>
+                        <div class="preset-container">
+                            <button class="preset-button" data-start="20" data-end="25">FTP/SMTP</button>
+                            <button class="preset-button" data-start="80" data-end="80">HTTP</button>
+                            <button class="preset-button" data-start="443" data-end="443">HTTPS</button>
+                            <button class="preset-button" data-start="3306" data-end="3306">MySQL</button>
+                            <button class="preset-button" data-start="5432" data-end="5432">PostgreSQL</button>
+                            <button class="preset-button" data-start="27017" data-end="27017">MongoDB</button>
+                        </div>
+                    </div>
+
+                    <button id="scan-button" class="scan-button">Start Scan</button>
+
+                    <div class="results" id="results">
+                        <h2>Scan Results</h2>
+                        <div id="status"></div>
+                        <div id="port-status" class="port-status"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const hostInput = document.getElementById('host');
+            const startPortInput = document.getElementById('start-port');
+            const endPortInput = document.getElementById('end-port');
+            const scanButton = document.getElementById('scan-button');
+            const statusDiv = document.getElementById('status');
+            const portStatusDiv = document.getElementById('port-status');
+
+            // Preset buttons
+            document.querySelectorAll('.preset-button').forEach(button => {
+                button.addEventListener('click', () => {
+                    startPortInput.value = button.dataset.start;
+                    endPortInput.value = button.dataset.end;
+                });
+            });
+
+            async function checkPort(host, port) {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 1000);
+
+                    const response = await fetch(`http://${host}:${port}`, {
+                        mode: 'no-cors',
+                        signal: controller.signal
+                    });
+                    clearTimeout(timeoutId);
+                    return true;
+                } catch (error) {
+                    return false;
+                }
+            }
+
+            async function scanPorts() {
+                const host = hostInput.value.trim();
+                const startPort = parseInt(startPortInput.value);
+                const endPort = parseInt(endPortInput.value);
+
+                if (!host) {
+                    alert('Please enter a host or IP address');
+                    return;
+                }
+
+                if (isNaN(startPort) || isNaN(endPort) || startPort < 1 || endPort > 65535 || startPort > endPort) {
+                    alert('Please enter valid port numbers (1-65535)');
+                    return;
+                }
+
+                if (endPort - startPort > 100) {
+                    if (!confirm('Scanning more than 100 ports may take a while. Continue?')) {
+                        return;
+                    }
+                }
+
+                scanButton.disabled = true;
+                statusDiv.textContent = 'Scanning ports...';
+                portStatusDiv.innerHTML = '';
+
+                const ports = Array.from({ length: endPort - startPort + 1 }, (_, i) => startPort + i);
+                const results = [];
+
+                for (const port of ports) {
+                    const isOpen = await checkPort(host, port);
+                    results.push({ port, isOpen });
+
+                    const portItem = document.createElement('div');
+                    portItem.className = `port-item ${isOpen ? 'port-open' : 'port-closed'}`;
+                    portItem.innerHTML = `
+                        <span>Port ${port}</span>
+                        <span>${isOpen ? 'Open' : 'Closed'}</span>
+                    `;
+                    portStatusDiv.appendChild(portItem);
+                }
+
+                statusDiv.textContent = `Scan complete! ${results.filter(r => r.isOpen).length} open ports found.`;
+                scanButton.disabled = false;
+            }
+
+            scanButton.addEventListener('click', scanPorts);
+        });
+    </script>
+</body>
+</html>

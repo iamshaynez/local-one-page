@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online regex tester and debugger - Test regular expressions with real-time matching, pattern explanation, and common regex examples. Browser-based processing with no server interaction">
+    <meta name="keywords" content="regex tester, regular expression, regex debugger, regex pattern, regex validator, online regex tool, regex examples, pattern matching, regex flags">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Regex Tester - Free Online Regular Expression Testing Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .regex-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+
+        .text-area {
+            width: 100%;
+            min-height: 100px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+        }
+
+        .regex-input {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+        }
+
+        .flags-container {
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-sm) 0;
+            flex-wrap: wrap;
+        }
+
+        .flag-option {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .results {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        .match-highlight {
+            background-color: rgba(var(--primary-color-rgb), 0.2);
+            border-radius: 2px;
+            padding: 0 2px;
+        }
+
+        .examples {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        .example-item {
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin: var(--spacing-sm) 0;
+            background: var(--background-color);
+        }
+
+        .example-item:hover {
+            border-color: var(--primary-color);
+        }
+
+        .explanation {
+            margin-top: var(--spacing-md);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Regular Expression Tester</h1>
+                <p>Test and debug your regular expressions in real-time. All processing is done in your browser - no data is sent to any server.</p>
+
+                <div class="regex-grid">
+                    <div class="input-group">
+                        <label for="regex-pattern">Regular Expression Pattern:</label>
+                        <input type="text" id="regex-pattern" class="regex-input" placeholder="Enter your regex pattern..." />
+                        
+                        <div class="flags-container">
+                            <div class="flag-option">
+                                <input type="checkbox" id="flag-global" value="g" checked>
+                                <label for="flag-global">Global (g)</label>
+                            </div>
+                            <div class="flag-option">
+                                <input type="checkbox" id="flag-case" value="i">
+                                <label for="flag-case">Case Insensitive (i)</label>
+                            </div>
+                            <div class="flag-option">
+                                <input type="checkbox" id="flag-multiline" value="m">
+                                <label for="flag-multiline">Multiline (m)</label>
+                            </div>
+                            <div class="flag-option">
+                                <input type="checkbox" id="flag-dotall" value="s">
+                                <label for="flag-dotall">Dot All (s)</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <label for="test-string">Test String:</label>
+                        <textarea id="test-string" class="text-area" placeholder="Enter text to test the regex pattern..."></textarea>
+                    </div>
+
+                    <div class="results" id="results">
+                        <h2>Results</h2>
+                        <div id="matches"></div>
+                        <div id="groups"></div>
+                    </div>
+
+                    <div class="explanation" id="explanation">
+                        <h2>Pattern Explanation</h2>
+                        <div id="pattern-explanation"></div>
+                    </div>
+
+                    <div class="examples">
+                        <h2>Common Regex Examples</h2>
+                        <div class="example-item" data-pattern="^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$" data-text="test@example.com">
+                            <strong>Email Validation</strong>
+                            <pre>^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$</pre>
+                        </div>
+                        <div class="example-item" data-pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$" data-text="Password123">
+                            <strong>Password Validation</strong>
+                            <pre>^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$</pre>
+                        </div>
+                        <div class="example-item" data-pattern="^\+?[1-9]\d{1,14}$" data-text="+1234567890">
+                            <strong>Phone Number (E.164)</strong>
+                            <pre>^\+?[1-9]\d{1,14}$</pre>
+                        </div>
+                        <div class="example-item" data-pattern="^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$" data-text="00:1A:2B:3C:4D:5E">
+                            <strong>MAC Address</strong>
+                            <pre>^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const regexPattern = document.getElementById('regex-pattern');
+            const testString = document.getElementById('test-string');
+            const results = document.getElementById('matches');
+            const groups = document.getElementById('groups');
+            const patternExplanation = document.getElementById('pattern-explanation');
+            const flagCheckboxes = document.querySelectorAll('.flag-option input');
+
+            function getFlags() {
+                return Array.from(flagCheckboxes)
+                    .filter(checkbox => checkbox.checked)
+                    .map(checkbox => checkbox.value)
+                    .join('');
+            }
+
+            function escapeHtml(text) {
+                return text
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            function explainPattern(pattern) {
+                if (!pattern) return '';
+                
+                let explanation = '<ul>';
+                const parts = [
+                    { regex: /^\^/, explanation: 'Matches the start of the line' },
+                    { regex: /\$$/, explanation: 'Matches the end of the line' },
+                    { regex: /\[([^\]]+)\]/g, explanation: 'Character class: matches any single character within the brackets' },
+                    { regex: /\(([^)]+)\)/g, explanation: 'Capturing group' },
+                    { regex: /\?/g, explanation: 'Makes the preceding token optional (0 or 1 occurrences)' },
+                    { regex: /\*/g, explanation: 'Matches 0 or more occurrences of the preceding token' },
+                    { regex: /\+/g, explanation: 'Matches 1 or more occurrences of the preceding token' },
+                    { regex: /\{(\d+,?\d*)\}/g, explanation: 'Quantifier: specifies number of occurrences' },
+                    { regex: /\./g, explanation: 'Matches any single character except newline' },
+                    { regex: /\\w/g, explanation: 'Matches any word character (alphanumeric & underscore)' },
+                    { regex: /\\d/g, explanation: 'Matches any digit (0-9)' },
+                    { regex: /\\s/g, explanation: 'Matches any whitespace character' }
+                ];
+
+                parts.forEach(({ regex, explanation }) => {
+                    if (pattern.match(regex)) {
+                        explanation += `<li>${explanation}</li>`;
+                    }
+                });
+
+                return explanation + '</ul>';
+            }
+
+            function updateResults() {
+                const pattern = regexPattern.value;
+                const text = testString.value;
+                const flags = getFlags();
+
+                if (!pattern || !text) {
+                    results.innerHTML = '<p>Enter a pattern and test string to see results.</p>';
+                    groups.innerHTML = '';
+                    patternExplanation.innerHTML = '';
+                    return;
+                }
+
+                try {
+                    const regex = new RegExp(pattern, flags);
+                    let match;
+                    let matchesHtml = '';
+                    let groupsHtml = '';
+                    let matchCount = 0;
+                    let lastIndex = 0;
+
+                    // Create highlighted output
+                    while ((match = regex.exec(text)) !== null) {
+                        matchCount++;
+                        const matchText = match[0];
+                        const start = match.index;
+                        const end = start + matchText.length;
+
+                        // Add text before match
+                        matchesHtml += escapeHtml(text.slice(lastIndex, start));
+                        // Add highlighted match
+                        matchesHtml += `<span class="match-highlight">${escapeHtml(matchText)}</span>`;
+                        lastIndex = end;
+
+                        // Show groups if any
+                        if (match.length > 1) {
+                            groupsHtml += `<p><strong>Match ${matchCount} groups:</strong></p><ul>`;
+                            for (let i = 1; i < match.length; i++) {
+                                groupsHtml += `<li>Group ${i}: ${escapeHtml(match[i] || '')}</li>`;
+                            }
+                            groupsHtml += '</ul>';
+                        }
+
+                        if (!flags.includes('g')) break;
+                    }
+
+                    // Add remaining text
+                    matchesHtml += escapeHtml(text.slice(lastIndex));
+
+                    results.innerHTML = `
+                        <p><strong>${matchCount} match${matchCount !== 1 ? 'es' : ''} found</strong></p>
+                        <pre>${matchesHtml}</pre>
+                    `;
+                    groups.innerHTML = groupsHtml;
+                    patternExplanation.innerHTML = explainPattern(pattern);
+                } catch (error) {
+                    results.innerHTML = `<p class="error">Invalid regular expression: ${escapeHtml(error.message)}</p>`;
+                    groups.innerHTML = '';
+                    patternExplanation.innerHTML = '';
+                }
+            }
+
+            // Event listeners
+            regexPattern.addEventListener('input', updateResults);
+            testString.addEventListener('input', updateResults);
+            flagCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateResults);
+            });
+
+            // Example handling
+            document.querySelectorAll('.example-item').forEach(example => {
+                example.addEventListener('click', () => {
+                    regexPattern.value = example.dataset.pattern;
+                    testString.value = example.dataset.text;
+                    updateResults();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

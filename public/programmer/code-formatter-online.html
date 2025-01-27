@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online code formatter tool - Beautify and format JSON, HTML, and CSS code with syntax highlighting. Browser-based processing with no server interaction">
+    <meta name="keywords" content="code formatter, json formatter, html formatter, css formatter, code beautifier, online formatter, code prettifier, syntax highlighter, code indentation tool">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Code Formatter - Free Online JSON/HTML/CSS Beautifier Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/standalone.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-html.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-postcss.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prettier/2.8.8/parser-babel.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github-dark.min.css">
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .formatter-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        @media (max-width: 768px) {
+            .formatter-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section, .output-section {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .controls {
+            display: flex;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .code-area {
+            width: 100%;
+            min-height: 400px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            font-family: monospace;
+            resize: vertical;
+            tab-size: 4;
+        }
+
+        .output-container {
+            position: relative;
+            width: 100%;
+            min-height: 400px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            overflow: auto;
+        }
+
+        .output-container pre {
+            margin: 0;
+            padding: var(--spacing-sm);
+        }
+
+        .copy-button {
+            position: absolute;
+            top: var(--spacing-sm);
+            right: var(--spacing-sm);
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            opacity: 0.8;
+            transition: opacity 0.2s;
+        }
+
+        .copy-button:hover {
+            opacity: 1;
+        }
+
+        .examples {
+            margin-top: var(--spacing-lg);
+            padding: var(--spacing-md);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+        }
+
+        .example-item {
+            cursor: pointer;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            margin: var(--spacing-sm) 0;
+            background: var(--background-color);
+        }
+
+        .example-item:hover {
+            border-color: var(--primary-color);
+        }
+
+        .error-message {
+            color: #ff4444;
+            margin-top: var(--spacing-sm);
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Code Formatter</h1>
+                <p>Format and beautify your JSON, HTML, and CSS code with syntax highlighting. All processing is done in your browser - no data is sent to any server.</p>
+
+                <div class="formatter-grid">
+                    <div class="input-section">
+                        <div class="controls">
+                            <select id="language-select" class="select-input">
+                                <option value="json">JSON</option>
+                                <option value="html">HTML</option>
+                                <option value="css">CSS</option>
+                            </select>
+                            <select id="indent-select" class="select-input">
+                                <option value="2">2 spaces</option>
+                                <option value="4">4 spaces</option>
+                                <option value="tab">Tab</option>
+                            </select>
+                            <button id="format-button" class="button">Format Code</button>
+                            <button id="minify-button" class="button">Minify Code</button>
+                        </div>
+                        <textarea id="input-code" class="code-area" placeholder="Paste your code here..."></textarea>
+                        <div id="error-message" class="error-message"></div>
+                    </div>
+
+                    <div class="output-section">
+                        <div class="output-container">
+                            <pre><code id="output-code"></code></pre>
+                            <button id="copy-button" class="copy-button">Copy</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="examples">
+                    <h2>Example Code</h2>
+                    <div class="example-item" data-type="json" data-content='{"menu":{"id":"file","value":"File","popup":{"menuitem":[{"value":"New","onclick":"CreateNewDoc()"},{"value":"Open","onclick":"OpenDoc()"},{"value":"Close","onclick":"CloseDoc()"}]}}}'>
+                        <strong>JSON Example</strong>
+                        <p>Nested menu structure</p>
+                    </div>
+                    <div class="example-item" data-type="html" data-content='<!DOCTYPE html><html><head><title>Example</title></head><body><div class="container"><h1>Hello World</h1><p>This is a sample HTML document.</p></div></body></html>'>
+                        <strong>HTML Example</strong>
+                        <p>Simple HTML document structure</p>
+                    </div>
+                    <div class="example-item" data-type="css" data-content='.container{width:100%;max-width:1200px;margin:0 auto;padding:20px}.header{background:#f5f5f5;padding:10px}.content{display:flex;flex-direction:column;gap:20px}'>
+                        <strong>CSS Example</strong>
+                        <p>Common CSS layout styles</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputCode = document.getElementById('input-code');
+            const outputCode = document.getElementById('output-code');
+            const languageSelect = document.getElementById('language-select');
+            const indentSelect = document.getElementById('indent-select');
+            const formatButton = document.getElementById('format-button');
+            const minifyButton = document.getElementById('minify-button');
+            const copyButton = document.getElementById('copy-button');
+            const errorMessage = document.getElementById('error-message');
+
+            function getIndentSize() {
+                const value = indentSelect.value;
+                return value === 'tab' ? '\t' : Number(value);
+            }
+
+            function formatCode(minify = false) {
+                const code = inputCode.value.trim();
+                if (!code) return;
+
+                const language = languageSelect.value;
+                const indentSize = getIndentSize();
+
+                try {
+                    let formattedCode = '';
+                    let options = {
+                        parser: language,
+                        plugins: prettierPlugins,
+                        tabWidth: indentSize === '\t' ? 4 : indentSize,
+                        useTabs: indentSize === '\t',
+                        printWidth: minify ? 999999 : 80
+                    };
+
+                    if (language === 'json') {
+                        // First validate JSON
+                        JSON.parse(code);
+                        options.parser = 'json';
+                    } else if (language === 'css') {
+                        options.parser = 'css';
+                    } else if (language === 'html') {
+                        options.parser = 'html';
+                    }
+
+                    formattedCode = prettier.format(code, options);
+                    
+                    if (minify) {
+                        if (language === 'json') {
+                            formattedCode = JSON.stringify(JSON.parse(code));
+                        } else {
+                            formattedCode = formattedCode.replace(/\s+/g, ' ').trim();
+                        }
+                    }
+
+                    outputCode.textContent = formattedCode;
+                    outputCode.className = `language-${language}`;
+                    hljs.highlightElement(outputCode);
+                    errorMessage.textContent = '';
+                } catch (error) {
+                    errorMessage.textContent = `Error: ${error.message}`;
+                    outputCode.textContent = '';
+                }
+            }
+
+            formatButton.addEventListener('click', () => formatCode(false));
+            minifyButton.addEventListener('click', () => formatCode(true));
+
+            copyButton.addEventListener('click', () => {
+                const code = outputCode.textContent;
+                if (code) {
+                    navigator.clipboard.writeText(code)
+                        .then(() => {
+                            copyButton.textContent = 'Copied!';
+                            setTimeout(() => {
+                                copyButton.textContent = 'Copy';
+                            }, 2000);
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy:', err);
+                        });
+                }
+            });
+
+            // Example code handling
+            document.querySelectorAll('.example-item').forEach(example => {
+                example.addEventListener('click', () => {
+                    const type = example.dataset.type;
+                    const content = example.dataset.content;
+                    languageSelect.value = type;
+                    inputCode.value = content;
+                    formatCode(false);
+                });
+            });
+
+            // Auto-format on paste if the input is empty
+            inputCode.addEventListener('paste', () => {
+                setTimeout(() => {
+                    if (!outputCode.textContent) {
+                        formatCode(false);
+                    }
+                }, 0);
+            });
+        });
+    </script>
+</body>
+</html>

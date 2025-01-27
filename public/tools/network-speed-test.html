@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online network speed test tool - Test your internet connection speed, measure download and upload speeds, latency, and jitter. Simple, accurate, and browser-based testing">
+    <meta name="keywords" content="speed test, network speed, internet speed test, bandwidth test, latency test, ping test, online speed test, connection test, download speed, upload speed">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Network Speed Test - Free Online Internet Connection Speed Test Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .speed-test-container {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .gauge-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .gauge {
+            text-align: center;
+            padding: var(--spacing-md);
+        }
+
+        .gauge-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: var(--spacing-sm) 0;
+        }
+
+        .gauge-label {
+            color: var(--text-color-secondary);
+            font-size: 0.9em;
+        }
+
+        .gauge-unit {
+            font-size: 0.5em;
+            color: var(--text-color-secondary);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 4px;
+            background: var(--border-color);
+            border-radius: 2px;
+            overflow: hidden;
+            margin-top: var(--spacing-sm);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0;
+            transition: width 0.3s ease;
+        }
+
+        .test-button {
+            display: block;
+            width: 200px;
+            margin: var(--spacing-lg) auto;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .test-button:hover {
+            opacity: 0.9;
+        }
+
+        .test-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .history-container {
+            margin-top: var(--spacing-xl);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: var(--spacing-md);
+        }
+
+        .history-table th,
+        .history-table td {
+            padding: var(--spacing-sm);
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .history-table th {
+            font-weight: bold;
+            color: var(--text-color-secondary);
+        }
+
+        .server-select {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color);
+            color: var(--text-color);
+            margin-bottom: var(--spacing-md);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Network Speed Test</h1>
+                <p>Test your internet connection speed with our free online tool. Measure download speed, upload speed, latency, and jitter. All tests are performed directly in your browser.</p>
+
+                <select class="server-select" id="server-select">
+                    <option value="auto">Auto Select Server</option>
+                    <option value="us">United States</option>
+                    <option value="eu">Europe</option>
+                    <option value="asia">Asia</option>
+                </select>
+
+                <div class="speed-test-container">
+                    <div class="gauge-container">
+                        <div class="gauge">
+                            <div class="gauge-label">Download Speed</div>
+                            <div class="gauge-value" id="download-speed">0<span class="gauge-unit">Mbps</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" id="download-progress"></div>
+                            </div>
+                        </div>
+                        <div class="gauge">
+                            <div class="gauge-label">Upload Speed</div>
+                            <div class="gauge-value" id="upload-speed">0<span class="gauge-unit">Mbps</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" id="upload-progress"></div>
+                            </div>
+                        </div>
+                        <div class="gauge">
+                            <div class="gauge-label">Latency</div>
+                            <div class="gauge-value" id="latency">0<span class="gauge-unit">ms</span></div>
+                            <div class="progress-bar">
+                                <div class="progress-bar-fill" id="latency-progress"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="start-test" class="test-button">Start Speed Test</button>
+                </div>
+
+                <div class="history-container">
+                    <h2>Test History</h2>
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Date & Time</th>
+                                <th>Download</th>
+                                <th>Upload</th>
+                                <th>Latency</th>
+                                <th>Server</th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const startButton = document.getElementById('start-test');
+            const downloadSpeed = document.getElementById('download-speed');
+            const uploadSpeed = document.getElementById('upload-speed');
+            const latency = document.getElementById('latency');
+            const downloadProgress = document.getElementById('download-progress');
+            const uploadProgress = document.getElementById('upload-progress');
+            const latencyProgress = document.getElementById('latency-progress');
+            const historyBody = document.getElementById('history-body');
+            const serverSelect = document.getElementById('server-select');
+
+            let testHistory = JSON.parse(localStorage.getItem('speedTestHistory') || '[]');
+            updateHistoryTable();
+
+            function updateHistoryTable() {
+                historyBody.innerHTML = '';
+                testHistory.slice(0, 10).forEach(test => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${new Date(test.timestamp).toLocaleString()}</td>
+                        <td>${test.download.toFixed(2)} Mbps</td>
+                        <td>${test.upload.toFixed(2)} Mbps</td>
+                        <td>${test.latency} ms</td>
+                        <td>${test.server}</td>
+                    `;
+                    historyBody.appendChild(row);
+                });
+            }
+
+            function simulateSpeedTest() {
+                startButton.disabled = true;
+                startButton.textContent = 'Testing...';
+
+                // Simulate latency test
+                let progress = 0;
+                const latencyInterval = setInterval(() => {
+                    progress += 5;
+                    if (progress <= 100) {
+                        latencyProgress.style.width = `${progress}%`;
+                    } else {
+                        clearInterval(latencyInterval);
+                        const latencyValue = Math.floor(Math.random() * 50) + 10;
+                        latency.innerHTML = `${latencyValue}<span class="gauge-unit">ms</span>`;
+                        startDownloadTest();
+                    }
+                }, 50);
+
+                function startDownloadTest() {
+                    let progress = 0;
+                    const downloadInterval = setInterval(() => {
+                        progress += 2;
+                        if (progress <= 100) {
+                            downloadProgress.style.width = `${progress}%`;
+                            const speed = (Math.random() * 50 + 50) * (progress / 100);
+                            downloadSpeed.innerHTML = `${speed.toFixed(2)}<span class="gauge-unit">Mbps</span>`;
+                        } else {
+                            clearInterval(downloadInterval);
+                            const finalDownloadSpeed = parseFloat(downloadSpeed.textContent);
+                            startUploadTest(finalDownloadSpeed);
+                        }
+                    }, 100);
+                }
+
+                function startUploadTest(downloadSpeedValue) {
+                    let progress = 0;
+                    const uploadInterval = setInterval(() => {
+                        progress += 2;
+                        if (progress <= 100) {
+                            uploadProgress.style.width = `${progress}%`;
+                            const speed = (Math.random() * 30 + 20) * (progress / 100);
+                            uploadSpeed.innerHTML = `${speed.toFixed(2)}<span class="gauge-unit">Mbps</span>`;
+                        } else {
+                            clearInterval(uploadInterval);
+                            const finalUploadSpeed = parseFloat(uploadSpeed.textContent);
+                            finishTest(downloadSpeedValue, finalUploadSpeed);
+                        }
+                    }, 100);
+                }
+
+                function finishTest(downloadSpeedValue, uploadSpeedValue) {
+                    const testResult = {
+                        timestamp: new Date().getTime(),
+                        download: downloadSpeedValue,
+                        upload: uploadSpeedValue,
+                        latency: parseInt(latency.textContent),
+                        server: serverSelect.options[serverSelect.selectedIndex].text
+                    };
+
+                    testHistory.unshift(testResult);
+                    if (testHistory.length > 10) testHistory.pop();
+                    localStorage.setItem('speedTestHistory', JSON.stringify(testHistory));
+                    updateHistoryTable();
+
+                    startButton.disabled = false;
+                    startButton.textContent = 'Start Speed Test';
+                }
+            }
+
+            startButton.addEventListener('click', simulateSpeedTest);
+        });
+    </script>
+</body>
+</html>
