@@ -54,6 +54,12 @@
     "url": "/tools/image-stitcher.html"
   },
   {
+    "title": "Unit Converter - Free Online Length, Area & Volume Conversion Tool",
+    "desc": "Free online unit converter - Convert length, area, and volume measurements. Easy-to-use tool with real-time conversion, common presets, and support for metric and imperial units",
+    "category": "tools",
+    "url": "/tools/unit-converter.html"
+  },
+  {
     "title": "Image to Base64 Converter - Free Online Image Encoding Tool",
     "desc": "Free online image to base64 converter - Convert images to base64 format instantly. Get base64 strings for HTML img tags, CSS backgrounds, and plain text. Simple and fast conversion tool.",
     "category": "tools",

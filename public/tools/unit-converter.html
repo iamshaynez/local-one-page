@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online unit converter - Convert length, area, and volume measurements. Easy-to-use tool with real-time conversion, common presets, and support for metric and imperial units">
+    <meta name="keywords" content="unit converter, measurement converter, length converter, area converter, volume converter, metric converter, imperial units, online conversion tool">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Unit Converter - Free Online Length, Area & Volume Conversion Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .converter-section {
+            background: var(--background-color);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .converter-section h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .converter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+        }
+
+        .input-group label {
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        .input-group input {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+            font-size: 1.1em;
+        }
+
+        .input-group select {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+            cursor: pointer;
+        }
+
+        .presets {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+            margin-top: var(--spacing-sm);
+        }
+
+        .preset-button {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--background-color-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-color);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .preset-button:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Unit Converter</h1>
+                <p>Convert between different units of length, area, and volume. Features real-time conversion, common presets, and support for both metric and imperial units.</p>
+
+                <div class="converter-section">
+                    <h2>Length Converter</h2>
+                    <div class="converter-grid">
+                        <div class="input-group">
+                            <label for="lengthInput">Value</label>
+                            <input type="number" id="lengthInput" step="any">
+                            <select id="lengthFromUnit">
+                                <option value="m">Meters (m)</option>
+                                <option value="km">Kilometers (km)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="in">Inches (in)</option>
+                                <option value="yd">Yards (yd)</option>
+                                <option value="mi">Miles (mi)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Converted Value</label>
+                            <input type="number" id="lengthOutput" readonly>
+                            <select id="lengthToUnit">
+                                <option value="m">Meters (m)</option>
+                                <option value="km">Kilometers (km)</option>
+                                <option value="cm">Centimeters (cm)</option>
+                                <option value="mm">Millimeters (mm)</option>
+                                <option value="ft">Feet (ft)</option>
+                                <option value="in">Inches (in)</option>
+                                <option value="yd">Yards (yd)</option>
+                                <option value="mi">Miles (mi)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="presets">
+                        <button class="preset-button" data-value="1" data-from="m" data-to="ft">1m to ft</button>
+                        <button class="preset-button" data-value="1" data-from="km" data-to="mi">1km to mi</button>
+                        <button class="preset-button" data-value="1" data-from="cm" data-to="in">1cm to in</button>
+                    </div>
+                </div>
+
+                <div class="converter-section">
+                    <h2>Area Converter</h2>
+                    <div class="converter-grid">
+                        <div class="input-group">
+                            <label for="areaInput">Value</label>
+                            <input type="number" id="areaInput" step="any">
+                            <select id="areaFromUnit">
+                                <option value="m2">Square Meters (m²)</option>
+                                <option value="km2">Square Kilometers (km²)</option>
+                                <option value="cm2">Square Centimeters (cm²)</option>
+                                <option value="ha">Hectares (ha)</option>
+                                <option value="ft2">Square Feet (ft²)</option>
+                                <option value="yd2">Square Yards (yd²)</option>
+                                <option value="ac">Acres (ac)</option>
+                                <option value="mi2">Square Miles (mi²)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Converted Value</label>
+                            <input type="number" id="areaOutput" readonly>
+                            <select id="areaToUnit">
+                                <option value="m2">Square Meters (m²)</option>
+                                <option value="km2">Square Kilometers (km²)</option>
+                                <option value="cm2">Square Centimeters (cm²)</option>
+                                <option value="ha">Hectares (ha)</option>
+                                <option value="ft2">Square Feet (ft²)</option>
+                                <option value="yd2">Square Yards (yd²)</option>
+                                <option value="ac">Acres (ac)</option>
+                                <option value="mi2">Square Miles (mi²)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="presets">
+                        <button class="preset-button" data-value="1" data-from="m2" data-to="ft2">1m² to ft²</button>
+                        <button class="preset-button" data-value="1" data-from="ha" data-to="ac">1ha to ac</button>
+                        <button class="preset-button" data-value="1" data-from="km2" data-to="mi2">1km² to mi²</button>
+                    </div>
+                </div>
+
+                <div class="converter-section">
+                    <h2>Volume Converter</h2>
+                    <div class="converter-grid">
+                        <div class="input-group">
+                            <label for="volumeInput">Value</label>
+                            <input type="number" id="volumeInput" step="any">
+                            <select id="volumeFromUnit">
+                                <option value="m3">Cubic Meters (m³)</option>
+                                <option value="l">Liters (L)</option>
+                                <option value="ml">Milliliters (mL)</option>
+                                <option value="cm3">Cubic Centimeters (cm³)</option>
+                                <option value="ft3">Cubic Feet (ft³)</option>
+                                <option value="gal">Gallons (US)</option>
+                                <option value="qt">Quarts (US)</option>
+                                <option value="pt">Pints (US)</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label>Converted Value</label>
+                            <input type="number" id="volumeOutput" readonly>
+                            <select id="volumeToUnit">
+                                <option value="m3">Cubic Meters (m³)</option>
+                                <option value="l">Liters (L)</option>
+                                <option value="ml">Milliliters (mL)</option>
+                                <option value="cm3">Cubic Centimeters (cm³)</option>
+                                <option value="ft3">Cubic Feet (ft³)</option>
+                                <option value="gal">Gallons (US)</option>
+                                <option value="qt">Quarts (US)</option>
+                                <option value="pt">Pints (US)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="presets">
+                        <button class="preset-button" data-value="1" data-from="l" data-to="gal">1L to gal</button>
+                        <button class="preset-button" data-value="1" data-from="m3" data-to="ft3">1m³ to ft³</button>
+                        <button class="preset-button" data-value="1" data-from="ml" data-to="pt">1L to pt</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const conversionFactors = {
+            // Length conversions (to meters)
+            length: {
+                m: 1,
+                km: 1000,
+                cm: 0.01,
+                mm: 0.001,
+                ft: 0.3048,
+                in: 0.0254,
+                yd: 0.9144,
+                mi: 1609.344
+            },
+            // Area conversions (to square meters)
+            area: {
+                m2: 1,
+                km2: 1000000,
+                cm2: 0.0001,
+                ha: 10000,
+                ft2: 0.092903,
+                yd2: 0.836127,
+                ac: 4046.86,
+                mi2: 2589988.11
+            },
+            // Volume conversions (to cubic meters)
+            volume: {
+                m3: 1,
+                l: 0.001,
+                ml: 0.000001,
+                cm3: 0.000001,
+                ft3: 0.0283168,
+                gal: 0.00378541,
+                qt: 0.000946353,
+                pt: 0.000473176
+            }
+        };
+
+        function convert(value, fromUnit, toUnit, type) {
+            const factors = conversionFactors[type];
+            if (!factors) return 0;
+            
+            // Convert to base unit (meters/square meters/cubic meters)
+            const baseValue = value * factors[fromUnit];
+            // Convert from base unit to target unit
+            return baseValue / factors[toUnit];
+        }
+
+        function setupConverter(type) {
+            const input = document.getElementById(`${type}Input`);
+            const output = document.getElementById(`${type}Output`);
+            const fromUnit = document.getElementById(`${type}FromUnit`);
+            const toUnit = document.getElementById(`${type}ToUnit`);
+
+            function updateConversion() {
+                const value = parseFloat(input.value);
+                if (!isNaN(value)) {
+                    const result = convert(value, fromUnit.value, toUnit.value, type);
+                    output.value = result.toFixed(6);
+                } else {
+                    output.value = '';
+                }
+            }
+
+            input.addEventListener('input', updateConversion);
+            fromUnit.addEventListener('change', updateConversion);
+            toUnit.addEventListener('change', updateConversion);
+
+            return updateConversion;
+        }
+
+        // Setup converters for each type
+        const lengthConverter = setupConverter('length');
+        const areaConverter = setupConverter('area');
+        const volumeConverter = setupConverter('volume');
+
+        // Setup preset buttons
+        document.querySelectorAll('.preset-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const section = button.closest('.converter-section');
+                const type = section.querySelector('h2').textContent.toLowerCase().split(' ')[0];
+                const input = document.getElementById(`${type}Input`);
+                const fromUnit = document.getElementById(`${type}FromUnit`);
+                const toUnit = document.getElementById(`${type}ToUnit`);
+
+                input.value = button.dataset.value;
+                fromUnit.value = button.dataset.from;
+                toUnit.value = button.dataset.to;
+
+                // Trigger conversion
+                input.dispatchEvent(new Event('input'));
+            });
+        });
+    </script>
+</body>
+</html>
