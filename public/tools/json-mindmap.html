@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online JSON to Mindmap converter - Transform JSON data into interactive mindmap visualizations. Simple, fast, and intuitive JSON visualization tool with zoom controls and export options">
+    <meta name="keywords" content="json to mindmap, json visualizer, mindmap generator, json tree visualization, interactive mindmap, data visualization, developer tools, free converter">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>JSON to Mindmap Converter - Free Online JSON Visualization Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.9/standalone/umd/vis-network.min.js" integrity="sha512-iTgTmIgxyA2YehKNVbzLJx4j9SnuC5ihtRrtxVkXH/9nF3vXBN5YeNQp+6wufBWKD3u+roHVNOvWBMufQnBbug==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .converter-layout {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+        .input-section {
+            display: flex;
+            flex-direction: column;
+        }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-sm);
+        }
+        .section-title {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .json-input {
+            width: 100%;
+            height: 400px;
+            padding: var(--spacing-sm);
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        .error-message {
+            color: red;
+            margin-top: var(--spacing-sm);
+            min-height: 20px;
+        }
+        .mindmap-container {
+            height: 600px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background: #f8f8f8;
+        }
+        .controls {
+            margin-top: var(--spacing-sm);
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+        .btn {
+            padding: 8px 16px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .zoom-controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>JSON to Mindmap Converter</h1>
+                <p>Transform your JSON data into an interactive mindmap visualization. Simply paste your JSON code and see it rendered as an intuitive, explorable diagram.</p>
+                
+                <div class="converter-layout">
+                    <div class="input-section">
+                        <div class="section-header">
+                            <span class="section-title">JSON Input</span>
+                            <button id="sampleBtn" class="btn">Load Sample</button>
+                        </div>
+                        <textarea id="jsonInput" class="json-input" placeholder="Paste your JSON here..."></textarea>
+                        <div id="jsonError" class="error-message"></div>
+                        <div class="controls">
+                            <button id="visualizeBtn" class="btn">Visualize</button>
+                            <button id="exportBtn" class="btn">Export as PNG</button>
+                        </div>
+                    </div>
+
+                    <div class="mindmap-section">
+                        <div class="zoom-controls">
+                            <button id="zoomInBtn" class="btn">Zoom In</button>
+                            <button id="zoomOutBtn" class="btn">Zoom Out</button>
+                            <button id="fitBtn" class="btn">Fit View</button>
+                        </div>
+                        <div id="mindmap" class="mindmap-container"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        let network = null;
+
+        function createMindmap(jsonData, container) {
+            const nodes = [];
+            const edges = [];
+            let nodeId = 0;
+
+            function processObject(obj, parentId = null, key = 'root') {
+                const currentId = nodeId++;
+                nodes.push({
+                    id: currentId,
+                    label: key,
+                    shape: 'box',
+                    color: parentId === null ? '#4CAF50' : '#2196F3'
+                });
+
+                if (parentId !== null) {
+                    edges.push({
+                        from: parentId,
+                        to: currentId
+                    });
+                }
+
+                if (Array.isArray(obj)) {
+                    obj.forEach((item, index) => {
+                        if (typeof item === 'object' && item !== null) {
+                            processObject(item, currentId, `[${index}]`);
+                        } else {
+                            const valueId = nodeId++;
+                            nodes.push({
+                                id: valueId,
+                                label: String(item),
+                                shape: 'box',
+                                color: '#FFC107'
+                            });
+                            edges.push({
+                                from: currentId,
+                                to: valueId
+                            });
+                        }
+                    });
+                } else if (typeof obj === 'object' && obj !== null) {
+                    Object.entries(obj).forEach(([key, value]) => {
+                        if (typeof value === 'object' && value !== null) {
+                            processObject(value, currentId, key);
+                        } else {
+                            const valueId = nodeId++;
+                            nodes.push({
+                                id: valueId,
+                                label: `${key}: ${value}`,
+                                shape: 'box',
+                                color: '#FFC107'
+                            });
+                            edges.push({
+                                from: currentId,
+                                to: valueId
+                            });
+                        }
+                    });
+                }
+
+                return currentId;
+            }
+
+            processObject(jsonData);
+
+            const data = {
+                nodes: new vis.DataSet(nodes),
+                edges: new vis.DataSet(edges)
+            };
+
+            const options = {
+                layout: {
+                    hierarchical: {
+                        direction: 'UD',
+                        sortMethod: 'directed',
+                        nodeSpacing: 150,
+                        levelSeparation: 150
+                    }
+                },
+                physics: false,
+                interaction: {
+                    dragNodes: true,
+                    dragView: true,
+                    zoomView: true
+                }
+            };
+
+            return new vis.Network(container, data, options);
+        }
+
+        document.getElementById('visualizeBtn').addEventListener('click', () => {
+            const jsonInput = document.getElementById('jsonInput').value;
+            const errorDiv = document.getElementById('jsonError');
+            const container = document.getElementById('mindmap');
+
+            try {
+                const jsonData = JSON.parse(jsonInput);
+                errorDiv.textContent = '';
+                network = createMindmap(jsonData, container);
+            } catch (error) {
+                errorDiv.textContent = `Error: ${error.message}`;
+            }
+        });
+
+        document.getElementById('sampleBtn').addEventListener('click', () => {
+            const sampleJson = {
+                "name": "Project",
+                "description": "Sample Project",
+                "version": "1.0.0",
+                "dependencies": {
+                    "framework": "latest",
+                    "plugins": ["auth", "database", "ui"]
+                },
+                "settings": {
+                    "debug": true,
+                    "theme": {
+                        "dark": true,
+                        "colors": ["#000", "#fff"]
+                    }
+                }
+            };
+            document.getElementById('jsonInput').value = JSON.stringify(sampleJson, null, 2);
+        });
+
+        document.getElementById('zoomInBtn').addEventListener('click', () => {
+            if (network) network.zoom(1.2);
+        });
+
+        document.getElementById('zoomOutBtn').addEventListener('click', () => {
+            if (network) network.zoom(0.8);
+        });
+
+        document.getElementById('fitBtn').addEventListener('click', () => {
+            if (network) network.fit();
+        });
+
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            if (network) {
+                const canvas = network.canvas.frame.canvas;
+                const link = document.createElement('a');
+                link.download = 'mindmap.png';
+                link.href = canvas.toDataURL();
+                link.click();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -54,6 +54,12 @@
     "url": "/tools/image-grid-splitter.html"
   },
   {
+    "title": "JSON to Mindmap Converter - Free Online JSON Visualization Tool",
+    "desc": "Free online JSON to Mindmap converter - Transform JSON data into interactive mindmap visualizations. Simple, fast, and intuitive JSON visualization tool with zoom controls and export options",
+    "category": "tools",
+    "url": "/tools/json-mindmap.html"
+  },
+  {
     "title": "Milliseconds to Date Converter - Free Online Time Format Tool",
     "desc": "Free online milliseconds to date converter - Convert Unix timestamps and milliseconds to human-readable dates. Features multiple time formats, timezone support, and instant conversion.",
     "category": "tools",
