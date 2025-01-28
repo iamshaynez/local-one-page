@@ -45,3 +45,15 @@
     }
 })();
 
+// 查找现有的 favicon link 标签
+let favicon = document.querySelector('link[rel="shortcut icon"]');
+
+// 如果不存在，则创建新的
+if (!favicon) {
+    favicon = document.createElement('link');
+    favicon.rel = 'shortcut icon';
+    document.head.appendChild(favicon);
+}
+
+// 设置或更新 favicon 的 href
+favicon.href = '/static/favicon.jpg';
