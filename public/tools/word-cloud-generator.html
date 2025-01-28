@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online word cloud generator - Create beautiful word clouds from your text with customizable fonts, colors, and shapes. Features real-time preview and multiple export options">
+    <meta name="keywords" content="word cloud generator, tag cloud maker, text visualization, word art creator, word frequency analyzer, text cloud generator, word collage maker, online word cloud tool">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Word Cloud Generator - Free Online Text Visualization Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/d3-cloud@1.2.5/build/d3.layout.cloud.min.js"></script>
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        @media (max-width: 768px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+        }
+
+        .preview-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            color: var(--text-color);
+        }
+
+        textarea, select, input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+            font-family: inherit;
+        }
+
+        textarea {
+            height: 200px;
+            resize: vertical;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .color-option {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .color-option:hover {
+            opacity: 0.8;
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .action-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .action-button:hover {
+            opacity: 0.9;
+        }
+
+        .export-button {
+            background: var(--accent-color);
+        }
+
+        #wordCloudCanvas {
+            max-width: 100%;
+            height: auto;
+            background: white;
+            border-radius: var(--border-radius);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Word Cloud Generator</h1>
+                <p>Create beautiful word clouds from your text. Customize fonts, colors, and shapes to generate unique text visualizations.</p>
+
+                <div class="editor-grid">
+                    <div class="input-section">
+                        <div class="input-group">
+                            <label for="textInput">Enter your text</label>
+                            <textarea id="textInput" placeholder="Paste your text here..."></textarea>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="fontSelect">Font Style</label>
+                            <select id="fontSelect">
+                                <option value="Arial">Arial</option>
+                                <option value="Times New Roman">Times New Roman</option>
+                                <option value="Helvetica">Helvetica</option>
+                                <option value="Georgia">Georgia</option>
+                                <option value="Verdana">Verdana</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="shapeSelect">Cloud Shape</label>
+                            <select id="shapeSelect">
+                                <option value="circle">Circle</option>
+                                <option value="rectangle">Rectangle</option>
+                                <option value="star">Star</option>
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="maxWords">Maximum Words</label>
+                            <input type="number" id="maxWords" value="100" min="1" max="300">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Color Scheme</label>
+                            <div class="color-grid" id="colorSchemes">
+                                <!-- Color schemes will be added here via JavaScript -->
+                            </div>
+                        </div>
+
+                        <div class="button-group">
+                            <button class="action-button" onclick="generateWordCloud()">Generate</button>
+                            <button class="action-button export-button" onclick="exportWordCloud()">Export as PNG</button>
+                        </div>
+                    </div>
+
+                    <div class="preview-section">
+                        <canvas id="wordCloudCanvas" width="600" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Color schemes
+        const colorSchemes = [
+            ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEEAD'],
+            ['#D4A5A5', '#9D8189', '#7A6174', '#5E4A59', '#392B3B'],
+            ['#F9ED69', '#F08A5D', '#B83B5E', '#6A2C70', '#FF9A8B'],
+            ['#2D4059', '#EA5455', '#F07B3F', '#FFD460', '#A8E6CF'],
+            ['#A8E6CF', '#DCEDC1', '#FFD3B6', '#FFAAA5', '#FF8B94']
+        ];
+
+        // Initialize color scheme options
+        function initColorSchemes() {
+            const container = document.getElementById('colorSchemes');
+            colorSchemes.forEach((scheme, index) => {
+                const div = document.createElement('div');
+                div.className = 'color-option';
+                div.style.background = `linear-gradient(to right, ${scheme.join(', ')})`;
+                div.setAttribute('data-scheme', index);
+                div.onclick = () => selectColorScheme(index);
+                container.appendChild(div);
+            });
+        }
+
+        let selectedColorScheme = 0;
+        function selectColorScheme(index) {
+            selectedColorScheme = index;
+            document.querySelectorAll('.color-option').forEach((el, i) => {
+                el.style.border = i === index ? '2px solid var(--primary-color)' : '1px solid var(--border-color)';
+            });
+        }
+
+        // Word cloud generation
+        function generateWordCloud() {
+            const text = document.getElementById('textInput').value;
+            if (!text.trim()) {
+                alert('Please enter some text');
+                return;
+            }
+
+            const words = text.trim().toLowerCase()
+                .replace(/[^\w\s]/g, '')
+                .split(/\s+/)
+                .reduce((acc, word) => {
+                    acc[word] = (acc[word] || 0) + 1;
+                    return acc;
+                }, {});
+
+            const wordArray = Object.entries(words)
+                .map(([text, size]) => ({ text, size: 10 + size * 5 }))
+                .sort((a, b) => b.size - a.size)
+                .slice(0, parseInt(document.getElementById('maxWords').value));
+
+            const layout = d3.layout.cloud()
+                .size([600, 400])
+                .words(wordArray)
+                .padding(5)
+                .rotate(() => (~~(Math.random() * 2) * 90))
+                .font(document.getElementById('fontSelect').value)
+                .fontSize(d => d.size)
+                .on('end', draw);
+
+            layout.start();
+        }
+
+        function draw(words) {
+            const canvas = document.getElementById('wordCloudCanvas');
+            const ctx = canvas.getContext('2d');
+            const colors = colorSchemes[selectedColorScheme];
+
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.translate(canvas.width / 2, canvas.height / 2);
+
+            words.forEach((word, i) => {
+                ctx.font = `${word.size}px ${word.font}`;
+                ctx.fillStyle = colors[i % colors.length];
+                ctx.textAlign = 'center';
+                ctx.save();
+                ctx.translate(word.x, word.y);
+                ctx.rotate(word.rotate * Math.PI / 180);
+                ctx.fillText(word.text, 0, 0);
+                ctx.restore();
+            });
+
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
+        }
+
+        function exportWordCloud() {
+            const canvas = document.getElementById('wordCloudCanvas');
+            const link = document.createElement('a');
+            link.download = 'wordcloud.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Initialize
+        window.onload = () => {
+            initColorSchemes();
+            selectColorScheme(0);
+        };
+    </script>
+</body>
+</html>

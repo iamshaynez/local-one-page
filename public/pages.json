@@ -18,10 +18,22 @@
     "url": "/tools/device-info-detector.html"
   },
   {
+    "title": "Word Weight Cloud Generator - Custom Word Cloud Creation Tool",
+    "desc": "Free online word cloud generator with manual weight control - Create customized word clouds by setting individual word weights. Features color schemes, fonts, and shape options",
+    "category": "tools",
+    "url": "/tools/word-weight-cloud.html"
+  },
+  {
     "title": "Mermaid Diagram Renderer - Free Online Tool",
     "desc": "Free online Mermaid diagram renderer - Create and visualize diagrams using Mermaid syntax. Perfect for flowcharts, sequence diagrams, class diagrams, and more",
     "category": "tools",
     "url": "/tools/mermaid-renderer.html"
+  },
+  {
+    "title": "Word Cloud Generator - Free Online Text Visualization Tool",
+    "desc": "Free online word cloud generator - Create beautiful word clouds from your text with customizable fonts, colors, and shapes. Features real-time preview and multiple export options",
+    "category": "tools",
+    "url": "/tools/word-cloud-generator.html"
   },
   {
     "title": "Free JPG to SVG Converter - Convert Images to Vector Graphics Online",

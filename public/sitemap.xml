@@ -49,8 +49,20 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/tools/word-weight-cloud.html</loc>
+        <lastmod>2025-01-28</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/tools/mermaid-renderer.html</loc>
         <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/tools/word-cloud-generator.html</loc>
+        <lastmod>2025-01-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>
