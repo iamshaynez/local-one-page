@@ -43,6 +43,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/tools/device-info-detector.html</loc>
+        <lastmod>2025-01-28</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/tools/mermaid-renderer.html</loc>
         <lastmod>2025-01-26</lastmod>
         <changefreq>monthly</changefreq>
@@ -69,6 +75,12 @@
     <url>
         <loc>https://www.localhosts.vip/tools/milliseconds-date.html</loc>
         <lastmod>2025-01-26</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://www.localhosts.vip/tools/world-clock-display.html</loc>
+        <lastmod>2025-01-28</lastmod>
         <changefreq>monthly</changefreq>
         <priority>0.8</priority>
     </url>

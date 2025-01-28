@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online device information detector - Check your device's specifications including browser details, operating system, screen resolution, hardware capabilities, and network status">
+    <meta name="keywords" content="device info detector, system information, browser detection, screen resolution checker, hardware info, network status, device capabilities, user agent parser, online device checker">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Device Information Detector - Free Online System Information Checker</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .info-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .info-section h2 {
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .info-item {
+            background: var(--background-color-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+        }
+
+        .info-item-label {
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .info-item-value {
+            word-break: break-all;
+        }
+
+        .copy-button {
+            padding: var(--spacing-xs) var(--spacing-sm);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .copy-button:hover {
+            opacity: 0.9;
+        }
+
+        .export-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .export-button:hover {
+            opacity: 0.9;
+        }
+
+        .dynamic-value {
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 600px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Device Information Detector</h1>
+                <p>Get detailed information about your device, browser, and system capabilities. All information is collected locally and no data is sent to any server.</p>
+                
+                <button id="exportButton" class="export-button">Export All Information</button>
+
+                <div class="info-section">
+                    <h2>Browser Information</h2>
+                    <div class="info-grid" id="browserInfo"></div>
+                </div>
+
+                <div class="info-section">
+                    <h2>System Information</h2>
+                    <div class="info-grid" id="systemInfo"></div>
+                </div>
+
+                <div class="info-section">
+                    <h2>Screen & Display</h2>
+                    <div class="info-grid" id="screenInfo"></div>
+                </div>
+
+                <div class="info-section">
+                    <h2>Network Status</h2>
+                    <div class="info-grid" id="networkInfo"></div>
+                </div>
+
+                <div class="info-section">
+                    <h2>Hardware Capabilities</h2>
+                    <div class="info-grid" id="hardwareInfo"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Utility function to create info items
+        function createInfoItem(label, value, isDynamic = false) {
+            const item = document.createElement('div');
+            item.className = 'info-item';
+            
+            const labelElement = document.createElement('div');
+            labelElement.className = 'info-item-label';
+            labelElement.textContent = label;
+
+            const valueElement = document.createElement('div');
+            valueElement.className = 'info-item-value';
+            if (isDynamic) {
+                valueElement.classList.add('dynamic-value');
+            }
+            valueElement.textContent = value;
+
+            const copyButton = document.createElement('button');
+            copyButton.className = 'copy-button';
+            copyButton.textContent = 'Copy';
+            copyButton.onclick = () => {
+                navigator.clipboard.writeText(value).then(() => {
+                    copyButton.textContent = 'Copied!';
+                    setTimeout(() => {
+                        copyButton.textContent = 'Copy';
+                    }, 2000);
+                });
+            };
+
+            item.appendChild(labelElement);
+            item.appendChild(valueElement);
+            item.appendChild(copyButton);
+
+            return item;
+        }
+
+        // Collect and display browser information
+        function displayBrowserInfo() {
+            const browserInfo = document.getElementById('browserInfo');
+            browserInfo.innerHTML = '';
+
+            const info = {
+                'User Agent': navigator.userAgent,
+                'Browser Language': navigator.language,
+                'Cookies Enabled': navigator.cookieEnabled ? 'Yes' : 'No',
+                'JavaScript Enabled': 'Yes',
+                'Do Not Track': navigator.doNotTrack || 'Not Set',
+                'Platform': navigator.platform,
+                'Browser Online': navigator.onLine ? 'Yes' : 'No'
+            };
+
+            for (const [label, value] of Object.entries(info)) {
+                browserInfo.appendChild(createInfoItem(label, value));
+            }
+        }
+
+        // Collect and display system information
+        function displaySystemInfo() {
+            const systemInfo = document.getElementById('systemInfo');
+            systemInfo.innerHTML = '';
+
+            const info = {
+                'Operating System': navigator.platform,
+                'CPU Cores': navigator.hardwareConcurrency || 'Unknown',
+                'Memory': navigator.deviceMemory ? `${navigator.deviceMemory} GB` : 'Unknown',
+                'Color Depth': `${screen.colorDepth} bits`,
+                'Time Zone': Intl.DateTimeFormat().resolvedOptions().timeZone,
+                'System Time': new Date().toLocaleString()
+            };
+
+            for (const [label, value] of Object.entries(info)) {
+                systemInfo.appendChild(createInfoItem(label, value, label === 'System Time'));
+            }
+        }
+
+        // Collect and display screen information
+        function displayScreenInfo() {
+            const screenInfo = document.getElementById('screenInfo');
+            screenInfo.innerHTML = '';
+
+            const info = {
+                'Screen Resolution': `${screen.width} × ${screen.height}`,
+                'Available Resolution': `${screen.availWidth} × ${screen.availHeight}`,
+                'Window Size': `${window.innerWidth} × ${window.innerHeight}`,
+                'Pixel Ratio': window.devicePixelRatio,
+                'Orientation': screen.orientation ? screen.orientation.type : 'Unknown'
+            };
+
+            for (const [label, value] of Object.entries(info)) {
+                screenInfo.appendChild(createInfoItem(label, value, label === 'Window Size'));
+            }
+        }
+
+        // Collect and display network information
+        function displayNetworkInfo() {
+            const networkInfo = document.getElementById('networkInfo');
+            networkInfo.innerHTML = '';
+
+            const info = {
+                'Online Status': navigator.onLine ? 'Online' : 'Offline'
+            };
+
+            if ('connection' in navigator) {
+                const conn = navigator.connection;
+                info['Connection Type'] = conn.effectiveType || 'Unknown';
+                info['Downlink Speed'] = conn.downlink ? `${conn.downlink} Mbps` : 'Unknown';
+                info['Save Data Mode'] = conn.saveData ? 'Enabled' : 'Disabled';
+            }
+
+            for (const [label, value] of Object.entries(info)) {
+                networkInfo.appendChild(createInfoItem(label, value, true));
+            }
+        }
+
+        // Collect and display hardware capabilities
+        function displayHardwareInfo() {
+            const hardwareInfo = document.getElementById('hardwareInfo');
+            hardwareInfo.innerHTML = '';
+
+            const info = {
+                'Touch Support': 'ontouchstart' in window ? 'Yes' : 'No',
+                'WebGL Support': (() => {
+                    const canvas = document.createElement('canvas');
+                    return canvas.getContext('webgl') ? 'Yes' : 'No';
+                })(),
+                'Audio Support': 'AudioContext' in window ? 'Yes' : 'No',
+                'Video Support': 'HTMLVideoElement' in window ? 'Yes' : 'No',
+                'WebRTC Support': 'RTCPeerConnection' in window ? 'Yes' : 'No',
+                'Bluetooth Support': 'bluetooth' in navigator ? 'Yes' : 'No',
+                'Gamepad Support': 'getGamepads' in navigator ? 'Yes' : 'No',
+                'Battery Status': 'getBattery' in navigator ? 'Supported' : 'Not Supported'
+            };
+
+            for (const [label, value] of Object.entries(info)) {
+                hardwareInfo.appendChild(createInfoItem(label, value));
+            }
+        }
+
+        // Export all information
+        function exportInformation() {
+            const info = {
+                browserInfo: {},
+                systemInfo: {},
+                screenInfo: {},
+                networkInfo: {},
+                hardwareInfo: {}
+            };
+
+            document.querySelectorAll('.info-section').forEach(section => {
+                const sectionTitle = section.querySelector('h2').textContent.toLowerCase().replace(' ', '_');
+                section.querySelectorAll('.info-item').forEach(item => {
+                    const label = item.querySelector('.info-item-label').textContent;
+                    const value = item.querySelector('.info-item-value').textContent;
+                    info[sectionTitle] = info[sectionTitle] || {};
+                    info[sectionTitle][label] = value;
+                });
+            });
+
+            const blob = new Blob([JSON.stringify(info, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'device-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize
+        function init() {
+            displayBrowserInfo();
+            displaySystemInfo();
+            displayScreenInfo();
+            displayNetworkInfo();
+            displayHardwareInfo();
+
+            // Update dynamic values
+            setInterval(() => {
+                displaySystemInfo(); // Updates system time
+                displayScreenInfo(); // Updates window size
+                displayNetworkInfo(); // Updates network status
+            }, 1000);
+
+            // Add export button handler
+            document.getElementById('exportButton').onclick = exportInformation;
+
+            // Add network status event listeners
+            window.addEventListener('online', displayNetworkInfo);
+            window.addEventListener('offline', displayNetworkInfo);
+
+            // Add resize event listener
+            window.addEventListener('resize', displayScreenInfo);
+
+            // Add orientation change listener
+            if (screen.orientation) {
+                screen.orientation.addEventListener('change', displayScreenInfo);
+            }
+        }
+
+        // Start the application
+        init();
+    </script>
+</body>
+</html>
