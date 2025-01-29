@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online PNG to JPG converter - Convert PNG images to JPG format instantly with adjustable quality. Browser-based processing with no server uploads required. Fast, secure, and privacy-focused.">
+    <meta name="keywords" content="png to jpg converter, image converter, png converter, jpg converter, online image converter, free image converter, image format converter, png to jpeg, convert png, browser-based converter">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>PNG to JPG Converter - Free Online Image Format Converter</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .drop-zone {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .drop-zone.drag-over {
+            border-color: var(--primary-color);
+            background: var(--background-color-secondary);
+        }
+
+        .drop-zone p {
+            margin: var(--spacing-md) 0;
+            color: var(--text-color-secondary);
+        }
+
+        .preview-container {
+            margin: var(--spacing-lg) 0;
+            text-align: center;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 400px;
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        .controls {
+            margin: var(--spacing-lg) 0;
+        }
+
+        .quality-control {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .quality-slider {
+            width: 100%;
+            margin: var(--spacing-sm) 0;
+        }
+
+        .quality-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .file-info {
+            margin: var(--spacing-md) 0;
+            padding: var(--spacing-sm);
+            background: var(--background-color-secondary);
+            border-radius: var(--border-radius);
+            display: none;
+        }
+
+        .download-button {
+            display: none;
+            margin: var(--spacing-md) auto;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            transition: background 0.3s ease;
+        }
+
+        .download-button:hover {
+            background: var(--primary-color-dark);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>PNG to JPG Converter</h1>
+                <p>Convert PNG images to JPG format instantly in your browser. No upload to server required - all processing happens locally!</p>
+
+                <div class="drop-zone" id="dropZone">
+                    <p>Drag and drop your PNG image here</p>
+                    <p>or</p>
+                    <button class="button">Select File</button>
+                    <input type="file" id="fileInput" accept="image/png" style="display: none">
+                </div>
+
+                <div class="file-info" id="fileInfo"></div>
+
+                <div class="preview-container">
+                    <img id="previewImage" class="preview-image" alt="Image preview">
+                </div>
+
+                <div class="controls">
+                    <div class="quality-control">
+                        <label for="qualitySlider">JPG Quality: <span id="qualityValue" class="quality-value">90</span>%</label>
+                        <input type="range" id="qualitySlider" class="quality-slider" min="1" max="100" value="90">
+                    </div>
+                    <button id="downloadButton" class="download-button">Download JPG</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const previewImage = document.getElementById('previewImage');
+            const fileInfo = document.getElementById('fileInfo');
+            const qualitySlider = document.getElementById('qualitySlider');
+            const qualityValue = document.getElementById('qualityValue');
+            const downloadButton = document.getElementById('downloadButton');
+            let originalImage = null;
+
+            // Handle drag and drop events
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.classList.add('drag-over');
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.classList.remove('drag-over');
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('drag-over');
+                const file = e.dataTransfer.files[0];
+                handleFile(file);
+            });
+
+            // Handle file selection via button
+            dropZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                handleFile(file);
+            });
+
+            // Update quality value display
+            qualitySlider.addEventListener('input', () => {
+                qualityValue.textContent = qualitySlider.value;
+                if (originalImage) {
+                    convertToJpg();
+                }
+            });
+
+            function handleFile(file) {
+                if (!file || !file.type.startsWith('image/png')) {
+                    alert('Please select a PNG image file.');
+                    return;
+                }
+
+                // Display file info
+                fileInfo.style.display = 'block';
+                fileInfo.textContent = `File: ${file.name} (${(file.size / 1024).toFixed(2)} KB)`;
+
+                // Create preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    originalImage = new Image();
+                    originalImage.src = e.target.result;
+                    originalImage.onload = () => {
+                        previewImage.src = originalImage.src;
+                        previewImage.style.display = 'block';
+                        downloadButton.style.display = 'block';
+                        convertToJpg();
+                    };
+                };
+                reader.readAsDataURL(file);
+            }
+
+            function convertToJpg() {
+                if (!originalImage) return;
+
+                const canvas = document.createElement('canvas');
+                canvas.width = originalImage.width;
+                canvas.height = originalImage.height;
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = 'white';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(originalImage, 0, 0);
+
+                const quality = parseInt(qualitySlider.value) / 100;
+                const jpgDataUrl = canvas.toDataURL('image/jpeg', quality);
+                downloadButton.onclick = () => {
+                    const link = document.createElement('a');
+                    link.download = 'converted-image.jpg';
+                    link.href = jpgDataUrl;
+                    link.click();
+                };
+            }
+        });
+    </script>
+</body>
+</html>
