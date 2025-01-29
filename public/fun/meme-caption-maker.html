@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online meme caption maker - Create custom memes with text overlays, font customization, and image upload. Easy to use, no watermarks, and all processing happens in your browser">
+    <meta name="keywords" content="meme maker, meme generator, caption maker, image caption tool, meme creator, text on image, meme editor, free meme maker, online meme tool">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Meme Caption Maker - Free Online Meme Generator Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .meme-editor {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        @media (max-width: 768px) {
+            .meme-editor {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .editor-panel {
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .preview-panel {
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .meme-preview {
+            position: relative;
+            max-width: 100%;
+            margin: 0 auto;
+            background: #000;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .meme-preview img {
+            max-width: 100%;
+            max-height: 500px;
+            display: block;
+        }
+
+        .meme-text {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-shadow: 2px 2px 0 #000, -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000;
+            text-align: center;
+            width: 90%;
+            word-wrap: break-word;
+            font-family: Impact, sans-serif;
+            font-size: 36px;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        .top-text {
+            top: 20px;
+        }
+
+        .bottom-text {
+            bottom: 20px;
+        }
+
+        .input-group {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+            color: var(--text-color);
+        }
+
+        .input-group input,
+        .input-group select {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+        }
+
+        .button-group {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-md);
+        }
+
+        .action-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Meme Caption Maker</h1>
+                <p>Create custom memes easily with our free online meme generator. Add text to your images, customize fonts, and download your creations instantly!</p>
+
+                <div class="meme-editor">
+                    <div class="editor-panel">
+                        <div class="input-group">
+                            <label for="imageInput">Upload Image or Paste URL:</label>
+                            <input type="text" id="imageUrl" placeholder="Enter image URL or upload below" class="input">
+                            <div class="file-input-wrapper">
+                                <button class="action-button" style="margin-top: 10px;">Choose File</button>
+                                <input type="file" id="imageInput" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label for="topText">Top Text:</label>
+                            <input type="text" id="topText" placeholder="Enter top text">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="bottomText">Bottom Text:</label>
+                            <input type="text" id="bottomText" placeholder="Enter bottom text">
+                        </div>
+
+                        <div class="input-group">
+                            <label for="fontSize">Font Size:</label>
+                            <input type="range" id="fontSize" min="20" max="80" value="36">
+                        </div>
+
+                        <div class="button-group">
+                            <button id="downloadBtn" class="action-button">Download Meme</button>
+                            <button id="resetBtn" class="action-button">Reset</button>
+                        </div>
+                    </div>
+
+                    <div class="preview-panel">
+                        <h2>Preview</h2>
+                        <div class="meme-preview" id="memePreview">
+                            <div class="meme-text top-text" id="previewTopText"></div>
+                            <img id="previewImage" alt="Meme preview">
+                            <div class="meme-text bottom-text" id="previewBottomText"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const imageUrl = document.getElementById('imageUrl');
+            const imageInput = document.getElementById('imageInput');
+            const topText = document.getElementById('topText');
+            const bottomText = document.getElementById('bottomText');
+            const fontSize = document.getElementById('fontSize');
+            const previewImage = document.getElementById('previewImage');
+            const previewTopText = document.getElementById('previewTopText');
+            const previewBottomText = document.getElementById('previewBottomText');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const resetBtn = document.getElementById('resetBtn');
+
+            // Update preview when text changes
+            function updatePreview() {
+                previewTopText.textContent = topText.value;
+                previewBottomText.textContent = bottomText.value;
+                previewTopText.style.fontSize = `${fontSize.value}px`;
+                previewBottomText.style.fontSize = `${fontSize.value}px`;
+            }
+
+            // Handle image upload
+            imageInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previewImage.src = e.target.result;
+                        imageUrl.value = '';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            // Handle image URL input
+            imageUrl.addEventListener('input', function() {
+                if (this.value) {
+                    previewImage.src = this.value;
+                    imageInput.value = '';
+                }
+            });
+
+            // Update preview on text change
+            topText.addEventListener('input', updatePreview);
+            bottomText.addEventListener('input', updatePreview);
+            fontSize.addEventListener('input', updatePreview);
+
+            // Download meme
+            downloadBtn.addEventListener('click', function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                // Set canvas size to match image
+                canvas.width = previewImage.naturalWidth;
+                canvas.height = previewImage.naturalHeight;
+
+                // Draw image
+                ctx.drawImage(previewImage, 0, 0);
+
+                // Configure text style
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = 2;
+                ctx.textAlign = 'center';
+                ctx.font = `${fontSize.value}px Impact`;
+
+                // Draw top text
+                if (topText.value) {
+                    ctx.fillText(topText.value.toUpperCase(), canvas.width / 2, 50);
+                    ctx.strokeText(topText.value.toUpperCase(), canvas.width / 2, 50);
+                }
+
+                // Draw bottom text
+                if (bottomText.value) {
+                    ctx.fillText(bottomText.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
+                    ctx.strokeText(bottomText.value.toUpperCase(), canvas.width / 2, canvas.height - 20);
+                }
+
+                // Create download link
+                const link = document.createElement('a');
+                link.download = 'meme.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+
+            // Reset form
+            resetBtn.addEventListener('click', function() {
+                imageUrl.value = '';
+                imageInput.value = '';
+                topText.value = '';
+                bottomText.value = '';
+                fontSize.value = 36;
+                previewImage.src = '';
+                updatePreview();
+            });
+
+            // Handle image load errors
+            previewImage.addEventListener('error', function() {
+                alert('Error loading image. Please check the URL and try again.');
+                this.src = '';
+            });
+        });
+    </script>
+</body>
+</html>
