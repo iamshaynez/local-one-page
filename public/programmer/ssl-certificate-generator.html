@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online SSL certificate generator - Create CSR, private keys, and self-signed certificates. Generate SSL certificates with customizable parameters for development and testing.">
+    <meta name="keywords" content="ssl certificate generator, csr generator, self-signed certificate, ssl key generator, certificate signing request, online ssl tool, development ssl, test certificates">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>SSL Certificate Generator - Free Online SSL Certificate Creation Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/forge/1.3.1/forge.min.js"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .cert-section {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .input-group {
+            display: flex;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .input-field {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .input-field label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .input-field input,
+        .input-field select {
+            width: 100%;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+        }
+
+        .output-area {
+            width: 100%;
+            min-height: 150px;
+            padding: var(--spacing-md);
+            margin-top: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+            font-family: monospace;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .controls {
+            display: flex;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-md) 0;
+        }
+
+        .download-links {
+            display: none;
+            margin-top: var(--spacing-md);
+        }
+
+        .download-links.visible {
+            display: block;
+        }
+
+        .status-message {
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius);
+        }
+
+        .status-message.success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-message.error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>SSL Certificate Generator</h1>
+                <p>Generate SSL certificates for development and testing. Create CSR (Certificate Signing Request), private keys, and self-signed certificates with customizable parameters. All processing is done in your browser - no data is sent to any server.</p>
+
+                <div class="cert-section">
+                    <h2>Certificate Details</h2>
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="common-name">Common Name (CN)</label>
+                            <input type="text" id="common-name" placeholder="example.com">
+                        </div>
+                        <div class="input-field">
+                            <label for="organization">Organization (O)</label>
+                            <input type="text" id="organization" placeholder="Your Company">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="org-unit">Organizational Unit (OU)</label>
+                            <input type="text" id="org-unit" placeholder="IT Department">
+                        </div>
+                        <div class="input-field">
+                            <label for="country">Country (C)</label>
+                            <input type="text" id="country" placeholder="US" maxlength="2">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="state">State/Province (ST)</label>
+                            <input type="text" id="state" placeholder="California">
+                        </div>
+                        <div class="input-field">
+                            <label for="locality">Locality (L)</label>
+                            <input type="text" id="locality" placeholder="San Francisco">
+                        </div>
+                    </div>
+
+                    <div class="input-group">
+                        <div class="input-field">
+                            <label for="key-size">Key Size</label>
+                            <select id="key-size">
+                                <option value="2048">2048 bits (Standard)</option>
+                                <option value="4096">4096 bits (More Secure)</option>
+                            </select>
+                        </div>
+                        <div class="input-field">
+                            <label for="validity">Validity (days)</label>
+                            <input type="number" id="validity" value="365" min="1" max="3650">
+                        </div>
+                    </div>
+
+                    <div class="controls">
+                        <button id="generate-csr">Generate CSR</button>
+                        <button id="generate-cert">Generate Self-signed Certificate</button>
+                    </div>
+
+                    <div id="status-message" class="status-message" style="display: none;"></div>
+
+                    <div class="output-section">
+                        <div id="output" class="output-area"></div>
+                        <div id="download-links" class="download-links">
+                            <button id="download-private-key">Download Private Key</button>
+                            <button id="download-csr">Download CSR</button>
+                            <button id="download-cert">Download Certificate</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="instructions">
+                    <h2>Instructions</h2>
+                    <ol>
+                        <li>Fill in the certificate details with your information</li>
+                        <li>Choose the key size (2048 bits is standard, 4096 bits is more secure but slower)</li>
+                        <li>Set the validity period for self-signed certificates</li>
+                        <li>Click "Generate CSR" to create a Certificate Signing Request for CA submission</li>
+                        <li>Click "Generate Self-signed Certificate" to create a complete certificate for testing</li>
+                        <li>Download the generated files using the buttons below the output</li>
+                    </ol>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const commonName = document.getElementById('common-name');
+            const organization = document.getElementById('organization');
+            const orgUnit = document.getElementById('org-unit');
+            const country = document.getElementById('country');
+            const state = document.getElementById('state');
+            const locality = document.getElementById('locality');
+            const keySize = document.getElementById('key-size');
+            const validity = document.getElementById('validity');
+            const output = document.getElementById('output');
+            const statusMessage = document.getElementById('status-message');
+            const downloadLinks = document.getElementById('download-links');
+
+            let privateKey = null;
+            let csr = null;
+            let certificate = null;
+
+            function showStatus(message, isError = false) {
+                statusMessage.textContent = message;
+                statusMessage.style.display = 'block';
+                statusMessage.className = `status-message ${isError ? 'error' : 'success'}`;
+            }
+
+            function generateKeyPair() {
+                return new Promise((resolve, reject) => {
+                    const rsa = forge.pki.rsa;
+                    rsa.generateKeyPair({bits: parseInt(keySize.value)}, (err, keypair) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            resolve(keypair);
+                        }
+                    });
+                });
+            }
+
+            function createCertificateInfo() {
+                return {
+                    commonName: commonName.value,
+                    organizationName: organization.value,
+                    organizationalUnitName: orgUnit.value,
+                    countryName: country.value,
+                    stateOrProvinceName: state.value,
+                    localityName: locality.value
+                };
+            }
+
+            async function generateCSR() {
+                try {
+                    showStatus('Generating key pair...');
+                    const keypair = await generateKeyPair();
+                    privateKey = keypair.privateKey;
+
+                    const certInfo = createCertificateInfo();
+                    csr = forge.pki.createCertificationRequest();
+                    csr.publicKey = keypair.publicKey;
+                    csr.setSubject([
+                        {name: 'commonName', value: certInfo.commonName},
+                        {name: 'organizationName', value: certInfo.organizationName},
+                        {name: 'organizationalUnitName', value: certInfo.organizationalUnitName},
+                        {name: 'countryName', value: certInfo.countryName},
+                        {name: 'stateOrProvinceName', value: certInfo.stateOrProvinceName},
+                        {name: 'localityName', value: certInfo.localityName}
+                    ]);
+
+                    csr.sign(privateKey);
+                    const pem = forge.pki.certificationRequestToPem(csr);
+                    output.textContent = pem;
+                    downloadLinks.classList.add('visible');
+                    showStatus('CSR generated successfully!');
+                } catch (error) {
+                    showStatus('Error generating CSR: ' + error.message, true);
+                }
+            }
+
+            async function generateSelfSignedCert() {
+                try {
+                    showStatus('Generating self-signed certificate...');
+                    const keypair = await generateKeyPair();
+                    privateKey = keypair.privateKey;
+
+                    const cert = forge.pki.createCertificate();
+                    cert.publicKey = keypair.publicKey;
+                    cert.serialNumber = '01';
+                    cert.validity.notBefore = new Date();
+                    cert.validity.notAfter = new Date();
+                    cert.validity.notAfter.setDate(cert.validity.notBefore.getDate() + parseInt(validity.value));
+
+                    const certInfo = createCertificateInfo();
+                    const attrs = [
+                        {name: 'commonName', value: certInfo.commonName},
+                        {name: 'organizationName', value: certInfo.organizationName},
+                        {name: 'organizationalUnitName', value: certInfo.organizationalUnitName},
+                        {name: 'countryName', value: certInfo.countryName},
+                        {name: 'stateOrProvinceName', value: certInfo.stateOrProvinceName},
+                        {name: 'localityName', value: certInfo.localityName}
+                    ];
+
+                    cert.setSubject(attrs);
+                    cert.setIssuer(attrs);
+                    cert.sign(privateKey);
+                    certificate = cert;
+
+                    const certPem = forge.pki.certificateToPem(cert);
+                    output.textContent = certPem;
+                    downloadLinks.classList.add('visible');
+                    showStatus('Self-signed certificate generated successfully!');
+                } catch (error) {
+                    showStatus('Error generating certificate: ' + error.message, true);
+                }
+            }
+
+            function downloadFile(content, filename) {
+                const blob = new Blob([content], {type: 'text/plain'});
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = filename;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
+
+            document.getElementById('generate-csr').addEventListener('click', generateCSR);
+            document.getElementById('generate-cert').addEventListener('click', generateSelfSignedCert);
+
+            document.getElementById('download-private-key').addEventListener('click', () => {
+                if (privateKey) {
+                    const pem = forge.pki.privateKeyToPem(privateKey);
+                    downloadFile(pem, 'private.key');
+                }
+            });
+
+            document.getElementById('download-csr').addEventListener('click', () => {
+                if (csr) {
+                    const pem = forge.pki.certificationRequestToPem(csr);
+                    downloadFile(pem, 'certificate.csr');
+                }
+            });
+
+            document.getElementById('download-cert').addEventListener('click', () => {
+                if (certificate) {
+                    const pem = forge.pki.certificateToPem(certificate);
+                    downloadFile(pem, 'certificate.crt');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

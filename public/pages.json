@@ -252,6 +252,12 @@
     "url": "/programmer/json-2-yaml.html"
   },
   {
+    "title": "SSL Certificate Generator - Free Online SSL Certificate Creation Tool",
+    "desc": "Free online SSL certificate generator - Create CSR, private keys, and self-signed certificates. Generate SSL certificates with customizable parameters for development and testing.",
+    "category": "programmer",
+    "url": "/programmer/ssl-certificate-generator.html"
+  },
+  {
     "title": "Regex Tester - Free Online Regular Expression Testing Tool",
     "desc": "Free online regex tester and debugger - Test regular expressions with real-time matching, pattern explanation, and common regex examples. Browser-based processing with no server interaction",
     "category": "programmer",
