@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online UNO card game - Play against AI opponents in this classic card game. Features 2-4 players, drag-and-drop interface, and real-time game state. No download required.">
+    <meta name="keywords" content="uno online, uno card game, free uno game, multiplayer uno, browser uno game, card game online, uno with AI, virtual card game">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>UNO Card Game Online - Free Multiplayer Card Game with AI</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .game-board {
+            position: relative;
+            aspect-ratio: 16/9;
+            background: #076324;
+            border-radius: var(--border-radius);
+            margin: var(--spacing-lg) 0;
+            box-shadow: var(--box-shadow);
+        }
+
+        .player-area {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: var(--spacing-md);
+        }
+
+        .player-area.bottom {
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+        }
+
+        .player-area.left {
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(90deg);
+            transform-origin: left center;
+        }
+
+        .player-area.right {
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            transform-origin: right center;
+        }
+
+        .player-area.top {
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%) rotate(180deg);
+            width: 100%;
+        }
+
+        .card {
+            width: 80px;
+            height: 120px;
+            background: white;
+            border-radius: 10px;
+            margin: 0 5px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover {
+            transform: translateY(-10px);
+        }
+
+        .card.playable {
+            box-shadow: 0 0 10px #ffeb3b;
+        }
+
+        .deck-area {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            display: flex;
+            gap: var(--spacing-md);
+        }
+
+        .draw-pile, .discard-pile {
+            width: 80px;
+            height: 120px;
+            border-radius: 10px;
+            border: 2px dashed white;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-md);
+        }
+
+        .player-info {
+            background: var(--background-color);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-sm);
+        }
+
+        .action-button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .action-button:hover {
+            background: var(--primary-color-dark);
+        }
+
+        .game-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--background-color);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+            display: none;
+        }
+
+        .color-picker {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            z-index: 1000;
+        }
+
+        .color-button {
+            width: 50px;
+            height: 50px;
+            margin: 5px;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .color-button.red { background: #ff0000; }
+        .color-button.blue { background: #0000ff; }
+        .color-button.green { background: #008000; }
+        .color-button.yellow { background: #ffeb3b; }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="game-container">
+                <h1>UNO Card Game Online</h1>
+                <p>Play the classic UNO card game against AI opponents! Match colors and numbers, use special cards wisely, and be the first to get rid of all your cards.</p>
+
+                <div class="game-controls">
+                    <div class="player-info">
+                        <span id="currentPlayer">Your turn</span>
+                        <span id="cardCount">Cards: 7</span>
+                    </div>
+                    <div class="action-buttons">
+                        <button class="action-button" id="newGameBtn">New Game</button>
+                        <button class="action-button" id="helpBtn">Help</button>
+                    </div>
+                </div>
+
+                <div class="game-board">
+                    <div class="player-area top" id="player2Area"></div>
+                    <div class="player-area left" id="player3Area"></div>
+                    <div class="player-area right" id="player4Area"></div>
+                    <div class="player-area bottom" id="playerArea"></div>
+
+                    <div class="deck-area">
+                        <div class="draw-pile" id="drawPile"></div>
+                        <div class="discard-pile" id="discardPile"></div>
+                    </div>
+                </div>
+
+                <div class="game-message" id="gameMessage">
+                    <h2 id="messageTitle">Game Over</h2>
+                    <p id="messageContent">You won!</p>
+                    <button class="action-button" id="messageButton">Play Again</button>
+                </div>
+
+                <div class="color-picker" id="colorPicker">
+                    <h3>Choose a color:</h3>
+                    <div>
+                        <button class="color-button red" data-color="red"></button>
+                        <button class="color-button blue" data-color="blue"></button>
+                        <button class="color-button green" data-color="green"></button>
+                        <button class="color-button yellow" data-color="yellow"></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script src="uno-card-game-online.js"></script>
+</body>
+</html>
