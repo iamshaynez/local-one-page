@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online D&D dice roller - Roll virtual d4, d6, d8, d10, d12, and d20 dice with 3D animations. Perfect for Dungeons & Dragons and other tabletop RPGs with roll modifiers and history tracking">
+    <meta name="keywords" content="D&D dice roller, DnD dice, virtual dice, d20 roller, d&d online tools, rpg dice roller, dungeons and dragons dice, tabletop gaming tools, d4 d6 d8 d10 d12 d20, dice roll history">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>D&D Dice Roller - Free Online RPG Dice Rolling Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .dice-container {
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .dice-options {
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+        }
+
+        .dice-type-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 2px solid var(--primary-color);
+            border-radius: var(--border-radius);
+            background: transparent;
+            color: var(--primary-color);
+            cursor: pointer;
+            transition: all 0.2s;
+            min-width: 80px;
+        }
+
+        .dice-type-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .dice-count {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .dice-count input {
+            width: 60px;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            text-align: center;
+        }
+
+        .modifier-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .modifier-container select,
+        .modifier-container input {
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+
+        .dice-display {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            flex-wrap: wrap;
+            min-height: 100px;
+            margin: var(--spacing-lg) 0;
+        }
+
+        .dice {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary-color);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.5s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .dice::before {
+            content: attr(data-type);
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+            color: var(--text-color-secondary);
+        }
+
+        .dice.rolling {
+            animation: roll 0.5s linear infinite;
+        }
+
+        @keyframes roll {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .roll-button {
+            display: block;
+            width: 200px;
+            margin: var(--spacing-lg) auto;
+            padding: var(--spacing-md) var(--spacing-lg);
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .roll-button:hover {
+            opacity: 0.9;
+        }
+
+        .roll-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .history-container {
+            margin-top: var(--spacing-xl);
+        }
+
+        .history-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .history-item {
+            padding: var(--spacing-sm);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .history-item:last-child {
+            border-bottom: none;
+        }
+
+        .history-time {
+            color: var(--text-color-secondary);
+            font-size: 0.9em;
+        }
+
+        .total-sum {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-top: var(--spacing-md);
+        }
+
+        .keyboard-shortcuts {
+            margin-top: var(--spacing-xl);
+            padding: var(--spacing-md);
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+        }
+
+        .keyboard-shortcuts h3 {
+            margin-top: 0;
+        }
+
+        .shortcut-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .shortcut-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .key {
+            background: var(--border-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>D&D Dice Roller</h1>
+                <p>Roll virtual dice for Dungeons & Dragons and other tabletop RPGs. Features multiple dice types (d4-d20), roll modifiers, and roll history tracking. Perfect for online D&D sessions!</p>
+
+                <div class="dice-container">
+                    <div class="dice-options">
+                        <button class="dice-type-btn" data-type="d4">d4</button>
+                        <button class="dice-type-btn active" data-type="d6">d6</button>
+                        <button class="dice-type-btn" data-type="d8">d8</button>
+                        <button class="dice-type-btn" data-type="d10">d10</button>
+                        <button class="dice-type-btn" data-type="d12">d12</button>
+                        <button class="dice-type-btn" data-type="d20">d20</button>
+                    </div>
+
+                    <div class="dice-count">
+                        <label for="dice-count">Number of Dice:</label>
+                        <input type="number" id="dice-count" min="1" max="10" value="1">
+                    </div>
+
+                    <div class="modifier-container">
+                        <select id="modifier-type">
+                            <option value="none">No Modifier</option>
+                            <option value="add">Add (+)</option>
+                            <option value="subtract">Subtract (-)</option>
+                        </select>
+                        <input type="number" id="modifier-value" value="0" min="0" disabled>
+                    </div>
+
+                    <div class="dice-display" id="dice-display"></div>
+                    <button id="roll-button" class="roll-button">Roll Dice</button>
+                    <div class="total-sum" id="total-sum"></div>
+                </div>
+
+                <div class="history-container">
+                    <h2>Roll History</h2>
+                    <ul class="history-list" id="history-list"></ul>
+                </div>
+
+                <div class="keyboard-shortcuts">
+                    <h3>Keyboard Shortcuts</h3>
+                    <ul class="shortcut-list">
+                        <li class="shortcut-item"><span class="key">Space</span> Roll dice</li>
+                        <li class="shortcut-item"><span class="key">1-6</span> Select dice type</li>
+                        <li class="shortcut-item"><span class="key">↑/↓</span> Adjust dice count</li>
+                        <li class="shortcut-item"><span class="key">C</span> Clear history</li>
+                    </ul>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const diceDisplay = document.getElementById('dice-display');
+            const rollButton = document.getElementById('roll-button');
+            const historyList = document.getElementById('history-list');
+            const totalSum = document.getElementById('total-sum');
+            const diceButtons = document.querySelectorAll('.dice-type-btn');
+            const diceCountInput = document.getElementById('dice-count');
+            const modifierType = document.getElementById('modifier-type');
+            const modifierValue = document.getElementById('modifier-value');
+
+            let currentDiceType = 'd6';
+            let isRolling = false;
+
+            // Dice type selection
+            diceButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    if (isRolling) return;
+                    diceButtons.forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                    currentDiceType = button.dataset.type;
+                    createDice();
+                });
+            });
+
+            // Modifier handling
+            modifierType.addEventListener('change', () => {
+                modifierValue.disabled = modifierType.value === 'none';
+            });
+
+            function getMaxValue(diceType) {
+                return parseInt(diceType.substring(1));
+            }
+
+            function createDice() {
+                diceDisplay.innerHTML = '';
+                const count = parseInt(diceCountInput.value);
+                for (let i = 0; i < count; i++) {
+                    const dice = document.createElement('div');
+                    dice.className = 'dice';
+                    dice.textContent = '1';
+                    dice.dataset.type = currentDiceType;
+                    diceDisplay.appendChild(dice);
+                }
+                totalSum.textContent = '';
+            }
+
+            function rollDice() {
+                if (isRolling) return;
+                isRolling = true;
+                rollButton.disabled = true;
+
+                const diceElements = diceDisplay.querySelectorAll('.dice');
+                diceElements.forEach(dice => dice.classList.add('rolling'));
+
+                // Simulate rolling animation
+                const rolls = [];
+                let rollCount = 0;
+                const maxValue = getMaxValue(currentDiceType);
+
+                const rollInterval = setInterval(() => {
+                    diceElements.forEach(dice => {
+                        dice.textContent = Math.floor(Math.random() * maxValue) + 1;
+                    });
+                    rollCount++;
+
+                    if (rollCount >= 10) {
+                        clearInterval(rollInterval);
+                        finishRoll();
+                    }
+                }, 100);
+
+                function finishRoll() {
+                    diceElements.forEach(dice => {
+                        const value = Math.floor(Math.random() * maxValue) + 1;
+                        dice.textContent = value;
+                        dice.classList.remove('rolling');
+                        rolls.push(value);
+                    });
+
+                    let sum = rolls.reduce((a, b) => a + b, 0);
+                    
+                    // Apply modifier
+                    let modifierText = '';
+                    if (modifierType.value !== 'none') {
+                        const modVal = parseInt(modifierValue.value) || 0;
+                        if (modifierType.value === 'add') {
+                            sum += modVal;
+                            modifierText = ` + ${modVal}`;
+                        } else {
+                            sum -= modVal;
+                            modifierText = ` - ${modVal}`;
+                        }
+                    }
+
+                    totalSum.textContent = `Total: ${sum}`;
+
+                    // Add to history
+                    const historyItem = document.createElement('li');
+                    historyItem.className = 'history-item';
+                    historyItem.innerHTML = `
+                        <span>${rolls.length}${currentDiceType}: ${rolls.join(', ')}${modifierText} = ${sum}</span>
+                        <span class="history-time">${new Date().toLocaleTimeString()}</span>
+                    `;
+                    historyList.insertBefore(historyItem, historyList.firstChild);
+
+                    // Limit history to 20 items
+                    if (historyList.children.length > 20) {
+                        historyList.removeChild(historyList.lastChild);
+                    }
+
+                    isRolling = false;
+                    rollButton.disabled = false;
+                }
+            }
+
+            rollButton.addEventListener('click', rollDice);
+
+            // Allow rolling by clicking any dice
+            diceDisplay.addEventListener('click', rollDice);
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space' && !isRolling) {
+                    e.preventDefault(); // Prevent page scrolling
+                    rollDice();
+                } else if (e.key >= '1' && e.key <= '6') {
+                    const index = parseInt(e.key) - 1;
+                    diceButtons[index]?.click();
+                } else if (e.key === 'ArrowUp') {
+                    const newValue = Math.min(10, parseInt(diceCountInput.value) + 1);
+                    diceCountInput.value = newValue;
+                    createDice();
+                } else if (e.key === 'ArrowDown') {
+                    const newValue = Math.max(1, parseInt(diceCountInput.value) - 1);
+                    diceCountInput.value = newValue;
+                    createDice();
+                } else if (e.key.toLowerCase() === 'c') {
+                    historyList.innerHTML = '';
+                    totalSum.textContent = '';
+                }
+            });
+
+            // Initialize dice
+            createDice();
+        });
+    </script>
+</body>
+</html>

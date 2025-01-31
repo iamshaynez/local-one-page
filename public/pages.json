@@ -342,6 +342,12 @@
     "url": "/programmer/blowfish-encrypt-online.html"
   },
   {
+    "title": "D&D Dice Roller - Free Online RPG Dice Rolling Tool",
+    "desc": "Free online D&D dice roller - Roll virtual d4, d6, d8, d10, d12, and d20 dice with 3D animations. Perfect for Dungeons & Dragons and other tabletop RPGs with roll modifiers and history tracking",
+    "category": "games",
+    "url": "/games/dnd-dice-roller.html"
+  },
+  {
     "title": "DOS Game Emulator - Free Online DOS Gaming Experience",
     "desc": "Free online DOS game emulator - Play classic DOS games directly in your browser. Experience retro gaming with this easy-to-use DOS emulator powered by js-dos",
     "category": "games",
@@ -388,6 +394,12 @@
     "desc": "Free online geography flag quiz game - Test your knowledge of world flags with this interactive quiz. Features multiple difficulty levels, timer, and score tracking",
     "category": "games",
     "url": "/games/geography-flag-quiz.html"
+  },
+  {
+    "title": "D&D Character Creator - Free Online Character Sheet Generator",
+    "desc": "Free online D&D character creator - Create and customize your Dungeons & Dragons character sheet with automatic calculations for abilities, skills, and saving throws. Easy to use character builder with class, race, and equipment selection.",
+    "category": "games",
+    "url": "/games/dnd-character-creator.html"
   },
   {
     "title": "Black Jack Game - Free Online Casino Card Game",

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online D&D character creator - Create and customize your Dungeons & Dragons character sheet with automatic calculations for abilities, skills, and saving throws. Easy to use character builder with class, race, and equipment selection.">
+    <meta name="keywords" content="D&D character creator, dungeons and dragons character sheet, DnD character builder, D&D 5e character generator, RPG character creator, D&D ability calculator, character sheet generator, DnD 5e tools">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>D&D Character Creator - Free Online Character Sheet Generator</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .character-sheet {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: var(--spacing-lg);
+            margin: var(--spacing-lg) 0;
+        }
+
+        @media (max-width: 768px) {
+            .character-sheet {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .section {
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .ability-scores {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .ability-score {
+            text-align: center;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+        }
+
+        .ability-score label {
+            display: block;
+            margin-bottom: var(--spacing-xs);
+            font-weight: bold;
+        }
+
+        .ability-score input {
+            width: 60px;
+            text-align: center;
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .modifier {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .character-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+        }
+
+        .skills-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-sm);
+        }
+
+        .skill-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .saving-throws {
+            margin: var(--spacing-md) 0;
+        }
+
+        .proficiency-bonus {
+            font-size: 1.1em;
+            margin: var(--spacing-md) 0;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>D&D Character Creator</h1>
+                <p>Create and customize your Dungeons & Dragons character sheet with automatic calculations for abilities, skills, and saving throws. Save or print your character sheet when done!</p>
+
+                <div class="action-buttons">
+                    <button id="saveCharacter" class="button button-primary">Save Character</button>
+                    <button id="loadCharacter" class="button button-secondary">Load Character</button>
+                    <button id="printSheet" class="button button-secondary">Print Sheet</button>
+                    <button id="resetSheet" class="button button-secondary">Reset</button>
+                </div>
+
+                <div class="character-sheet">
+                    <div class="left-column">
+                        <div class="section character-info">
+                            <div class="input-field">
+                                <label for="charName">Character Name</label>
+                                <input type="text" id="charName" placeholder="Enter name...">
+                            </div>
+                            <div class="input-field">
+                                <label for="charClass">Class</label>
+                                <select id="charClass">
+                                    <option value="">Select Class...</option>
+                                    <option value="barbarian">Barbarian</option>
+                                    <option value="bard">Bard</option>
+                                    <option value="cleric">Cleric</option>
+                                    <option value="druid">Druid</option>
+                                    <option value="fighter">Fighter</option>
+                                    <option value="monk">Monk</option>
+                                    <option value="paladin">Paladin</option>
+                                    <option value="ranger">Ranger</option>
+                                    <option value="rogue">Rogue</option>
+                                    <option value="sorcerer">Sorcerer</option>
+                                    <option value="warlock">Warlock</option>
+                                    <option value="wizard">Wizard</option>
+                                </select>
+                            </div>
+                            <div class="input-field">
+                                <label for="charRace">Race</label>
+                                <select id="charRace">
+                                    <option value="">Select Race...</option>
+                                    <option value="dragonborn">Dragonborn</option>
+                                    <option value="dwarf">Dwarf</option>
+                                    <option value="elf">Elf</option>
+                                    <option value="gnome">Gnome</option>
+                                    <option value="half-elf">Half-Elf</option>
+                                    <option value="halfling">Halfling</option>
+                                    <option value="half-orc">Half-Orc</option>
+                                    <option value="human">Human</option>
+                                    <option value="tiefling">Tiefling</option>
+                                </select>
+                            </div>
+                            <div class="input-field">
+                                <label for="charLevel">Level</label>
+                                <input type="number" id="charLevel" value="1" min="1" max="20">
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>Ability Scores</h2>
+                            <div class="proficiency-bonus">
+                                Proficiency Bonus: <span id="profBonus">+2</span>
+                            </div>
+                            <div class="ability-scores">
+                                <div class="ability-score">
+                                    <label for="strScore">Strength</label>
+                                    <input type="number" id="strScore" value="10" min="1" max="20">
+                                    <div class="modifier" id="strMod">+0</div>
+                                </div>
+                                <div class="ability-score">
+                                    <label for="dexScore">Dexterity</label>
+                                    <input type="number" id="dexScore" value="10" min="1" max="20">
+                                    <div class="modifier" id="dexMod">+0</div>
+                                </div>
+                                <div class="ability-score">
+                                    <label for="conScore">Constitution</label>
+                                    <input type="number" id="conScore" value="10" min="1" max="20">
+                                    <div class="modifier" id="conMod">+0</div>
+                                </div>
+                                <div class="ability-score">
+                                    <label for="intScore">Intelligence</label>
+                                    <input type="number" id="intScore" value="10" min="1" max="20">
+                                    <div class="modifier" id="intMod">+0</div>
+                                </div>
+                                <div class="ability-score">
+                                    <label for="wisScore">Wisdom</label>
+                                    <input type="number" id="wisScore" value="10" min="1" max="20">
+                                    <div class="modifier" id="wisMod">+0</div>
+                                </div>
+                                <div class="ability-score">
+                                    <label for="chaScore">Charisma</label>
+                                    <input type="number" id="chaScore" value="10" min="1" max="20">
+                                    <div class="modifier" id="chaMod">+0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="right-column">
+                        <div class="section saving-throws">
+                            <h2>Saving Throws</h2>
+                            <div class="skills-list" id="savingThrows">
+                                <div class="skill-item">
+                                    <input type="checkbox" id="strSave">
+                                    <label for="strSave">Strength</label>
+                                    <span class="save-bonus" id="strSaveBonus">+0</span>
+                                </div>
+                                <div class="skill-item">
+                                    <input type="checkbox" id="dexSave">
+                                    <label for="dexSave">Dexterity</label>
+                                    <span class="save-bonus" id="dexSaveBonus">+0</span>
+                                </div>
+                                <div class="skill-item">
+                                    <input type="checkbox" id="conSave">
+                                    <label for="conSave">Constitution</label>
+                                    <span class="save-bonus" id="conSaveBonus">+0</span>
+                                </div>
+                                <div class="skill-item">
+                                    <input type="checkbox" id="intSave">
+                                    <label for="intSave">Intelligence</label>
+                                    <span class="save-bonus" id="intSaveBonus">+0</span>
+                                </div>
+                                <div class="skill-item">
+                                    <input type="checkbox" id="wisSave">
+                                    <label for="wisSave">Wisdom</label>
+                                    <span class="save-bonus" id="wisSaveBonus">+0</span>
+                                </div>
+                                <div class="skill-item">
+                                    <input type="checkbox" id="chaSave">
+                                    <label for="chaSave">Charisma</label>
+                                    <span class="save-bonus" id="chaSaveBonus">+0</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>Skills</h2>
+                            <div class="skills-list" id="skillsList">
+                                <!-- Skills will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script>
+        // Skills data
+        const skills = [
+            { name: 'Acrobatics', ability: 'dex' },
+            { name: 'Animal Handling', ability: 'wis' },
+            { name: 'Arcana', ability: 'int' },
+            { name: 'Athletics', ability: 'str' },
+            { name: 'Deception', ability: 'cha' },
+            { name: 'History', ability: 'int' },
+            { name: 'Insight', ability: 'wis' },
+            { name: 'Intimidation', ability: 'cha' },
+            { name: 'Investigation', ability: 'int' },
+            { name: 'Medicine', ability: 'wis' },
+            { name: 'Nature', ability: 'int' },
+            { name: 'Perception', ability: 'wis' },
+            { name: 'Performance', ability: 'cha' },
+            { name: 'Persuasion', ability: 'cha' },
+            { name: 'Religion', ability: 'int' },
+            { name: 'Sleight of Hand', ability: 'dex' },
+            { name: 'Stealth', ability: 'dex' },
+            { name: 'Survival', ability: 'wis' }
+        ];
+
+        // Populate skills list
+        const skillsList = document.getElementById('skillsList');
+        skills.forEach(skill => {
+            const skillDiv = document.createElement('div');
+            skillDiv.className = 'skill-item';
+            skillDiv.innerHTML = `
+                <input type="checkbox" id="${skill.name.toLowerCase().replace(/ /g, '')}">
+                <label for="${skill.name.toLowerCase().replace(/ /g, '')}">${skill.name} (${skill.ability.toUpperCase()})</label>
+                <span class="skill-bonus" id="${skill.name.toLowerCase().replace(/ /g, '')}Bonus">+0</span>
+            `;
+            skillsList.appendChild(skillDiv);
+        });
+
+        // Calculate modifier
+        function calculateModifier(score) {
+            return Math.floor((score - 10) / 2);
+        }
+
+        // Update modifiers
+        function updateModifiers() {
+            const abilities = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+            abilities.forEach(ability => {
+                const score = parseInt(document.getElementById(`${ability}Score`).value);
+                const modifier = calculateModifier(score);
+                document.getElementById(`${ability}Mod`).textContent = modifier >= 0 ? `+${modifier}` : modifier;
+            });
+            const level = parseInt(document.getElementById('charLevel').value);
+            const profBonus = Math.floor((level - 1) / 4) + 2;
+            document.getElementById('profBonus').textContent = `+${profBonus}`;
+            updateSavingThrows();
+            updateSkills();
+        }
+
+        // Update saving throws
+        function updateSavingThrows() {
+            const abilities = ['str', 'dex', 'con', 'int', 'wis', 'cha'];
+            const profBonus = parseInt(document.getElementById('profBonus').textContent);
+            
+            abilities.forEach(ability => {
+                const modifier = parseInt(document.getElementById(`${ability}Mod`).textContent);
+                const isProficient = document.getElementById(`${ability}Save`).checked;
+                const bonus = modifier + (isProficient ? profBonus : 0);
+                document.getElementById(`${ability}SaveBonus`).textContent = bonus >= 0 ? `+${bonus}` : bonus;
+            });
+        }
+
+        // Update skills
+        function updateSkills() {
+            const profBonus = parseInt(document.getElementById('profBonus').textContent);
+            
+            skills.forEach(skill => {
+                const abilityMod = parseInt(document.getElementById(`${skill.ability}Mod`).textContent);
+                const skillId = skill.name.toLowerCase().replace(/ /g, '');
+                const isProficient = document.getElementById(skillId).checked;
+                const bonus = abilityMod + (isProficient ? profBonus : 0);
+                document.getElementById(`${skillId}Bonus`).textContent = bonus >= 0 ? `+${bonus}` : bonus;
+            });
+        }
+
+        // Save character data
+        function saveCharacter() {
+            const characterData = {
+                name: document.getElementById('charName').value,
+                class: document.getElementById('charClass').value,
+                race: document.getElementById('charRace').value,
+                level: document.getElementById('charLevel').value,
+                abilities: {},
+                savingThrows: {},
+                skills: {}
+            };
+
+            // Save abilities
+            ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(ability => {
+                characterData.abilities[ability] = document.getElementById(`${ability}Score`).value;
+                characterData.savingThrows[ability] = document.getElementById(`${ability}Save`).checked;
+            });
+
+            // Save skills
+            skills.forEach(skill => {
+                const skillId = skill.name.toLowerCase().replace(/ /g, '');
+                characterData.skills[skillId] = document.getElementById(skillId).checked;
+            });
+
+            localStorage.setItem('dndCharacter', JSON.stringify(characterData));
+            alert('Character saved successfully!');
+        }
+
+        // Load character data
+        function loadCharacter() {
+            const savedData = localStorage.getItem('dndCharacter');
+            if (!savedData) {
+                alert('No saved character found!');
+                return;
+            }
+
+            const characterData = JSON.parse(savedData);
+
+            // Load basic info
+            document.getElementById('charName').value = characterData.name;
+            document.getElementById('charClass').value = characterData.class;
+            document.getElementById('charRace').value = characterData.race;
+            document.getElementById('charLevel').value = characterData.level;
+
+            // Load abilities and saving throws
+            ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(ability => {
+                document.getElementById(`${ability}Score`).value = characterData.abilities[ability];
+                document.getElementById(`${ability}Save`).checked = characterData.savingThrows[ability];
+            });
+
+            // Load skills
+            skills.forEach(skill => {
+                const skillId = skill.name.toLowerCase().replace(/ /g, '');
+                document.getElementById(skillId).checked = characterData.skills[skillId];
+            });
+
+            // Update all calculations
+            updateModifiers();
+            updateProficiencyBonus();
+        }
+
+        // Print character sheet
+        function printSheet() {
+            window.print();
+        }
+
+        // Reset character sheet
+        function resetSheet() {
+            if (confirm('Are you sure you want to reset the character sheet? This will clear all entries.')) {
+                document.getElementById('charName').value = '';
+                document.getElementById('charClass').value = '';
+                document.getElementById('charRace').value = '';
+                document.getElementById('charLevel').value = '1';
+
+                ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(ability => {
+                    document.getElementById(`${ability}Score`).value = '10';
+                    document.getElementById(`${ability}Save`).checked = false;
+                });
+
+                skills.forEach(skill => {
+                    const skillId = skill.name.toLowerCase().replace(/ /g, '');
+                    document.getElementById(skillId).checked = false;
+                });
+
+                updateModifiers();
+                updateProficiencyBonus();
+            }
+        }
+
+        // Event listeners
+        document.getElementById('saveCharacter').addEventListener('click', saveCharacter);
+        document.getElementById('loadCharacter').addEventListener('click', loadCharacter);
+        document.getElementById('printSheet').addEventListener('click', printSheet);
+        document.getElementById('resetSheet').addEventListener('click', resetSheet);
+
+        // Add change listeners to all inputs that affect calculations
+        ['str', 'dex', 'con', 'int', 'wis', 'cha'].forEach(ability => {
+            document.getElementById(`${ability}Score`).addEventListener('change', updateModifiers);
+            document.getElementById(`${ability}Save`).addEventListener('change', updateSavingThrows);
+        });
+
+        document.getElementById('charLevel').addEventListener('change', updateProficiencyBonus);
+
+        skills.forEach(skill => {
+            const skillId = skill.name.toLowerCase().replace(/ /g, '');
+            document.getElementById(skillId).addEventListener('change', updateSkills);
+        });
+
+        // Initialize calculations
+        updateModifiers();
+        updateProficiencyBonus();
+    </script>
+</body>
+</html>
