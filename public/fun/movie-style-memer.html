@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online movie-style meme generator - Create cinematic memes with vintage filters, 16:9 aspect ratio, and subtitle-style text. Perfect for creating movie scene style memes">
+    <meta name="keywords" content="movie meme maker, cinematic meme generator, movie subtitle generator, vintage filter, film style meme, movie scene meme, 16:9 meme creator">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Movie Style Meme Generator - Create Cinematic Scene Memes</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            padding: var(--spacing-xl);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            background-color: var(--background-color);
+        }
+        .upload-area:hover {
+            border-color: var(--primary-color);
+        }
+        .preview-container {
+            margin: var(--spacing-lg) 0;
+            text-align: center;
+        }
+        #previewCanvas {
+            max-width: 100%;
+            height: auto;
+            box-shadow: var(--box-shadow);
+        }
+        .text-input {
+            width: 100%;
+            min-height: 100px;
+            margin: var(--spacing-md) 0;
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            resize: vertical;
+        }
+        .controls {
+            margin: var(--spacing-lg) 0;
+        }
+        .button-group {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-top: var(--spacing-lg);
+        }
+        .filter-controls {
+            margin: var(--spacing-md) 0;
+            padding: var(--spacing-md);
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Movie Style Meme Generator</h1>
+                <p>Create cinematic memes with vintage filters and subtitle-style text. Upload your image, apply movie-style effects, and add subtitles in a classic film format!</p>
+
+                <div class="upload-area" id="dropZone">
+                    <p>Click to upload or drag and drop an image here</p>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none">
+                </div>
+
+                <div class="filter-controls">
+                    <div class="filter-group">
+                        <label for="vintageLevel">Vintage Effect:</label>
+                        <input type="range" id="vintageLevel" min="0" max="100" value="75">
+                    </div>
+                    <div class="filter-group">
+                        <label for="contrastLevel">Contrast:</label>
+                        <input type="range" id="contrastLevel" min="0" max="200" value="25">
+                    </div>
+                    <div class="filter-group">
+                        <label for="fontSize">Font Size:</label>
+                        <input type="range" id="fontSize" min="12" max="72" value="24">
+                    </div>
+                    <div class="filter-group">
+                        <label for="fontFamily">Font Family:</label>
+                        <select id="fontFamily" class="font-select">
+                            <option value="Arial">Arial</option>
+                            <option value="Impact">Impact</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Microsoft YaHei">Microsoft YaHei</option>
+                            <option value="SimSun">SimSun</option>
+                            <option value="NSimSun">NSimSun</option>
+                            <option value="KaiTi">KaiTi</option>
+                            <option value="STXihei">STXihei</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <label for="textInput">Enter your text (one line per row):</label>
+                    <textarea id="textInput" class="text-input" placeholder="Enter your text here...
+Each line will be placed at the bottom of the image"></textarea>
+                </div>
+
+                <div class="preview-container">
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+
+                <div class="button-group">
+                    <button id="generateBtn" class="button button-primary" disabled>Generate Image</button>
+                    <button id="downloadBtn" class="button button-secondary" disabled>Download Image</button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script src="movie-style-memer.js"></script>
+</body>
+</html>
