@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online Xiaohongshu card generator - Create beautiful text cards in Xiaohongshu style with customizable fonts, colors, and layouts. Perfect for social media content creation">
+    <meta name="keywords" content="xiaohongshu card generator, social media card maker, text to image converter, chinese social media tool, custom card creator, text layout tool, social media content creator">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Xiaohongshu Card Generator - Free Online Text to Card Tool</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .editor-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        @media (max-width: 768px) {
+            .editor-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .input-section {
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+
+        .preview-section {
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            min-height: 400px;
+        }
+
+        .text-input {
+            width: 100%;
+            min-height: 200px;
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            background: var(--background-color-secondary);
+            color: var(--text-color);
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-md);
+        }
+
+        .color-preview {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: var(--spacing-sm);
+            border: 1px solid var(--border-color);
+        }
+
+        .preview-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+
+        .preview-card {
+            aspect-ratio: 2/3;
+            background: white;
+            border-radius: var(--border-radius);
+            padding: var(--spacing-md);
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .watermark {
+            position: absolute;
+            bottom: var(--spacing-sm);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+
+        .download-section {
+            text-align: center;
+            margin-top: var(--spacing-lg);
+        }
+
+        .font-preview {
+            margin-bottom: var(--spacing-sm);
+            padding: var(--spacing-xs);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+        }
+
+        .font-preview:hover {
+            background: var(--background-color-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="tool-container">
+        <h1>Xiaohongshu Card Generator</h1>
+        <p>Create beautiful text cards in Xiaohongshu style. Enter your text below and customize the appearance.</p>
+        
+        <div class="editor-grid">
+            <div class="input-section">
+                <h2>Content</h2>
+                <textarea class="text-input" placeholder="Enter your text here..."></textarea>
+                
+                <div class="settings-grid">
+                    <div>
+                        <h3>Style Settings</h3>
+                        <div class="setting-group">
+                            <label>Background Color:</label>
+                            <select id="bgColor">
+                                <option value="#FFFFFF">White</option>
+                                <option value="#FFF6E9">Warm White</option>
+                                <option value="#F5F5F5">Light Gray</option>
+                                <option value="#FFE4E1">Misty Rose</option>
+                                <option value="#E8F4F8">Light Blue</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label>Text Color:</label>
+                            <select id="textColor">
+                                <option value="#000000">Black</option>
+                                <option value="#333333">Dark Gray</option>
+                                <option value="#4A4A4A">Charcoal</option>
+                                <option value="#2C3E50">Navy Blue</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <h3>Font Settings</h3>
+                        <div class="setting-group">
+                            <label>Font Family:</label>
+                            <select id="fontFamily">
+                                <option value="'PingFang SC'">PingFang SC</option>
+                                <option value="'Microsoft YaHei'">Microsoft YaHei</option>
+                                <option value="'Noto Sans SC'">Noto Sans SC</option>
+                                <option value="'Source Han Sans CN'">Source Han Sans</option>
+                            </select>
+                        </div>
+                        <div class="setting-group">
+                            <label>Watermark:</label>
+                            <input type="text" id="watermark" placeholder="Your Xiaohongshu username">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <h2>Preview</h2>
+                <div class="preview-cards" id="previewCards"></div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <button id="downloadAll" class="button">Download All Cards</button>
+        </div>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const textInput = document.querySelector('.text-input');
+            const bgColorSelect = document.getElementById('bgColor');
+            const textColorSelect = document.getElementById('textColor');
+            const fontFamilySelect = document.getElementById('fontFamily');
+            const watermarkInput = document.getElementById('watermark');
+            const previewCards = document.getElementById('previewCards');
+            const downloadAllBtn = document.getElementById('downloadAll');
+
+            function generateCards() {
+                const text = textInput.value.trim();
+                if (!text) {
+                    previewCards.innerHTML = '<p>Enter some text to see the preview</p>';
+                    return;
+                }
+
+                const paragraphs = text.split('\n\n').filter(p => p.trim());
+                const cards = [];
+
+                // First card - Title
+                const titleLines = paragraphs[0].split('\n')[0];
+                cards.push(createCard(titleLines, true));
+
+                // Content cards
+                for (let i = 0; i < paragraphs.length; i++) {
+                    const paragraph = paragraphs[i];
+                    if (i === 0) {
+                        // Skip first line as it's already used as title
+                        const remainingLines = paragraph.split('\n').slice(1).join('\n');
+                        if (remainingLines.trim()) {
+                            splitTextIntoCards(remainingLines).forEach(text => cards.push(createCard(text)));
+                        }
+                    } else {
+                        splitTextIntoCards(paragraph).forEach(text => cards.push(createCard(text)));
+                    }
+                }
+
+                previewCards.innerHTML = '';
+                cards.forEach(card => previewCards.appendChild(card));
+            }
+
+            function splitTextIntoCards(text) {
+                const maxCharsPerCard = 100;
+                const chunks = [];
+                let currentChunk = '';
+
+                text.split('\n').forEach(line => {
+                    if (currentChunk.length + line.length > maxCharsPerCard) {
+                        chunks.push(currentChunk);
+                        currentChunk = line;
+                    } else {
+                        currentChunk += (currentChunk ? '\n' : '') + line;
+                    }
+                });
+
+                if (currentChunk) {
+                    chunks.push(currentChunk);
+                }
+
+                return chunks;
+            }
+
+            function createCard(text, isTitle = false) {
+                const card = document.createElement('div');
+                card.className = 'preview-card';
+                card.style.backgroundColor = bgColorSelect.value;
+                card.style.color = textColorSelect.value;
+                card.style.fontFamily = fontFamilySelect.value;
+
+                const content = document.createElement('div');
+                content.style.height = '100%';
+                content.style.display = 'flex';
+                content.style.flexDirection = 'column';
+                content.style.justifyContent = 'center';
+                content.style.alignItems = 'center';
+                content.style.textAlign = 'center';
+                content.style.padding = '2em';
+                content.style.wordBreak = 'break-word';
+                content.style.fontSize = isTitle ? '1.5em' : '1em';
+                content.style.fontWeight = isTitle ? 'bold' : 'normal';
+                content.innerHTML = text.replace(/\n/g, '<br>');
+
+                const watermark = document.createElement('div');
+                watermark.className = 'watermark';
+                watermark.textContent = watermarkInput.value || '@xiaohongshu';
+
+                card.appendChild(content);
+                card.appendChild(watermark);
+
+                return card;
+            }
+
+            async function downloadAllCards() {
+                const cards = Array.from(previewCards.children);
+                if (cards.length === 0) return;
+
+                for (let i = 0; i < cards.length; i++) {
+                    const canvas = await html2canvas(cards[i], {
+                        scale: 2,
+                        backgroundColor: bgColorSelect.value
+                    });
+
+                    const link = document.createElement('a');
+                    link.download = `xiaohongshu-card-${i + 1}.png`;
+                    link.href = canvas.toDataURL('image/png');
+                    link.click();
+
+                    // Add a small delay between downloads
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+            }
+
+            // Event listeners
+            textInput.addEventListener('input', generateCards);
+            bgColorSelect.addEventListener('change', generateCards);
+            textColorSelect.addEventListener('change', generateCards);
+            fontFamilySelect.addEventListener('change', generateCards);
+            watermarkInput.addEventListener('input', generateCards);
+            downloadAllBtn.addEventListener('click', downloadAllCards);
+        });
+    </script>
+</body>
+</html>
