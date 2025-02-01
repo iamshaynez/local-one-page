@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online auto-running snake battle game - Watch two AI-controlled snakes compete in a strategic battle for survival. Features pathfinding algorithms and real-time collision detection.">
+    <meta name="keywords" content="snake game, AI snake, snake battle, auto snake game, competitive snake, pathfinding game, browser game, snake competition">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Auto Snake Battle - Watch AI Snakes Compete</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+            text-align: center;
+        }
+
+        .game-container {
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            margin: var(--spacing-lg) 0;
+        }
+
+        #gameCanvas {
+            background: #1a1a1a;
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .game-info {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: var(--spacing-md);
+            font-size: 1.2em;
+        }
+
+        .snake-info {
+            padding: var(--spacing-sm);
+            border-radius: var(--border-radius);
+        }
+
+        .snake1-info {
+            color: #4CAF50;
+        }
+
+        .snake2-info {
+            color: #2196F3;
+        }
+
+        .game-status {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: var(--spacing-md) 0;
+            color: var(--primary-color);
+        }
+
+        .control-panel {
+            margin-top: var(--spacing-md);
+        }
+
+        .control-button {
+            padding: var(--spacing-sm) var(--spacing-lg);
+            margin: 0 var(--spacing-sm);
+            border: none;
+            border-radius: var(--border-radius);
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .control-button:hover {
+            background: var(--primary-color-dark);
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="nav-buttons">
+            <a href="/" class="home-button">Home</a>
+            <a href="/about.html" class="home-button">About</a>
+        </div>
+    </header>
+
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Auto Snake Battle</h1>
+                <p>Watch two AI-controlled snakes compete in an epic battle for survival! The snakes use advanced pathfinding algorithms to collect food while avoiding collisions.</p>
+
+                <div class="game-container">
+                    <div class="game-info">
+                        <div class="snake-info snake1-info">
+                            <div>Snake 1 Score: <span id="score1">0</span></div>
+                            <div>Length: <span id="length1">3</span></div>
+                        </div>
+                        <div class="snake-info snake2-info">
+                            <div>Snake 2 Score: <span id="score2">0</span></div>
+                            <div>Length: <span id="length2">3</span></div>
+                        </div>
+                    </div>
+
+                    <canvas id="gameCanvas" width="600" height="400"></canvas>
+                    
+                    <div class="game-status" id="gameStatus">Game Running...</div>
+
+                    <div class="control-panel">
+                        <button id="restartButton" class="control-button">New Game</button>
+                        <button id="pauseButton" class="control-button">Pause</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="footer">
+        <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+    </footer>
+
+    <script src="auto-snake-battle.js"></script>
+</body>
+</html>

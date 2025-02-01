@@ -150,6 +150,12 @@
     "url": "/tools/image-mosaic-painter.html"
   },
   {
+    "title": "Auto Snake Battle - Watch AI Snakes Compete",
+    "desc": "Free online auto-running snake battle game - Watch two AI-controlled snakes compete in a strategic battle for survival. Features pathfinding algorithms and real-time collision detection.",
+    "category": "fun",
+    "url": "/fun/auto-snake-battle.html"
+  },
+  {
     "title": "Meme Caption Maker - Free Online Meme Generator Tool",
     "desc": "Free online meme caption maker - Create custom memes with text overlays, font customization, and image upload. Easy to use, no watermarks, and all processing happens in your browser",
     "category": "fun",
