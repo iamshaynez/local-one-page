@@ -186,6 +186,12 @@
     "url": "/fun/movie-style-preset-online.html"
   },
   {
+    "title": "Elastic Heptagon Bounce Simulator",
+    "desc": "Interactive physics simulation featuring a rotating heptagon with elastic bands and a bouncing ping pong ball. Experience realistic physics with elastic deformation and dynamic color changes.",
+    "category": "fun",
+    "url": "/fun/elastic-heptagon-bounce.html"
+  },
+  {
     "title": "Card Game Score Tracker - Free Online Score Keeper",
     "desc": "Free online card game score tracker - Keep track of scores for your card games. Easy-to-use tool for managing players and recording game scores round by round",
     "category": "fun",
