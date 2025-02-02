@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online Matrix digital rain animation - Experience the iconic green falling characters from The Matrix movie. Interactive canvas-based animation with customizable settings">
+    <meta name="keywords" content="matrix digital rain, matrix code animation, green matrix effect, falling characters animation, matrix movie effect, digital rain generator, matrix style animation">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Matrix Digital Rain - Interactive Matrix Code Animation</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        .tool-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+        .canvas-container {
+            text-align: center;
+            margin: var(--spacing-lg) 0;
+        }
+        #matrixCanvas {
+            background: black;
+            border-radius: var(--border-radius);
+        }
+        .controls {
+            display: flex;
+            gap: var(--spacing-md);
+            justify-content: center;
+            margin-bottom: var(--spacing-lg);
+            flex-wrap: wrap;
+        }
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            background: var(--background-color);
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: var(--border-radius);
+        }
+        .control-group label {
+            white-space: nowrap;
+        }
+        input[type="range"] {
+            width: 150px;
+        }
+        input[type="color"] {
+            width: 50px;
+            height: 30px;
+            padding: 0;
+            border: none;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Matrix Digital Rain Animation</h1>
+                <p>Experience the iconic falling green characters effect from The Matrix movie. Customize the animation speed, character size, and colors to create your own digital rain!</p>
+                
+                <div class="controls">
+                    <div class="control-group">
+                        <label for="speed">Speed:</label>
+                        <input type="range" id="speed" min="1" max="50" value="15">
+                    </div>
+                    <div class="control-group">
+                        <label for="fontSize">Character Size:</label>
+                        <input type="range" id="fontSize" min="10" max="30" value="15">
+                    </div>
+                    <div class="control-group">
+                        <label for="color">Color:</label>
+                        <input type="color" id="color" value="#00ff00">
+                    </div>
+                    <div class="control-group">
+                        <label for="charSet">Character Set:</label>
+                        <select id="charSet" class="char-set-select">
+                            <option value="japanese">Japanese</option>
+                            <option value="english">English</option>
+                            <option value="binary">Binary</option>
+                            <option value="chinese">Chinese</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <canvas id="matrixCanvas"></canvas>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
+            let drops = [];
+            let chars = [];
+
+            // Character set definitions
+            const charSets = {
+                japanese: () => {
+                    const chars = [];
+                    for (let i = 0; i < 128; i++) {
+                        chars.push(String.fromCharCode(0x30A0 + Math.random() * 96));
+                    }
+                    return chars;
+                },
+                english: () => {
+                    const chars = [];
+                    const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+                    for (let i = 0; i < 128; i++) {
+                        chars.push(letters.charAt(Math.floor(Math.random() * letters.length)));
+                    }
+                    return chars;
+                },
+                binary: () => {
+                    const chars = [];
+                    for (let i = 0; i < 128; i++) {
+                        chars.push(Math.random() < 0.5 ? '0' : '1');
+                    }
+                    return chars;
+                },
+                chinese: () => {
+                    const chars = [];
+                    // Common Chinese characters range
+                    for (let i = 0; i < 128; i++) {
+                        chars.push(String.fromCharCode(0x4E00 + Math.floor(Math.random() * 0x9FFF - 0x4E00)));
+                    }
+                    return chars;
+                }
+            };
+
+            // Initialize with Japanese characters
+            chars = charSets.japanese();
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth * 0.9;
+                canvas.height = window.innerHeight * 0.7;
+                drops = Array(Math.floor(canvas.width / getFontSize())).fill(1);
+            }
+
+            function getFontSize() {
+                return parseInt(document.getElementById('fontSize').value);
+            }
+
+            function getSpeed() {
+                return parseInt(document.getElementById('speed').value);
+            }
+
+            function getColor() {
+                return document.getElementById('color').value;
+            }
+
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const fontSize = getFontSize();
+                ctx.font = fontSize + 'px monospace';
+                ctx.fillStyle = getColor();
+
+                for (let i = 0; i < drops.length; i++) {
+                    const char = chars[Math.floor(Math.random() * chars.length)];
+                    ctx.fillText(char, i * fontSize, drops[i] * fontSize);
+
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+
+                setTimeout(() => requestAnimationFrame(draw), 1000 / getSpeed());
+            }
+
+            // Event listeners for controls
+            window.addEventListener('resize', resizeCanvas);
+            ['speed', 'fontSize', 'color', 'charSet'].forEach(id => {
+                document.getElementById(id).addEventListener('change', () => {
+                    if (id === 'fontSize') resizeCanvas();
+                    if (id === 'charSet') {
+                        chars = charSets[document.getElementById('charSet').value]();
+                    }
+                });
+            });
+
+            // Initialize
+            resizeCanvas();
+            draw();
+        });
+    </script>
+</body>
+</html>
