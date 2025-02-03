@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Free online tool to convert Word documents to scanned-looking PDFs - Transform your DOCX files with black and white effects, slight rotation, and authentic scanning artifacts. Perfect for creating professional scanned document effects.">
+    <meta name="keywords" content="scan your word, word to scanned pdf, docx scanner effect, document scanning simulator, word document converter, scanned paper effect, black and white document converter, online document tools, word to pdf converter, document effects">
+    <meta name="author" content="Xiaowen Zhang">
+    <title>Word to Scanned PDF Converter - Make Documents Look Like Scanned Paper</title>
+    
+    <script src="/include-loader.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="/static/styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <style>
+        .tool-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: var(--spacing-md);
+        }
+
+        .upload-section {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-lg);
+            text-align: center;
+            margin-bottom: var(--spacing-lg);
+            background: var(--background-color);
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+        }
+
+        .upload-section:hover {
+            border-color: var(--primary-color);
+        }
+
+        .upload-section.dragover {
+            border-color: var(--primary-color);
+            background: var(--hover-color);
+        }
+
+        .settings-section {
+            background: var(--background-color);
+            padding: var(--spacing-md);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .setting-item {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .setting-item label {
+            display: block;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .setting-item input[type="range"] {
+            width: 100%;
+        }
+
+        .preview-section {
+            margin-top: var(--spacing-lg);
+            text-align: center;
+        }
+
+        #previewCanvas {
+            max-width: 100%;
+            margin-top: var(--spacing-md);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .process-button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: var(--spacing-sm) var(--spacing-lg);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: var(--font-size-base);
+            transition: background-color 0.3s ease;
+        }
+
+        .process-button:hover {
+            background: var(--primary-dark-color);
+        }
+
+        .process-button:disabled {
+            background: var(--border-color);
+            cursor: not-allowed;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: var(--background-color);
+            border-radius: var(--border-radius);
+            margin-top: var(--spacing-md);
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-color);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <div class="layout">
+        <header class="header">
+            <div class="nav-buttons">
+                <a href="/" class="home-button">Home</a>
+                <a href="/about.html" class="home-button">About</a>
+            </div>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search tools..." id="searchInput">
+                <div class="search-results" id="searchResults"></div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="tool-container">
+                <h1>Word to Scanned PDF Converter</h1>
+                <p>Transform your Word documents to look like they've been scanned on paper. Add black and white effects, slight rotation, and authentic scanning artifacts.</p>
+
+                <div class="upload-section" id="dropZone">
+                    <p>Drop your Word document (DOCX) here or click to upload</p>
+                    <input type="file" id="fileInput" accept=".docx" style="display: none">
+                </div>
+
+                <div class="settings-section">
+                    <div class="setting-item">
+                        <label>Rotation Angle (±15°)</label>
+                        <input type="range" id="rotationAngle" min="-15" max="15" value="0" step="0.5">
+                        <span id="rotationValue">0°</span>
+                    </div>
+
+                    <div class="setting-item">
+                        <label>Contrast</label>
+                        <input type="range" id="contrast" min="0" max="200" value="100" step="10">
+                        <span id="contrastValue">100%</span>
+                    </div>
+
+                    <div class="setting-item">
+                        <label>Noise Amount</label>
+                        <input type="range" id="noiseAmount" min="0" max="50" value="10">
+                        <span id="noiseValue">10%</span>
+                    </div>
+
+                    <div class="setting-item">
+                        <label>Brightness</label>
+                        <input type="range" id="brightness" min="50" max="150" value="100" step="5">
+                        <span id="brightnessValue">100%</span>
+                    </div>
+                </div>
+
+                <button id="processButton" class="process-button" disabled>Process Document</button>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressBar"></div>
+                </div>
+
+                <div class="preview-section">
+                    <h2>Preview</h2>
+                    <canvas id="previewCanvas"></canvas>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <div class="copyright">&copy; 2024 Local Free Online Tools Collection. All rights reserved.</div>
+        </footer>
+    </div>
+
+    <script>
+        let currentDocument = null;
+        let currentPage = 1;
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const processButton = document.getElementById('processButton');
+        const progressBar = document.getElementById('progressBar');
+        const previewCanvas = document.getElementById('previewCanvas');
+        const ctx = previewCanvas.getContext('2d');
+
+        // Handle drag and drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.docx')) {
+                handleDocUpload(file);
+            }
+        });
+
+        dropZone.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleDocUpload(file);
+            }
+        });
+
+        // Handle settings changes
+        const settings = ['rotationAngle', 'contrast', 'noiseAmount', 'brightness'];
+        settings.forEach(setting => {
+            const input = document.getElementById(setting);
+            const value = document.getElementById(`${setting}Value`);
+            input.addEventListener('input', () => {
+                value.textContent = `${input.value}${setting === 'rotationAngle' ? '°' : '%'}`;
+                updatePreview();
+            });
+        });
+
+        async function handleDocUpload(file) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
+                currentDocument = result.value;
+                processButton.disabled = false;
+                updatePreview();
+            } catch (error) {
+                console.error('Error loading document:', error);
+                alert('Error loading document. Please try again.');
+            }
+        }
+
+        async function updatePreview() {
+            if (!currentDocument) return;
+
+            // Create a temporary div to render HTML
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = currentDocument;
+            document.body.appendChild(tempDiv);
+
+            // Set canvas size
+            const scale = 1.5;
+            previewCanvas.width = 800 * scale;
+            previewCanvas.height = 1000 * scale;
+
+            // Clear canvas
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+            // Draw text content
+            ctx.fillStyle = 'black';
+            ctx.font = '16px Arial';
+            const lineHeight = 20;
+            let y = 40;
+
+            // Simple text rendering (you might want to enhance this)
+            tempDiv.querySelectorAll('p').forEach(p => {
+                const words = p.textContent.split(' ');
+                let line = '';
+                
+                words.forEach(word => {
+                    const testLine = line + word + ' ';
+                    const metrics = ctx.measureText(testLine);
+                    if (metrics.width > previewCanvas.width - 80) {
+                        ctx.fillText(line, 40, y);
+                        line = word + ' ';
+                        y += lineHeight;
+                    } else {
+                        line = testLine;
+                    }
+                });
+                ctx.fillText(line, 40, y);
+                y += lineHeight * 1.5;
+            });
+
+            document.body.removeChild(tempDiv);
+            applyEffects();
+        }
+
+        function applyEffects() {
+            const imageData = ctx.getImageData(0, 0, previewCanvas.width, previewCanvas.height);
+            const data = imageData.data;
+
+            const contrast = document.getElementById('contrast').value / 100;
+            const brightness = document.getElementById('brightness').value / 100;
+            const noiseAmount = document.getElementById('noiseAmount').value / 100;
+
+            // Apply contrast, brightness, and noise
+            for (let i = 0; i < data.length; i += 4) {
+                // Convert to grayscale
+                const gray = (data[i] * 0.299 + data[i + 1] * 0.587 + data[i + 2] * 0.114);
+
+                // Apply contrast and brightness
+                let value = ((gray - 128) * contrast + 128) * brightness;
+
+                // Add noise
+                value += (Math.random() - 0.5) * noiseAmount * 50;
+
+                // Clamp values
+                value = Math.max(0, Math.min(255, value));
+
+                data[i] = data[i + 1] = data[i + 2] = value;
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+
+            // Apply rotation
+            const rotation = document.getElementById('rotationAngle').value * Math.PI / 180;
+            if (rotation !== 0) {
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = previewCanvas.width;
+                tempCanvas.height = previewCanvas.height;
+                const tempCtx = tempCanvas.getContext('2d');
+
+                tempCtx.save();
+                tempCtx.translate(previewCanvas.width / 2, previewCanvas.height / 2);
+                tempCtx.rotate(rotation);
+                tempCtx.drawImage(previewCanvas, -previewCanvas.width / 2, -previewCanvas.height / 2);
+                tempCtx.restore();
+
+                ctx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                ctx.drawImage(tempCanvas, 0, 0);
+            }
+        }
+
+        processButton.addEventListener('click', async () => {
+            if (!currentDocument) return;
+
+            processButton.disabled = true;
+            const pdfDoc = await PDFLib.PDFDocument.create();
+
+            // Convert canvas to PDF page
+            const blob = await new Promise(resolve => previewCanvas.toBlob(resolve, 'image/jpeg', 0.8));
+            const imageBytes = await blob.arrayBuffer();
+
+            // Add page to new PDF
+            const image = await pdfDoc.embedJpg(imageBytes);
+            const page = pdfDoc.addPage([previewCanvas.width, previewCanvas.height]);
+            page.drawImage(image, {
+                x: 0,
+                y: 0,
+                width: previewCanvas.width,
+                height: previewCanvas.height,
+            });
+
+            // Save and download the processed PDF
+            const pdfBytes = await pdfDoc.save();
+            const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const url = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'scanned-effect.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+
+            processButton.disabled = false;
+            progressBar.style.width = '0%';
+        });
+    </script>
+</body>
+</html>

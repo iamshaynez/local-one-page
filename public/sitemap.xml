@@ -169,6 +169,12 @@
         <priority>0.8</priority>
     </url>
     <url>
+        <loc>https://www.localhosts.vip/tools/scan-your-word.html</loc>
+        <lastmod>2025-02-03</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
         <loc>https://www.localhosts.vip/tools/qrcode-generator.html</loc>
         <lastmod>2025-01-26</lastmod>
         <changefreq>monthly</changefreq>
