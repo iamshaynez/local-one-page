@@ -7,6 +7,11 @@
             console.log('Hostname does not match. Skipping analytics.');
             return;
         }
+        
+        // 获取当前路径
+        const currentPath = window.location.pathname;
+        console.log('Current path:', currentPath);
+        
         console.log('Hostname match production. Loading scripts.');
         const response = await fetch('/include.html');
         const html = await response.text();
@@ -16,11 +21,16 @@
         temp.innerHTML = html;
         
         // 获取所有脚本标签
-        const scripts = temp.getElementsByTagName('script');
+        const scripts = Array.from(temp.getElementsByTagName('script'));
+        
+        // 根据路径判断加载多少个脚本
+        const shouldLoadLimited = currentPath.startsWith('/games'); // 判断是否是 /games 路径
+        const maxScripts = shouldLoadLimited ? 2 : scripts.length;
+        const scriptsToLoad = scripts.slice(0, maxScripts); // 截取要加载的脚本
         
         // 逐个处理脚本
         let scriptCount = 0;
-        Array.from(scripts).forEach(script => {
+        scriptsToLoad.forEach(script => {
             const newScript = document.createElement('script');
             
             // 复制脚本的所有属性
@@ -40,6 +50,7 @@
         
         // Print the total number of scripts loaded
         console.log(`Total scripts loaded: ${scriptCount}`);
+        console.log(`Loading ${shouldLoadLimited ? 'limited' : 'all'} scripts based on path.`);
     } catch (error) {
         console.error('Failed to load analytics:', error);
     }
